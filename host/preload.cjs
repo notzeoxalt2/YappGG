@@ -1,6 +1,9 @@
-const {contextBridge,ipcRenderer}=require('electron');
+const {contextBridge,ipcRenderer,webUtils}=require('electron');
 contextBridge.exposeInMainWorld('micHost',{
   updates:(command,values)=>ipcRenderer.invoke('host:updates',command,values),
+  droppedPaths:files=>Array.from(files).map(file=>webUtils.getPathForFile(file)).filter(Boolean),
+  onPreferences:callback=>{const listener=(_,value)=>callback(value);ipcRenderer.on('host:preferences',listener);return()=>ipcRenderer.removeListener('host:preferences',listener);},
+  onSoundboard:callback=>{const listener=(_,value)=>callback(value);ipcRenderer.on('host:soundboard-changed',listener);return()=>ipcRenderer.removeListener('host:soundboard-changed',listener);},
   soundboard:(command,values)=>ipcRenderer.invoke('host:soundboard',command,values),
   initial:()=>ipcRenderer.invoke('host:initial'),
   save:state=>ipcRenderer.invoke('host:save',state),

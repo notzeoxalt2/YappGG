@@ -23,10 +23,11 @@ static class MediaImport
 }
 sealed class SoundboardMixer:IDisposable
 {
-    sealed record Voice(string Id,WaveFileReader Reader,ISampleProvider Provider,float Volume){public bool Paused;}
+    sealed record Voice(string Id,WaveFileReader Reader,ISampleProvider Provider,float InitialVolume){public float Volume=InitialVolume;public bool Paused;}
     readonly object gate=new();readonly List<Voice> voices=[];readonly float[] scratch=new float[4096];
     public int SampleRate { get; set; }=48000;
     public string[] Paused {get {lock(gate)return voices.Where(v=>v.Paused).Select(v=>v.Id).ToArray();}}
+    public void Volume(string id,float value){if(!float.IsFinite(value)||value<0||value>1)throw new ArgumentOutOfRangeException(nameof(value));lock(gate){var voice=voices.FirstOrDefault(v=>v.Id==id);if(voice!=null)voice.Volume=value;}}
     public void Pause(string id,bool paused){lock(gate){var voice=voices.FirstOrDefault(v=>v.Id==id)??throw new InvalidOperationException("This sound is not playing.");voice.Paused=paused;}}
     public void PauseAll(){lock(gate){bool value=voices.Any(v=>!v.Paused);foreach(var voice in voices)voice.Paused=value;}}
     public string[] Playing { get {lock(gate)return voices.Select(v=>v.Id).ToArray();} }

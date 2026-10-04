@@ -123,6 +123,7 @@ public sealed class MicEngine : IDisposable
     public void PlaySound(string id,string path,float volume){if(!Running)throw new InvalidOperationException("Start microphone processing to play sounds.");PrepareSoundboard();soundboard.Play(id,path,volume);}
     public void StopSounds(string? id=null)=>soundboard.Stop(id);
     public void Preview(float volume,string? output){if(!float.IsFinite(volume)||volume<0||volume>1)throw new ArgumentOutOfRangeException(nameof(volume));previewVolume=volume;var changed=previewOutput!=output;previewOutput=output;if(changed&&Running)Start(inputDevice!.ID);else fun?.PreviewVolume(volume);}
+    public void SoundVolume(string id,float value)=>soundboard.Volume(id,value);
     public void PauseAllSounds()=>soundboard.PauseAll();
     public void PauseSound(string id,bool paused)=>soundboard.Pause(id,paused);
     public void MediaGain(float value){if(!float.IsFinite(value)||value<0||value>100)throw new ArgumentException("Send volume must be between 0 and 10,000%.");mediaGain=value;fun?.MediaGain(value);}

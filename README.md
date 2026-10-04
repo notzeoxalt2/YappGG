@@ -10,7 +10,7 @@ The installer opens YappGG after Finish by default. Start with Windows is checke
 
 Installed builds check public GitHub Releases after startup and every six hours, downloading newer stable versions in the background. Settings has Automatic updates, Check for updates and Restart to update. Installation waits for your explicit restart; Windows may request administrator approval. Release downloads must remain public for friends to update without credentials. No GitHub token is included in the app.
 
-Versions through 0.5.0 need one manual installation of 0.6.0 to gain the updater.
+Versions through 0.5.0 need one manual installation of 0.6.1 to gain the updater.
 
 ## Soundboard
 
@@ -20,7 +20,7 @@ Use Play again to stop, Pause/Resume to keep position, and Restart to begin agai
 
 The signed driver requires active render feed endpoints, which Windows also lists as outputs. Keep physical headphones as your playback output; disabling those feeds breaks the microphones.
 
-Import audio/video files or ZIP packs, including nested folders. Assign each sound a shortcut using a modifier plus a letter, number or function key. Shortcuts also work from the tray. Clips mix after cleanup; YappGG mute silences the combined output. Unsupported or damaged media is reported and skipped. MP3, MP4, WAV, FLAC, Ogg and WebM have been tested. No test clips are bundled.
+Drag audio/video files or ZIP packs onto Soundboard, or use Import audio / ZIP. Open folder opens a dedicated Soundboard imports inbox; paste files or nested folders there and they appear automatically without autoplay. Refresh folder scans on demand. Imported originals remain in the inbox, so you can remove them after import if you want to reclaim space. The managed sound library stays separate. Assign each sound a shortcut using a modifier plus a letter, number or function key. Shortcuts also work from the tray. Clips mix after cleanup; YappGG mute silences the combined output. Unsupported or damaged media is reported and skipped. MP3, MP4, WAV, FLAC, Ogg and WebM have been tested. No test clips are bundled.
 
 ## Development
 
@@ -43,3 +43,5 @@ Bump package.json and its lock file, update the Settings version label, then bui
 Installers are currently unsigned; bundled driver signatures are separate. A complete clean-PC installation and restart test is still required for broader distribution.
 
 If GG is uninstalled, its uninstaller can remove the shared signed driver. YappGG detects missing driver/configuration on connection and offers Windows repair automatically. Settings also includes Repair microphone. The repair restores bundled components and does not reinstall GG. Windows administrator approval may be required.
+
+Version 0.6.1 separates meter updates from editable controls, uses immediate button feedback, moves clip actions away from volume/keybind inputs and applies per-clip volume to already-playing clips. Preview-volume changes reuse the current physical output instead of repeatedly enumerating devices.

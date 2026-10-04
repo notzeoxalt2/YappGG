@@ -7,18 +7,20 @@ namespace MicOnly;
 sealed class ShareProtection : IDisposable
 {
     readonly Dictionary<string, bool> previous = new();
-    long checkedAt;
+    long checkedAt;readonly object gate=new(),inspectionGate=new();bool inspecting,disposed;
     public bool Enabled { get; private set; } = true;
     public bool BlockDesktopAudio { get; private set; } = true;
     object last = new { enabled = true, sessions = 0 };
-    public void SetEnabled(bool enabled) { Enabled = enabled; checkedAt = 0; if (!enabled) Restore(); }
-    public void SetDesktopBlock(bool enabled) { Restore(); BlockDesktopAudio = enabled; checkedAt = 0; }
+    public void SetEnabled(bool enabled) { lock(inspectionGate){Enabled = enabled; checkedAt = 0; if (!enabled) Restore();} }
+    public void SetDesktopBlock(bool enabled) { lock(inspectionGate){Restore(); BlockDesktopAudio = enabled; checkedAt = 0;} }
     public object Status()
     {
-        if (Environment.TickCount64 - checkedAt < 1000) return last;
-        checkedAt = Environment.TickCount64;
-        try { last = Inspect(true); }
-        catch (Exception error) { last = new { enabled = Enabled, error = error.Message }; }
+        lock(gate){
+            if(disposed||inspecting||Environment.TickCount64-checkedAt<1000)return last;
+            checkedAt=Environment.TickCount64;inspecting=true;
+        }
+        // Device/session enumeration must not block microphone button commands.
+        Task.Run(()=>{lock(inspectionGate){try{if(!disposed)last=Inspect(true);}catch(Exception error){last=new{enabled=Enabled,error=error.Message};}finally{lock(gate)inspecting=false;}}});
         return last;
     }
     public object Inspect(bool apply)
@@ -67,7 +69,7 @@ sealed class ShareProtection : IDisposable
             foreach (var d in e.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
             using (d)
             {
-                if (!AudioPolicy.IsGG(d)) continue;
+                if (!AudioPolicy.IsGG(d)&&!AudioPolicy.IsTroll(d)) continue;
                 var manager = d.AudioSessionManager; manager.RefreshSessions();
                 for (int i = 0; i < manager.Sessions.Count; i++)
                 using (var session = manager.Sessions[i])
@@ -80,5 +82,5 @@ sealed class ShareProtection : IDisposable
         catch (Exception error) { Console.Error.WriteLine("Share protection restore: " + error.Message); }
         previous.Clear();
     }
-    public void Dispose() => Restore();
+    public void Dispose(){lock(inspectionGate){disposed=true;Restore();}}
 }

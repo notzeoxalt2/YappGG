@@ -44,6 +44,7 @@ let applyTimer,lastApplied;
 globalThis.__audioStatus={running:false,inputPeak:0,outputPeak:0};
 function receiveAudio(status){const wasRunning=__audioStatus.running;globalThis.__audioStatus=status;window.dispatchEvent(new CustomEvent('mic-audio-status',{detail:status}));if(wasRunning!==status.running){const next=structuredClone(state);if(next.soundstage.micMonitoring)next.soundstage.micMonitoring.isRecording=!!status.recording;updateState(next);}}
 micHost.onAudio(receiveAudio);
+micHost.onPreferences(preferences=>{if(window.__micInitial){__micInitial.audioPreferences={...__micInitial.audioPreferences,...preferences};__micInitial.startupEnabled=preferences.startWithWindows??true;}});
 globalThis.__connectAudio=async inputId=>{try{const status=await micHost.audio('connect',{inputId,data:state.soundstage.configs.selectedConfigs.chatCapture.data});receiveAudio(status);return status;}catch(error){receiveAudio({...__audioStatus,running:false,error:error.message});}};
 function applyAudio(){if(__micInitial?.audioStatus==='verification')return;clearTimeout(applyTimer);applyTimer=setTimeout(()=>{const data=state.soundstage.configs.selectedConfigs.chatCapture.data,encoded=JSON.stringify(data);if(encoded===lastApplied)return;micHost.audio('apply',{data}).then(()=>{lastApplied=encoded;}).catch(error=>receiveAudio({...__audioStatus,error:error.message}));},75);}
 let playback;

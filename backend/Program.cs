@@ -140,6 +140,7 @@ static class Program
                                 case "application-audio":engine.SelectApplication(message.GetProperty("pid").GetInt32());break;
                                 case "soundboard-ready":engine.PrepareSoundboard();break;
                                 case "soundboard-play":engine.PlaySound(message.GetProperty("soundId").GetString()!,message.GetProperty("path").GetString()!,message.GetProperty("volume").GetSingle());break;
+                                case "soundboard-volume":engine.SoundVolume(message.GetProperty("soundId").GetString()!,message.GetProperty("volume").GetSingle());break;
                                 case "soundboard-pause-all":engine.PauseAllSounds();break;
                                 case "soundboard-pause":engine.PauseSound(message.GetProperty("soundId").GetString()!,message.GetProperty("paused").GetBoolean());break;
                                 case "media-gain":engine.MediaGain(message.GetProperty("value").GetSingle());break;
