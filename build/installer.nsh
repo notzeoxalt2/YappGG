@@ -3,7 +3,9 @@
 !define MUI_FINISHPAGE_TITLE "YappGG is installed"
 !define MUI_FINISHPAGE_TEXT "Open YappGG and select your physical microphone.$\r$\n$\r$\nIn Discord, select YappGG Microphone as input and your headphones as output.$\r$\n$\r$\nUse YappGG mute for global processed microphone mute."
 !include nsDialogs.nsh
+!include FileFunc.nsh
 !ifndef BUILD_UNINSTALLER
+Var YappUpdating
 Var YappSetupDialog
 Var YappStartupControl
 Var YappDiscordControl
@@ -13,6 +15,13 @@ Var YappDiscord
 Var YappEnhance
 Var YappSetupArgs
 !macro customInit
+  StrCpy $YappUpdating 0
+  ${GetParameters} $R0
+  ClearErrors
+  ${GetOptions} $R0 "--updated" $R1
+  ${IfNot} ${Errors}
+    StrCpy $YappUpdating 1
+  ${EndIf}
   StrCpy $YappStartup 1
   StrCpy $YappDiscord 0
   StrCpy $YappEnhance 0
@@ -20,6 +29,9 @@ Var YappSetupArgs
 !macro customPageAfterChangeDir
   Page custom YappSetupPage YappSetupLeave
   Function YappSetupPage
+    ${If} $YappUpdating == 1
+      Abort
+    ${EndIf}
     !insertmacro MUI_HEADER_TEXT "Microphone setup" "Choose startup and Discord voice enhancement."
     nsDialogs::Create 1018
     Pop $YappSetupDialog
@@ -46,6 +58,7 @@ Var YappSetupArgs
   FunctionEnd
 !macroend
 !macro customInstall
+  ${If} $YappUpdating != 1
   nsExec::ExecToStack '"$INSTDIR\resources\backend-bin\MicBackend.exe" --install-driver'
   Pop $0
   Pop $1
@@ -67,6 +80,7 @@ Var YappSetupArgs
     StrCpy $YappSetupArgs "$YappSetupArgs --enhance-discord"
   ${EndIf}
   ${StdUtils.ExecShellAsUser} $0 "$INSTDIR\YappGG.exe" "open" "$YappSetupArgs"
+  ${EndIf}
 !macroend
 !endif
 !macro customFinishPage

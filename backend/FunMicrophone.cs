@@ -62,7 +62,7 @@ sealed class FunMicrophone : IDisposable
     readonly WasapiCapture capture;
     readonly WasapiOut output;
     readonly BufferedWaveProvider buffer;
-    readonly BufferedWaveProvider? trollBuffer,previewBuffer;readonly WasapiOut? trollOutput,previewOutput;readonly Func<ApplicationAudio?>? application;volatile float previewGain=.15f,mediaGain=1;volatile bool trollVoice=true;volatile string mediaDestination="troll";
+    readonly BufferedWaveProvider? trollBuffer,previewBuffer;readonly WasapiOut? trollOutput,previewOutput;volatile float previewGain=.15f,mediaGain=1;volatile bool trollVoice=true;volatile string mediaDestination="troll";
     volatile FunDsp? dsp;
     readonly NativeCleanup? cleanup;
     readonly float[] board=new float[4096];
@@ -72,9 +72,8 @@ sealed class FunMicrophone : IDisposable
     public string? Error { get; private set; }
     public string? Name=>dsp?.Name;
     public bool CleanFirst=>cleanup!=null;
-    public FunMicrophone(MMDevice input,MMDevice target,JsonElement? preset,string? cleanedCaptureId=null,SoundboardMixer? soundboard=null,MMDevice? troll=null,MMDevice? headphones=null,Func<ApplicationAudio?>? appAudio=null)
+    public FunMicrophone(MMDevice input,MMDevice target,JsonElement? preset,string? cleanedCaptureId=null,SoundboardMixer? soundboard=null,MMDevice? troll=null,MMDevice? headphones=null)
     {
-        application=appAudio;
         capture=new WasapiCapture(input,true,20);
         if(soundboard!=null)soundboard.SampleRate=capture.WaveFormat.SampleRate;
         dsp=preset.HasValue?new FunDsp(preset.Value,capture.WaveFormat.SampleRate):null;
@@ -96,7 +95,7 @@ sealed class FunMicrophone : IDisposable
                     clean[frame*2]=clean[frame*2+1]=sample/channels;
                 }
                 cleanup?.Process(clean,count);
-                soundboard?.Mix(board,count);var clipPreview=new float[count];Array.Copy(board,clipPreview,count);application?.Invoke()?.Mix(board,count,format.SampleRate);
+                soundboard?.Mix(board,count);var clipPreview=new float[count];Array.Copy(board,clipPreview,count);
                 for(int frame=0;frame<count;frame++){
                     float raw=(clean[frame*2]+clean[frame*2+1])*.5f;float sample=muted?0:Math.Clamp(raw*gain+(mediaDestination!="troll"?board[frame]*mediaGain:0),-.98f,.98f);float trollSample=muted?0:Math.Clamp((trollVoice?(activeDsp?.Process(raw)??raw)*gain:0)+(mediaDestination!="clean"?board[frame]*mediaGain:0),-.98f,.98f);float previewSample=muted?0:Math.Clamp(clipPreview[frame]*previewGain,-.98f,.98f);
                     BitConverter.TryWriteBytes(result.AsSpan((frame+offset)*8,4),sample);BitConverter.TryWriteBytes(result.AsSpan((frame+offset)*8+4,4),sample);

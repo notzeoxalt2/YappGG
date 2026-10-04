@@ -18,6 +18,9 @@ static class AudioPolicy
     public static void BypassEndpointEffects(){using var e=new MMDeviceEnumerator();var policy=(IAudioPolicy)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("870AF99C-171D-4F9E-AF0D-E63DF40C2BC9"))!)!;try{
         foreach(var endpoint in e.EnumerateAudioEndPoints(DataFlow.All,DeviceState.Active))using(endpoint){if(!IsGG(endpoint)&&!IsTroll(endpoint))continue;
             var key=new PropertyKey(new Guid("1da5d803-d492-4edd-8c23-e0c0ffee7f0e"),5);var disabled=new PropVariant{vt=19,pointerValue=(nint)1};
+            var endpointGuid=endpoint.ID[(endpoint.ID.LastIndexOf('.')+1)..];
+            using var effects=Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices\Audio\"+(endpoint.DataFlow==DataFlow.Capture?"Capture":"Render")+"\\"+endpointGuid+@"\FxProperties");
+            if(effects?.GetValue("{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},5") is int existing&&existing==1)continue;
             policy.SetPropertyValue(endpoint.ID,true,ref key,ref disabled);
         }
     }finally{Marshal.FinalReleaseComObject(policy);}}
@@ -31,7 +34,7 @@ static class AudioPolicy
         foreach(var mic in e.EnumerateAudioEndPoints(DataFlow.All,DeviceState.Active).Where(d=>IsGG(d)||IsTroll(d)))using(mic){
             var label=IsTroll(mic)?(mic.DataFlow==DataFlow.Capture?"YappGG Troll":"YappGG Troll Feed"):(mic.DataFlow==DataFlow.Capture?"YappGG Microphone":"YappGG Microphone Feed");
             foreach(var pair in new[]{(new PropertyKey(new Guid("a45c254e-df1c-4efd-8020-67d146a850e0"),2),label),(new PropertyKey(new Guid("b3f8fa53-0004-438e-9003-51a46e139bfc"),6),label)}){
-                var key=pair.Item1;var value=new PropVariant{vt=31,pointerValue=Marshal.StringToCoTaskMemUni(pair.Item2)};
+                var key=pair.Item1;if(mic.Properties.Contains(key)&&Equals(mic.Properties[key].Value,pair.Item2))continue;var value=new PropVariant{vt=31,pointerValue=Marshal.StringToCoTaskMemUni(pair.Item2)};
                 try{policy.SetPropertyValue(mic.ID,false,ref key,ref value);}finally{Marshal.FreeCoTaskMem(value.pointerValue);}
             }
             changed.Add(new{microphoneId=mic.ID,name=label});

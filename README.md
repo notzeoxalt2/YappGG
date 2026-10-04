@@ -10,13 +10,13 @@ The installer opens YappGG after Finish by default. Start with Windows is checke
 
 Installed builds check public GitHub Releases after startup and every six hours, downloading newer stable versions in the background. Settings has Automatic updates, Check for updates and Restart to update. Installation waits for your explicit restart; Windows may request administrator approval. Release downloads must remain public for friends to update without credentials. No GitHub token is included in the app.
 
-Versions through 0.5.0 need one manual installation of 0.7.0 to gain the updater.
+Versions through 0.5.0 need one manual installation of the latest release to gain the updater.
 
 ## Soundboard
 
 YappGG Microphone carries clean voice; YappGG Troll carries voice plus clips by default. Send media to lets you choose Troll only, normal mic only, or both. Select the same microphone in Discord. Separate meters show captured audio; Discord voice detection may still suppress music if its filters or input threshold are enabled.
 
-Use Play again to stop, Pause/Resume to keep position, and Restart to begin again. Stop all and Pause/Resume all have configurable global shortcuts (Ctrl+Alt+S and Ctrl+Alt+P by default). Your headphone preview and the boosted mic-send volume are independent. Boost is capped at 10,000% with a final peak limit; high settings distort. Videos display muted locally to avoid duplicate audio. Folders organize clips and full music/video files. Selected application capture includes its child processes and excludes unrelated applications; control that application’s original local listening volume in Windows or the app itself.
+Use Play again to stop, Pause/Resume to keep position, and Restart to begin again. Stop all and Pause/Resume all have configurable global shortcuts (Ctrl+Alt+S and Ctrl+Alt+P by default). Your headphone preview and the boosted mic-send volume are independent. Boost is capped at 10,000% with a final peak limit; high settings distort. Videos display muted locally to avoid duplicate audio. Folders organize clips and full music/video files.
 
 The signed driver requires active render feed endpoints, which Windows also lists as outputs. Keep physical headphones as your playback output; disabling those feeds breaks the microphones.
 
@@ -46,8 +46,12 @@ If GG is uninstalled, its uninstaller can remove the shared signed driver. YappG
 
 Version 0.6.1 separates meter updates from editable controls, uses immediate button feedback, moves clip actions away from volume/keybind inputs and applies per-clip volume to already-playing clips. Preview-volume changes reuse the current physical output instead of repeatedly enumerating devices.
 
-Version 0.7.0 adds the sound wheel. Ctrl+Alt+Q opens it on the monitor containing your mouse, including when YappGG is in the tray. Drag toward a sound and release to play; Escape cancels. Choose a folder, scroll between eight-sound pages, or use the arrow buttons. Change the wheel shortcut and default folder in Soundboard. The overlay closes on focus loss and releases its renderer after 30 seconds hidden. Exclusive fullscreen applications may cover overlays; use borderless mode if necessary.
+Version 0.7.1 adds a compact transparent sound wheel. Ctrl+Alt+Q opens it on your current monitor, including from the tray. Drag toward a sound and release to play. Escape cancels. Scroll between pages, click Back/Next, or hover over either page button for 420 milliseconds. Page buttons are hidden for a single page. The small folder picker above the wheel defaults to All and remembers your choice across app/PC restarts. Configure its shortcut in Trolling / Soundboards. Exclusive fullscreen apps can cover overlays; use borderless mode if needed.
 
-The application picker includes visible open applications even before they play sound, as well as active audio sessions. It refreshes every five seconds while Soundboard is open and supports search. Discord and YappGG are excluded to prevent feedback. Some protected applications do not permit audio capture.
+Trolling voice effects, effect selection, effect on/off and the global voice shortcut are now in Trolling / Soundboards. Settings links to these controls. Voice effects affect the Troll voice path; clips are mixed afterward. Application/tab capture has been removed. Imports, local video previews, independent send/preview levels and shortcuts remain.
 
-Voice cleanup is invoked on voice buffers before clips/application audio are added. Windows endpoint system effects are bypassed for YappGG endpoints to prevent a second pass on the combined stream. A failed bypass leaves the microphone available and shows a warning in Soundboard. External receiving apps can still apply their own filtering. Version 0.7.0 was verified with silent UI fixtures and read-only application enumeration; live audio quality remains unverified.
+Update installation verifies the downloaded installer hash, closes the microphone engine, starts a detached helper, and waits for the app to exit before launching installation. Windows administrator approval is required. The helper checks the exit code and installed version, records failures, and reopens the app. In-app updates skip unchanged audio-component installation and preserve preferences. No forced update installation happens on ordinary exit. If an older app cannot launch the installer, download the matching release installer manually once.
+
+Voice cleanup is invoked on voice buffers before media mixing. Windows endpoint effects are bypassed for YappGG endpoints to prevent a second pass on the combined stream. A failed bypass leaves the microphone available and shows a warning. Receiving apps can still apply their own filtering. Verification for 0.7.1 stayed silent; end-to-end installation from the updater is reserved for the user.
+
+YappGG microphone endpoints stay enabled when the engine closes so receiving apps can keep their selection. Reconnect skips unchanged device labels and endpoint effect properties, and a fresh engine always starts the saved physical input.

@@ -31,7 +31,7 @@ public sealed class MicEngine : IDisposable
     JsonElement? funPreset;
     JsonElement? afterEffect;
     readonly bool dedicatedRouting=true;readonly SoundboardMixer soundboard=new();
-    string mediaDestination="troll";bool trollVoice=true;ApplicationAudio? applicationAudio;float previewVolume=.15f,mediaGain=1;string? previewOutput;
+    string mediaDestination="troll";bool trollVoice=true;float previewVolume=.15f,mediaGain=1;string? previewOutput;
     WaveFileWriter? recordingWriter;
     string? recordingPath;
     long recordingBytes;
@@ -78,7 +78,7 @@ public sealed class MicEngine : IDisposable
         if (System.Diagnostics.Process.GetProcessesByName("SteelSeriesSonar").Length > 0)
             throw new InvalidOperationException("Close SteelSeries GG/Sonar before starting this app's mic engine.");
         using var e = new MMDeviceEnumerator();
-        visibility??=new EndpointVisibility();
+        visibility??=new EndpointVisibility(keepEnabled:true);
         foreach(var d in e.EnumerateAudioEndPoints(DataFlow.All,DeviceState.All).Where(d=>(IsSonarMic(d)||AudioPolicy.IsTroll(d))&&((int)d.State&3)!=0))
         {
             try{visibility.Enable(d.ID,d.State==DeviceState.Active);}catch(Exception error){Console.Error.WriteLine($"Endpoint {d.ID} visibility: {error.Message}");}
@@ -100,7 +100,7 @@ public sealed class MicEngine : IDisposable
             using var troll=e.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active).FirstOrDefault(AudioPolicy.IsTroll)??throw new InvalidOperationException("Repair the YappGG Troll audio endpoint in Settings.");
             using var headphones=e.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active).Where(d=>!AudioPolicy.IsGG(d)&&!AudioPolicy.IsTroll(d)&&!d.FriendlyName.Contains("SteelSeries Sonar")).OrderByDescending(d=>d.ID==previewOutput).ThenByDescending(d=>d.FriendlyName.Contains("Headset")||d.FriendlyName.Contains("Headphones")).FirstOrDefault();
             StartMeters(e);
-            fun=new FunMicrophone(inputDevice,output,afterEffect??funPreset,capture.ID,soundboard,troll,headphones,()=>applicationAudio);fun.PreviewVolume(previewVolume);fun.TrollVoice(trollVoice);fun.MediaDestination(mediaDestination);fun.MediaGain(mediaGain);fun.Gain(currentGain,currentMuted);fun.Start();
+            fun=new FunMicrophone(inputDevice,output,afterEffect??funPreset,capture.ID,soundboard,troll,headphones);fun.PreviewVolume(previewVolume);fun.TrollVoice(trollVoice);fun.MediaDestination(mediaDestination);fun.MediaGain(mediaGain);fun.Gain(currentGain,currentMuted);fun.Start();
         }else{
             stream ??= (IAudioStreamManager)new AudioStreamManagerClass();
             stream.RegisterEventsClient(events);
@@ -117,7 +117,7 @@ public sealed class MicEngine : IDisposable
         using var trollCapture=devices.EnumerateAudioEndPoints(DataFlow.Capture,DeviceState.Active).FirstOrDefault(AudioPolicy.IsTroll)??throw new InvalidOperationException("YappGG Troll microphone is unavailable.");
         trollMeter=new WasapiCapture(trollCapture);trollMeter.DataAvailable+=(_,args)=>trollPeak=Peak(args);trollMeter.StartRecording();
     }
-    public void Stop() { var previousApp=applicationAudio;applicationAudio=null;previousApp?.Dispose();soundboard.Stop();RecordStop();fun?.Dispose();fun=null;if(meter!=null){meter.StopRecording();meter.Dispose();meter=null;outputPeak=0;}if(trollMeter!=null){trollMeter.StopRecording();trollMeter.Dispose();trollMeter=null;trollPeak=0;}if (stream != null && Running) stream.Stop(); }
+    public void Stop() { soundboard.Stop();RecordStop();fun?.Dispose();fun=null;if(meter!=null){meter.StopRecording();meter.Dispose();meter=null;outputPeak=0;}if(trollMeter!=null){trollMeter.StopRecording();trollMeter.Dispose();trollMeter=null;trollPeak=0;}if (stream != null && Running) stream.Stop(); }
     public void Gain(float value,bool muted){if(!float.IsFinite(value)||value<0||value>1000000)throw new ArgumentOutOfRangeException(nameof(value));var wasRunning=Running;currentGain=value;currentMuted=muted;if(wasRunning&&fun==null&&value>1){Start(inputDevice!.ID);return;}fun?.Gain(value,muted);if(fun==null&&value<=1){stream?.SetOutputLinearGain(value);stream?.SetOutputMute(muted?1:0);}}
     void MirrorCaptureEq(){for(int i=1;i<=10;i++){var p="ParametricEqFilter"+i;Set("Capture"+p+"State",Bool(p+"State"));foreach(var f in new[]{"FreqHz","Q","GainDb"})Set("Capture"+p+f,Float(p+f));Set("Capture"+p+"Type",Long(p+"Type"));}Set("CaptureParametricEqState",Bool("ParametricEqState"));}
     public void AfterEffect(JsonElement? value){var wasRunning=Running;var input=inputDevice?.ID;afterEffect=value?.Clone();if(fun!=null){fun.ChangeEffect(afterEffect??funPreset);return;}if(wasRunning&&input!=null&&afterEffect.HasValue)Start(input);}
@@ -131,8 +131,8 @@ public sealed class MicEngine : IDisposable
     public void MediaGain(float value){if(!float.IsFinite(value)||value<0||value>100)throw new ArgumentException("Send volume must be between 0 and 10,000%.");mediaGain=value;fun?.MediaGain(value);}
     public void MediaDestination(string value){if(value is not ("troll" or "both" or "clean"))throw new ArgumentException("Choose a media microphone destination.");mediaDestination=value;fun?.MediaDestination(value);}
     public void TrollVoice(bool value){trollVoice=value;fun?.TrollVoice(value);}
-    public void SelectApplication(int pid){var next=pid>0?new ApplicationAudio(pid):null;var previous=applicationAudio;applicationAudio=next;previous?.Dispose();}
-    public object Status()=>new{running=Running,mediaEffectsBypassed,soundboardPaused=soundboard.Paused,mediaGain,trollPeak,mediaDestination,applicationPid=applicationAudio?.ProcessId,applicationError=applicationAudio?.Error,previewVolume,soundboardPlaying=soundboard.Playing,inputId=inputDevice?.ID,inputPeak=inputDevice?.AudioMeterInformation.MasterPeakValue??0,outputPeak,outputName=processedDevice?.FriendlyName,outputId=processedDevice?.ID,recording=recorder!=null,gain=currentGain,muted=currentMuted,effect=fun?.Name,cleanFirst=fun?.CleanFirst==true,afterEffectEnabled=afterEffect.HasValue,copyMuted=fun!=null||stream?.GetCopyOutputMute()==1,copyDevice=fun!=null?"":stream?.GetCopyOutputDevice(),outputMute=processedDevice?.AudioEndpointVolume.Mute,outputVolume=processedDevice?.AudioEndpointVolume.MasterVolumeLevelScalar,routingError=fun?.Error??events.Error};
+
+    public object Status()=>new{running=Running,mediaEffectsBypassed,soundboardPaused=soundboard.Paused,mediaGain,trollPeak,mediaDestination,previewVolume,soundboardPlaying=soundboard.Playing,inputId=inputDevice?.ID,inputPeak=inputDevice?.AudioMeterInformation.MasterPeakValue??0,outputPeak,outputName=processedDevice?.FriendlyName,outputId=processedDevice?.ID,recording=recorder!=null,gain=currentGain,muted=currentMuted,effect=fun?.Name,cleanFirst=fun?.CleanFirst==true,afterEffectEnabled=afterEffect.HasValue,copyMuted=fun!=null||stream?.GetCopyOutputMute()==1,copyDevice=fun!=null?"":stream?.GetCopyOutputDevice(),outputMute=processedDevice?.AudioEndpointVolume.Mute,outputVolume=processedDevice?.AudioEndpointVolume.MasterVolumeLevelScalar,routingError=fun?.Error??events.Error};
     public void RecordStart(string path,string route="clean")
     {
         if(!Running||processedDevice==null)throw new InvalidOperationException("Start microphone processing before recording.");

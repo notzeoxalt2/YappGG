@@ -49,7 +49,6 @@ static class Program
         try
         {
             if(args.Contains("--decode-media")){var index=Array.IndexOf(args,"--decode-media");Console.WriteLine(JsonSerializer.Serialize(MediaImport.Decode(args[index+1],args[index+2])));return 0;}
-            if(args.Contains("--audio-apps")){Console.WriteLine(JsonSerializer.Serialize(ApplicationAudio.Apps()));return 0;}
             if(args.Contains("--preview-outputs")){using var e=new MMDeviceEnumerator();Console.WriteLine(JsonSerializer.Serialize(e.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active).Where(d=>!AudioPolicy.IsGG(d)&&!AudioPolicy.IsTroll(d)&&!d.FriendlyName.Contains("SteelSeries Sonar")).Select(d=>new{id=d.ID,name=d.FriendlyName})));return 0;}
             if(args.Contains("--driver-health")){using var configuration=Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\SteelSeries ApS\Sonar.APO\ChatCapture");Console.WriteLine(JsonSerializer.Serialize(new{installed=DriverSetup.Installed(),configuration=configuration!=null}));return 0;}
             if(args.Contains("--repair-driver")){var result=DriverSetup.Install();DriverBranding.Rename();Console.WriteLine(JsonSerializer.Serialize(result));return 0;}
@@ -137,7 +136,6 @@ static class Program
                                 case "preview":engine.Preview(message.GetProperty("volume").GetSingle(),message.TryGetProperty("outputId",out var previewOutput)?previewOutput.GetString():null);break;
                                 case "media-destination":engine.MediaDestination(message.GetProperty("destination").GetString()!);break;
                                 case "troll-voice":engine.TrollVoice(message.GetProperty("enabled").GetBoolean());break;
-                                case "application-audio":engine.SelectApplication(message.GetProperty("pid").GetInt32());break;
                                 case "soundboard-ready":engine.PrepareSoundboard();break;
                                 case "soundboard-play":engine.PlaySound(message.GetProperty("soundId").GetString()!,message.GetProperty("path").GetString()!,message.GetProperty("volume").GetSingle());break;
                                 case "soundboard-volume":engine.SoundVolume(message.GetProperty("soundId").GetString()!,message.GetProperty("volume").GetSingle());break;

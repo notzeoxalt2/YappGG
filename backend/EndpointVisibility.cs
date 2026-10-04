@@ -30,6 +30,8 @@ sealed class EndpointVisibility : IDisposable
 {
     readonly IPolicyConfig policy=(IPolicyConfig)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("870AF99C-171D-4F9E-AF0D-E63DF40C2BC9"))!)!;
     readonly HashSet<string> changed=new();
+    readonly bool keepEnabled;
+    public EndpointVisibility(bool keepEnabled=false){this.keepEnabled=keepEnabled;}
     public void Enable(string id,bool alreadyVisible){if(!alreadyVisible){policy.SetEndpointVisibility(id,1);changed.Add(id);}}
-    public void Dispose(){foreach(var id in changed)try{policy.SetEndpointVisibility(id,0);}catch{}Marshal.FinalReleaseComObject(policy);}
+    public void Dispose(){if(!keepEnabled)foreach(var id in changed)try{policy.SetEndpointVisibility(id,0);}catch{}Marshal.FinalReleaseComObject(policy);}
 }

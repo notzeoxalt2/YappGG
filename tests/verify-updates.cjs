@@ -1,16 +1,6 @@
-const assert=require('assert'),{EventEmitter}=require('events'),fs=require('fs'),os=require('os'),path=require('path');
-const {Updates}=require('../host/updates.cjs');
-(async()=>{
- const data=fs.mkdtempSync(path.join(os.tmpdir(),'yappgg-updates-')),updater=new EventEmitter();let calls=0,installed=false,prepared=false;
- updater.checkForUpdates=async()=>{calls++;updater.emit('checking-for-update');updater.emit('update-available',{version:'0.5.2'});};
- updater.quitAndInstall=(silent,run)=>{assert.equal(silent,false);assert.equal(run,true);installed=true;};
- const updates=new Updates({updater,app:{getVersion:()=> '0.5.1'},data,beforeInstall:()=>prepared=true});
- assert.equal(updater.autoDownload,true);assert.equal(updater.autoInstallOnAppQuit,false);
- await updates.check();await updates.check();assert.equal(calls,1);
- updater.emit('download-progress',{percent:42.7});assert.equal(updates.state.percent,43);
- updater.emit('update-downloaded',{version:'0.5.2'});assert.equal(updates.state.status,'ready');assert.equal(installed,false);
- updates.command('enabled',{enabled:false});assert.equal(JSON.parse(fs.readFileSync(path.join(data,'updates.json'))).enabled,false);
- updates.command('install');assert(installed&&prepared);
- updater.emit('error',Error('secret technical failure'));assert(!updates.state.message.includes('secret'));
- updates.dispose();console.log('PASS: background download, no forced restart, progress, preferences and explicit install.');
-})().catch(error=>{console.error(error);process.exitCode=1;});
+const assert=require('assert'),{EventEmitter}=require('events'),fs=require('fs'),os=require('os'),path=require('path'),crypto=require('crypto');const {Updates}=require('../host/updates.cjs'),{verifyInstaller}=require('../host/update-install.cjs');
+(async()=>{const data=fs.mkdtempSync(path.join(os.tmpdir(),'yappgg-update-test-')),updater=new EventEmitter(),events=[];let calls=0,failLaunch=false;updater.installerPath=path.join(data,'fixture.exe');fs.writeFileSync(updater.installerPath,'inert installer fixture - never executed');const sha512=crypto.createHash('sha512').update(fs.readFileSync(updater.installerPath)).digest('base64');updater.checkForUpdates=async()=>{calls++;updater.emit('update-available',{version:'0.7.1'});};const app={getVersion:()=> '0.7.0',quit:()=>events.push('quit')};const updates=new Updates({updater,app,data,beforeInstall:async()=>{events.push('closing');await new Promise(r=>setTimeout(r,30));events.push('closed');},afterInstallFailure:async()=>events.push('restored'),installer:{verifyInstaller:async(...args)=>{await verifyInstaller(...args);events.push('verified');},launchInstaller:async options=>{assert.equal(options.version,'0.7.1');assert(events.includes('closed'));events.push('launch');if(failLaunch)throw Error('Windows refused the helper.');}}});
+assert(updater.autoDownload&&!updater.autoInstallOnAppQuit);await updates.check();await updates.check();assert.equal(calls,1);updater.emit('update-downloaded',{version:'0.7.1',files:[{sha512}]});await updates.command('install');await new Promise(r=>setImmediate(r));assert.deepEqual(events,['verified','closing','closed','launch','quit']);
+updater.emit('update-downloaded',{version:'0.7.1',files:[{sha512}]});events.length=0;failLaunch=true;await assert.rejects(updates.command('install'),/refused/);assert(events.includes('restored')&&!events.includes('quit'));assert.equal(updates.state.status,'ready');
+failLaunch=false;events.length=0;fs.appendFileSync(updater.installerPath,'corrupt');await assert.rejects(updates.command('install'),/verification/);assert.deepEqual(events,[]);assert.equal(updates.state.status,'error');
+updates.command('enabled',{enabled:false});assert.equal(JSON.parse(fs.readFileSync(path.join(data,'updates.json'))).enabled,false);assert.equal(updater.autoInstallOnAppQuit,false);updates.dispose();fs.writeFileSync(path.join(data,'update-install-result.json'),JSON.stringify({status:'failed',message:'Administrator prompt was cancelled.'}));const restarted=new Updates({updater:new EventEmitter(),app,data});assert(restarted.state.message.includes('cancelled'));restarted.dispose();console.log('PASS: verified installer, awaited engine shutdown, launch then quit, rollback, corrupt download rejection, persisted failure, explicit restart only.');})().catch(error=>{console.error(error);process.exitCode=1;});
