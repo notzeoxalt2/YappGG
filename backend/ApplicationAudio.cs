@@ -31,5 +31,19 @@ public sealed class ApplicationAudio:IDisposable{
  catch(Exception error){Console.Error.WriteLine("Application audio: "+error);failure=error;ready.Set();}finally{client?.Stop();if(capture!=null)Marshal.FinalReleaseComObject(capture);if(client!=null)Marshal.FinalReleaseComObject(client);}}
  public void Mix(float[] samples,int frames,int sampleRate){if(provider==null||targetRate!=sampleRate){targetRate=sampleRate;provider=buffer.ToSampleProvider();if(sampleRate!=48000)provider=new WdlResamplingSampleProvider(provider,sampleRate);}var scratch=new float[frames];int count=provider.Read(scratch,0,frames);for(int i=0;i<count;i++)samples[i]+=scratch[i];}
  public void Dispose(){closing=true;worker.Join(2000);}
- public static object Apps(){using var devices=new MMDeviceEnumerator();var rows=new Dictionary<int,object>();foreach(var device in devices.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active))using(device){if(AudioPolicy.IsGG(device))continue;var manager=device.AudioSessionManager;manager.RefreshSessions();for(int i=0;i<manager.Sessions.Count;i++)using(var session=manager.Sessions[i]){try{int pid=(int)session.GetProcessID;using var process=Process.GetProcessById(pid);if(pid<=0||process.ProcessName.StartsWith("Discord",StringComparison.OrdinalIgnoreCase)||process.ProcessName is "YappGG" or "MicBackend")continue;rows[pid]=new{pid,name=process.ProcessName};}catch{}}}return rows.Values.ToArray();}
+ public static object Apps(){
+  var active=new HashSet<int>();using var devices=new MMDeviceEnumerator();
+  foreach(var device in devices.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active))using(device){
+   if(AudioPolicy.IsGG(device)||AudioPolicy.IsTroll(device))continue;
+   try{var manager=device.AudioSessionManager;manager.RefreshSessions();for(int i=0;i<manager.Sessions.Count;i++)using(var session=manager.Sessions[i]){try{if(session.GetProcessID>0)active.Add((int)session.GetProcessID);}catch{}}}catch(COMException){}
+  }
+  var rows=new List<(int pid,string name,string title,bool hasAudio)>();
+  foreach(var process in Process.GetProcesses())using(process){try{
+   var name=process.ProcessName;var title=process.MainWindowTitle.Trim();
+   if(process.Id<=0||name.StartsWith("Discord",StringComparison.OrdinalIgnoreCase)||name is "YappGG" or "MicBackend" or "SteelSeriesSonar")continue;
+   if(!active.Contains(process.Id)&&(process.MainWindowHandle==IntPtr.Zero||title.Length==0))continue;
+   rows.Add((process.Id,name,title.Length>140?title[..140]+"…":title,active.Contains(process.Id)));
+  }catch{}}
+  return rows.OrderByDescending(r=>r.hasAudio).ThenBy(r=>r.title.Length>0?r.title:r.name,StringComparer.OrdinalIgnoreCase).Select(r=>new{r.pid,r.name,r.title,r.hasAudio}).ToArray();
+ }
 }

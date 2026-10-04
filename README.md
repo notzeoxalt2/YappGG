@@ -10,7 +10,7 @@ The installer opens YappGG after Finish by default. Start with Windows is checke
 
 Installed builds check public GitHub Releases after startup and every six hours, downloading newer stable versions in the background. Settings has Automatic updates, Check for updates and Restart to update. Installation waits for your explicit restart; Windows may request administrator approval. Release downloads must remain public for friends to update without credentials. No GitHub token is included in the app.
 
-Versions through 0.5.0 need one manual installation of 0.6.1 to gain the updater.
+Versions through 0.5.0 need one manual installation of 0.7.0 to gain the updater.
 
 ## Soundboard
 
@@ -45,3 +45,9 @@ Installers are currently unsigned; bundled driver signatures are separate. A com
 If GG is uninstalled, its uninstaller can remove the shared signed driver. YappGG detects missing driver/configuration on connection and offers Windows repair automatically. Settings also includes Repair microphone. The repair restores bundled components and does not reinstall GG. Windows administrator approval may be required.
 
 Version 0.6.1 separates meter updates from editable controls, uses immediate button feedback, moves clip actions away from volume/keybind inputs and applies per-clip volume to already-playing clips. Preview-volume changes reuse the current physical output instead of repeatedly enumerating devices.
+
+Version 0.7.0 adds the sound wheel. Ctrl+Alt+Q opens it on the monitor containing your mouse, including when YappGG is in the tray. Drag toward a sound and release to play; Escape cancels. Choose a folder, scroll between eight-sound pages, or use the arrow buttons. Change the wheel shortcut and default folder in Soundboard. The overlay closes on focus loss and releases its renderer after 30 seconds hidden. Exclusive fullscreen applications may cover overlays; use borderless mode if necessary.
+
+The application picker includes visible open applications even before they play sound, as well as active audio sessions. It refreshes every five seconds while Soundboard is open and supports search. Discord and YappGG are excluded to prevent feedback. Some protected applications do not permit audio capture.
+
+Voice cleanup is invoked on voice buffers before clips/application audio are added. Windows endpoint system effects are bypassed for YappGG endpoints to prevent a second pass on the combined stream. A failed bypass leaves the microphone available and shows a warning in Soundboard. External receiving apps can still apply their own filtering. Version 0.7.0 was verified with silent UI fixtures and read-only application enumeration; live audio quality remains unverified.

@@ -13,6 +13,14 @@ interface IAudioPolicy
 }
 static class AudioPolicy
 {
+    // Cleanup is invoked explicitly on voice buffers. Windows endpoint effects
+    // must not process the combined voice/media stream a second time.
+    public static void BypassEndpointEffects(){using var e=new MMDeviceEnumerator();var policy=(IAudioPolicy)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("870AF99C-171D-4F9E-AF0D-E63DF40C2BC9"))!)!;try{
+        foreach(var endpoint in e.EnumerateAudioEndPoints(DataFlow.All,DeviceState.Active))using(endpoint){if(!IsGG(endpoint)&&!IsTroll(endpoint))continue;
+            var key=new PropertyKey(new Guid("1da5d803-d492-4edd-8c23-e0c0ffee7f0e"),5);var disabled=new PropVariant{vt=19,pointerValue=(nint)1};
+            policy.SetPropertyValue(endpoint.ID,true,ref key,ref disabled);
+        }
+    }finally{Marshal.FinalReleaseComObject(policy);}}
     public static bool IsTroll(MMDevice d){try{return d.FriendlyName.StartsWith("YappGG Troll",StringComparison.OrdinalIgnoreCase)||d.FriendlyName.Contains("SteelSeries Sonar - Stream",StringComparison.OrdinalIgnoreCase)||(d.DeviceFriendlyName.Contains("SteelSeries Sonar",StringComparison.OrdinalIgnoreCase)&&d.DeviceFriendlyName.Contains("Stream",StringComparison.OrdinalIgnoreCase));}catch(COMException){return false;}}
     public static object DiscordSetup(){SafeRoute();using var e=new MMDeviceEnumerator();using var mic=e.EnumerateAudioEndPoints(DataFlow.Capture,DeviceState.Active).FirstOrDefault(IsGG)??throw new InvalidOperationException("Install or repair the YappGG microphone driver first.");var policy=(IAudioPolicy)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("870AF99C-171D-4F9E-AF0D-E63DF40C2BC9"))!)!;try{foreach(Role role in Enum.GetValues<Role>())policy.SetDefaultEndpoint(mic.ID,role);using var current=e.GetDefaultAudioEndpoint(DataFlow.Capture,Role.Communications);if(current.ID!=mic.ID)throw new InvalidOperationException("Windows did not apply the microphone default.");return new{configured=true,input=current.FriendlyName,discord="Select Default or YappGG Microphone in Discord. A manually selected input is not overwritten."};}finally{Marshal.FinalReleaseComObject(policy);}}
     public static bool IsGG(MMDevice d){try{return d.FriendlyName.StartsWith("YappGG Microphone")||d.FriendlyName.StartsWith("YappEQ Mic")||(d.FriendlyName.Contains("SteelSeries Sonar")&&d.FriendlyName.Contains("Microphone"))||(d.DeviceFriendlyName.Contains("SteelSeries Sonar")&&d.DeviceFriendlyName.Contains("Microphone"));}catch(COMException){return false;}}
@@ -29,7 +37,7 @@ static class AudioPolicy
             changed.Add(new{microphoneId=mic.ID,name=label});
         }
         if(System.Diagnostics.Process.GetProcessesByName("SteelSeriesSonar").Length==0)
-            foreach(var extra in e.EnumerateAudioEndPoints(DataFlow.All,DeviceState.Active))using(extra){try{if(extra.FriendlyName.StartsWith("SteelSeries Sonar - ")&&!IsGG(extra)){policy.SetEndpointVisibility(extra.ID,0);changed.Add(new{hiddenExtraEndpoint=extra.ID});}}catch(COMException){}}
+            foreach(var extra in e.EnumerateAudioEndPoints(DataFlow.All,DeviceState.Active))using(extra){try{if(extra.FriendlyName.StartsWith("SteelSeries Sonar - ")&&!IsGG(extra)&&!IsTroll(extra)){policy.SetEndpointVisibility(extra.ID,0);changed.Add(new{hiddenExtraEndpoint=extra.ID});}}catch(COMException){}}
         return changed;
     }finally{Marshal.FinalReleaseComObject(policy);}}
 }
