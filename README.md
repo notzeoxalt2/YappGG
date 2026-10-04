@@ -35,3 +35,5 @@ Build with npm run dist. Run node tests/verify-updates.cjs for updater behavior 
 Bump package.json and its lock file, update the Settings version label, then build and verify. Commit and tag the version. Create a draft stable GitHub Release tagged v<version> and upload the matching installer, .exe.blockmap and latest.yml together. Publish only after uploading all files. Source commits alone do not trigger client updates.
 
 Installers are currently unsigned; bundled driver signatures are separate. A complete clean-PC installation and restart test is still required for broader distribution.
+
+If GG is uninstalled, its uninstaller can remove the shared signed driver. YappGG detects missing driver/configuration on connection and offers Windows repair automatically. Settings also includes Repair microphone. The repair restores bundled components and does not reinstall GG. Windows administrator approval may be required.

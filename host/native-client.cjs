@@ -9,7 +9,7 @@ class NativeClient{
    const lines=readline.createInterface({input:this.process.stdout});
    lines.on('line',line=>{try{const response=JSON.parse(line);if(response.ready){clearTimeout(timer);resolve(response);}else {const request=this.pending.get(response.id);if(request){clearTimeout(request.timer);this.pending.delete(response.id);response.ok?request.resolve(response):request.reject(Error(response.error));}}}catch(error){log({kind:'native-response-error',message:error.message});}});
    this.process.once('error',error=>{clearTimeout(timer);reject(error);});
-   this.process.once('exit',(code)=>{clearTimeout(timer);this.closed=true;reject(Error('Microphone engine exited ('+code+'). '+(mode==='gg'?'Keep SteelSeries GG/Sonar running for ClearCast.':mode==='independent'?'Check the selected input and YappGG Microphone driver.':'Close GG before processing.')));for(const request of this.pending.values()){clearTimeout(request.timer);request.reject(Error('Microphone engine stopped.'));}this.pending.clear();});
+   this.process.once('exit',(code)=>{clearTimeout(timer);this.closed=true;reject(Error('Microphone engine exited ('+code+'). '+(mode==='gg'?'Keep SteelSeries GG/Sonar running for ClearCast.':mode==='independent'?'Check the selected input and YappGG Microphone driver.':'Microphone components are unavailable. Open Settings and choose Repair microphone.')));for(const request of this.pending.values()){clearTimeout(request.timer);request.reject(Error('Microphone engine stopped.'));}this.pending.clear();});
   });
   this.process.stderr.on('data',chunk=>log({kind:'native',message:chunk.toString().slice(0,4000)}));
  }

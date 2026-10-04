@@ -6,8 +6,11 @@ namespace MicOnly;
 static class DriverSetup
 {
  const string HardwareId=@"ROOT\VEN_SSGG&DEV_0001";
- public static bool Installed(){using var root=Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Enum\ROOT\MEDIA");if(root==null)return false;foreach(var name in root.GetSubKeyNames()){using var device=root.OpenSubKey(name);if(device?.GetValue("HardwareID") is string[] ids&&ids.Contains(HardwareId,StringComparer.OrdinalIgnoreCase))return true;}return false;}
+ public static bool Installed(){var set=SetupDiGetClassDevs(0,null,0,6);if(set==-1)return false;try{for(uint index=0;;index++){var info=new DeviceInfo{size=(uint)Marshal.SizeOf<DeviceInfo>()};if(!SetupDiEnumDeviceInfo(set,index,ref info))break;var buffer=new byte[8192];if(SetupDiGetDeviceRegistryProperty(set,ref info,1,out _,buffer,(uint)buffer.Length,out _)&&System.Text.Encoding.Unicode.GetString(buffer).Split('\0').Contains(HardwareId,StringComparer.OrdinalIgnoreCase))return true;}return false;}finally{SetupDiDestroyDeviceInfoList(set);}}
  [StructLayout(LayoutKind.Sequential)]struct DeviceInfo{public uint size;public Guid classGuid;public uint devInst;public nint reserved;}
+ [DllImport("setupapi.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern nint SetupDiGetClassDevs(nint classGuid,string? enumerator,nint parent,uint flags);
+ [DllImport("setupapi.dll",SetLastError=true)]static extern bool SetupDiEnumDeviceInfo(nint set,uint index,ref DeviceInfo info);
+ [DllImport("setupapi.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern bool SetupDiGetDeviceRegistryProperty(nint set,ref DeviceInfo info,uint property,out uint type,byte[] buffer,uint length,out uint required);
  [DllImport("setupapi.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern bool SetupDiGetINFClass(string path,out Guid guid,System.Text.StringBuilder name,uint nameSize,out uint required);
  [DllImport("setupapi.dll",SetLastError=true)]static extern nint SetupDiCreateDeviceInfoList(ref Guid guid,nint parent);
  [DllImport("setupapi.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern bool SetupDiCreateDeviceInfo(nint set,string name,ref Guid guid,string description,nint parent,uint flags,ref DeviceInfo info);
@@ -16,15 +19,16 @@ static class DriverSetup
  [DllImport("setupapi.dll")]static extern bool SetupDiDestroyDeviceInfoList(nint set);
  [DllImport("newdev.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern bool UpdateDriverForPlugAndPlayDevices(nint parent,string hardwareId,string inf,uint flags,out bool reboot);
  static void Check(bool result){if(!result)throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());}
- static void Run(string executable,params string[] args){var start=new ProcessStartInfo(executable){UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true};foreach(var argument in args)start.ArgumentList.Add(argument);using var process=Process.Start(start)!;var output=process.StandardOutput.ReadToEndAsync();var error=process.StandardError.ReadToEndAsync();process.WaitForExit();Console.Error.WriteLine(output.GetAwaiter().GetResult()+error.GetAwaiter().GetResult());if(process.ExitCode!=0&&process.ExitCode!=3010)throw new InvalidOperationException($"{Path.GetFileName(executable)} exited {process.ExitCode}.");}
+ static void Run(string executable,params string[] args){var start=new ProcessStartInfo(executable){UseShellExecute=false,CreateNoWindow=true,RedirectStandardOutput=true,RedirectStandardError=true};foreach(var argument in args)start.ArgumentList.Add(argument);using var process=Process.Start(start)!;var output=process.StandardOutput.ReadToEndAsync();var error=process.StandardError.ReadToEndAsync();process.WaitForExit();Console.Error.WriteLine(output.GetAwaiter().GetResult()+error.GetAwaiter().GetResult());if(process.ExitCode!=0&&process.ExitCode!=3010&&!(Path.GetFileName(executable).Equals("pnputil.exe",StringComparison.OrdinalIgnoreCase)&&process.ExitCode==259))throw new InvalidOperationException($"{Path.GetFileName(executable)} exited {process.ExitCode}.");}
  public static object Install()
  {
-  if(Installed())return new{installed=true,alreadyInstalled=true,reboot=false};
+  var alreadyInstalled=Installed();
   using var identity=WindowsIdentity.GetCurrent();if(!new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator))throw new InvalidOperationException("Installing the signed Sonar microphone driver requires administrator rights.");
   var driver=Path.Combine(AppContext.BaseDirectory,"driver");var vad=Path.Combine(driver,"vad","SteelSeries-Sonar-VAD.inf");var extension=Path.Combine(driver,"vad","SteelSeries-Sonar-VAD-Extension.inf");var apo=Path.Combine(driver,"apoDriverPackage","Sonar.Apo.inf");
   foreach(var path in new[]{vad,extension,apo})if(!File.Exists(path))throw new FileNotFoundException("Driver package is incomplete.",path);
   Run(Path.Combine(driver,"apoDriverPackage","Sonar.AgsSetup.exe"),"--company=SteelSeries ApS","--apo=Sonar.APO","ChatCapture");
   foreach(var path in new[]{apo,extension,vad})Run(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows),"System32","pnputil.exe"),"/add-driver",path,"/install");
+  if(alreadyInstalled){Check(UpdateDriverForPlugAndPlayDevices(0,HardwareId,vad,1,out var repairReboot));return new{installed=Installed(),alreadyInstalled=true,reboot=repairReboot};}
   var className=new System.Text.StringBuilder(128);Check(SetupDiGetINFClass(vad,out var guid,className,128,out _));
   var set=SetupDiCreateDeviceInfoList(ref guid,0);if(set==-1)throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
   bool reboot;
@@ -33,3 +37,4 @@ static class DriverSetup
   return new{installed=Installed(),alreadyInstalled=false,reboot};
  }
 }
+

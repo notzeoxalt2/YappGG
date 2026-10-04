@@ -66,7 +66,7 @@ public sealed class MicEngine : IDisposable
         s.SetLongSetting(value);
     }
     public (float Min, float Max) Range(string name) { Setting(name).GetFloatTraits(out _, out var min, out var max); return (min,max); }
-    public static bool IsSonarMic(MMDevice d){try{return (d.FriendlyName.Contains("SteelSeries Sonar",StringComparison.OrdinalIgnoreCase)&&d.FriendlyName.Contains("Microphone",StringComparison.OrdinalIgnoreCase))||d.FriendlyName.StartsWith("YappGG Microphone",StringComparison.OrdinalIgnoreCase)||d.FriendlyName.StartsWith("YappEQ Mic",StringComparison.OrdinalIgnoreCase);}catch(COMException){return false;}}
+    public static bool IsSonarMic(MMDevice d)=>AudioPolicy.IsGG(d);
     public static List<MMDevice> Inputs()
     {
         using var e = new MMDeviceEnumerator();

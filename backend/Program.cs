@@ -49,6 +49,8 @@ static class Program
         try
         {
             if(args.Contains("--decode-media")){var index=Array.IndexOf(args,"--decode-media");Console.WriteLine(JsonSerializer.Serialize(MediaImport.Decode(args[index+1],args[index+2])));return 0;}
+            if(args.Contains("--driver-health")){using var configuration=Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\SteelSeries ApS\Sonar.APO\ChatCapture");Console.WriteLine(JsonSerializer.Serialize(new{installed=DriverSetup.Installed(),configuration=configuration!=null}));return 0;}
+            if(args.Contains("--repair-driver")){var result=DriverSetup.Install();DriverBranding.Rename();Console.WriteLine(JsonSerializer.Serialize(result));return 0;}
             if(args.Contains("--cleanup-test")){NativeEngine.CoInitializeEx(0,0);NativeEngine.PrepareRuntime();using var context=new NativeActivationContext();Console.WriteLine(JsonSerializer.Serialize(CleanupTest.Run()));return 0;}
             if(args.Contains("--fun-test")){using var doc=JsonDocument.Parse(File.ReadAllText(args[Array.IndexOf(args,"--fun-test")+1]));Console.WriteLine(JsonSerializer.Serialize(FunDsp.Measure(doc.RootElement)));return 0;}
             if(args.Contains("--share-sessions")){using var guard=new ShareProtection();Console.WriteLine(JsonSerializer.Serialize(guard.Inspect(false)));return 0;}
