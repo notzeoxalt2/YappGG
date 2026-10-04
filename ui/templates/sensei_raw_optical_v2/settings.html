@@ -1,0 +1,79 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical">
+
+    <div class="" data-bind="with: device">
+
+        <div class="col col1 fixedSection">
+
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+          </div>
+
+          <!-- DEVICE IMAGE TOGGLES -->
+          <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientationModel">
+            <div class="viewToggles">
+              <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><!-- No whitespace for inline-block
+              --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button><!-- No whitespace for inline-block
+              --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewRight', css: {active: view() == 'lateralViewAlt'}, click: setLateralViewAlt"></button>
+            </div>
+          </div>
+
+          <!-- ko if: selectedConfig().logoLightModel -->
+          <!-- LOGO LED WIDGET  -->
+          <div class="LEDhotspot logoLED" id="LogoLED" data-bind="css: orientationModel.view()">
+            <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().logoLightModel } } }, css: selectedConfig().logoLightModel.templateCssClass">
+            </div>
+          </div>
+          <!-- /ko -->
+        </div><!-- .col1 -->
+
+        <div class="col col2 fixedSection">
+
+          <!-- DEVICE IMAGE -->
+          <section>
+                        <!-- SOLID COLOR ZONE BACKGROUNDS -->
+            <ul class="zoneBackgrounds" data-bind="with: selectedConfig(), css: orientationModel.view()">
+              <li class="zoneBackground zone2" data-bind="style: { backgroundColor: logoLightModel.shiftSequenceColor() }"></li>
+              <li class="zoneBackground zone1" data-bind="style: { backgroundColor: wheelLightModel.shiftSequenceColor() }"></li>
+            </ul>
+
+            <div class="deviceImg" data-bind="with: orientationModel">
+              <div class="deviceImgContainer" data-bind="css : view()"></div>
+            </div>
+          </section>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection">
+      <div class="widgetsContainer widgetsContainerStatic">
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+          <section id="Resolution1" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel1}}"></div>
+          </section>
+
+          <section id="Resolution2" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel2}}"></div>
+          </section>
+        </div>
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig().settings()">
+          <section class="accelDecel widget">
+              <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: exact_accel.level, exactAim: exact_aim.level, color: $root.device.primaryColor }} }"></div>
+          </section>
+
+          <section id="AngleSnap" class="widget" data-bind="with: $root.device">
+              <div data-bind="template: { name: 'angleSnap', data: { snapLevel: selectedConfig().settings().free_move.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+          </section>
+
+          <section id="PollingRate" class="widget">
+            <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: polling_rate.level, pollingRateHz: polling_rate.hz } }"></div>
+          </section>
+        </div>
+
+      </div>
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+

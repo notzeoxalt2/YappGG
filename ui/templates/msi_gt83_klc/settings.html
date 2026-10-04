@@ -1,0 +1,72 @@
+<div class="settings cf" data-bind="css: { leftSideClosed: !device.viewOptions.leftVisible(), rightSideClosed: !device.viewOptions.rightVisible(), lightingMode: device.viewOptions.isLightingMode()}">
+
+    <div class="cols cf" data-bind="with: device">
+
+        <div class="col col1" data-bind="css: { leftSideClosed: !viewOptions.leftVisible(), rightSideClosed: !viewOptions.rightVisible()}">
+
+          <!-- LIGHTING MODE WIDGETS for LEFT SIDE -->
+          <div class="modeSection modeLighting" data-bind="visible: viewOptions.isLightingMode()">
+
+            <!-- LIGHTING TOOLS WIDGET -->
+            <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools', data:{ settings: selectedConfig().lightingSettings }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+
+          </div>
+
+          <!-- BINDING MODE WIDGETS for LEFT SIDE -->
+          <div class="modeSection modeBinding" data-bind="visible: !viewOptions.isLightingMode()">
+
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div class="highlightMarkers" data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel().selectBinding, quicksetDialog: selectedConfig().actionsModel().dialog, orientationModel: {view: function(){}}, openMacroEditor: selectedConfig().actionsModel().dialog.openMacroEditor } }, css: 'region-' + selectedConfig().selectedRegion().id"></div>
+          </div>
+        </div><!-- .col1 -->
+
+        <div class="col col2" data-bind="css: { leftSideClosed: !viewOptions.leftVisible() }">
+
+          <!-- VIEW OPTIONS and LAYERS -->
+          <div class="viewOptions">
+            <ul class="viewControls">
+              <li data-bind="localizedText: 'widgets.viewOptions'"></li>
+              <li data-bind="css: { disabled: viewOptions.isLightingMode() }">
+                <input type="checkbox" id="viewToggleQuickset" data-bind="checked: viewOptions.leftVisible, disable: viewOptions.isLightingMode()" />
+                <label for="viewToggleQuickset"><i class="icon iconMiddle configIconMuted"></i></label>
+              </li>
+              <li class="buttonCombine">
+                <button data-bind="css:{ active: !viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(false)}, localizedText:'widgets.keyBindings'"></button>
+              </li>
+              <li class="buttonCombine">
+                <button data-bind="css:{ active: viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(true)}, localizedText:'widgets.illumination'"></button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- DEVICE IMAGE -->
+          <section>
+
+            <!-- ZONE BACKGROUNDS -->
+            <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds region-'+selectedConfig().selectedRegion().id }, template:{ name: 'zoneColors', data:{ model: selectedConfig().individualKeyLightingManager }, afterRender: selectedConfig().onTemplateLoaded }, css:{ disabled: !viewOptions.isLightingMode() }"></div>
+
+            <!-- DEVICE IMAGE w/ TRANSPARENT KEYS -->
+            <div class="deviceImg" data-bind="css: 'region-' + selectedConfig().selectedRegion().id">
+              <div class="deviceImgContainer"></div>
+            </div>
+          </section>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection" data-bind="with: device.selectedConfig, css: {leftSideClosed: !device.viewOptions.leftVisible()}, visible: device.viewOptions.rightVisible()">
+      <div data-bind="visible: !$root.device.viewOptions.isLightingMode()">
+        <!-- REGION SELECTION -->
+        <section id="RegionSelect" class="widget">
+          <div data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }"></div>
+        </section>
+      </div>
+
+      <div data-bind="visible: $root.device.viewOptions.isLightingMode()">
+          <!-- LIGHTING TEMPLATES -->
+          <div data-bind="template: { name: 'lightingTemplates', data: { templates: $root.device.lightingTemplates, lightingManager: individualKeyLightingManager } }"></div>
+      </div>
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+

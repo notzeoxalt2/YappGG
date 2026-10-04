@@ -1,0 +1,110 @@
+<div class="settings scrollableContainer horizontal vertical cf" data-bind="css: { lightingMode: device.viewOptions.isLightingMode()}">
+
+    <div class="cols cf" data-bind="with: device">
+
+      <div class="col col1">
+
+        <!-- LIGHTING MODE WIDGETS for LEFT SIDE -->
+        <div class="modeSection modeLighting" data-bind="css:{ disabled: !viewOptions.isLightingMode() }">
+
+          <!-- LIGHTING TOOLS WIDGET -->
+          <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools_builtin_effects', data:{ settings: selectedConfig().lightingSettings, isActiveMode: selectedConfig().isActiveMode, selectedEffect: selectedConfig().selectedEffect, effects: selectedConfig().effects } }"></div>
+
+          <div data-bind="template: { name: 'lightingTemplatesDropdown', data: { templates: $root.device.lightingTemplates, lightingManager: selectedConfig().individualKeyLightingManager } }, visible: selectedConfig().selectedEffect().isCustom"></div>
+
+        </div>
+
+        <!-- BINDING MODE WIDGETS for LEFT SIDE -->
+        <div class="modeSection modeBinding" data-bind="css:{ disabled: !viewOptions.isKeyBindingsMode() }">
+
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div class="highlightMarkers" data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: {view: function(){}}, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }, css: 'region-' + selectedConfig().selectedRegion().id">
+          </div>
+        </div>
+
+        <!-- SETTINGS MODE-->
+        <div class="modeSection modeSettings" data-bind="with: selectedConfig, css:{ disabled: !viewOptions.isSettingsMode() }">
+
+          <!-- REGION SELECTION -->
+          <!-- ko if: localizedRegions().length > 1 -->
+          <section id="RegionSelect" class="widget">
+            <div data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }"></div>
+          </section>
+          <!-- /ko -->
+
+          <!-- USB POLLING RATE -->
+          <section id="PollingRate" class="widget">
+            <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: polling_rate.level, pollingRateHz: polling_rate.hz } }"></div>
+          </section>
+
+          <!-- GLOBAL ILLUMINATION -->
+          <section class="globalIllumination widget">
+            <div data-bind="template: {name: 'global_illumination_slider', data: { transitionDuration: globalIlluminationModel.transitionDuration, values: $root.device.brightnessValues, observables: globalIlluminationModel.observables } }"></div>
+          </section>
+
+          <!-- GLOBAL ILLUMINATION -->
+          <section class="widget">
+            <div class="title" data-bind="localizedText: 'deviceConfig.gamesenseBackground.title'"></div>
+            <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'deviceConfig.gamesenseBackground.tooltip', tooltip: {}"></a>
+
+            <div class="gamesenseDefaultWidget">
+              <div class="dropdownContainer" data-bind="dropdown: gamsenseDefaultMode">
+                <a href="javascript:void(0)" class="deviceConfigBtn dropdownButton withArrow" data-bind="localizedText: gamsenseDefaultMode"></a>
+
+                <div class="dropdownContent topGradient">
+                  <div class="scrollableArea">
+                    <ul class="deviceCardConfigs" data-bind="foreach: gamesenseModes">
+                      <li class="deviceCardConfig" data-bind="localizedText: label"></li>
+                    </ul>
+                  </div>
+                </div>
+              </div> <!-- dropdownContainer -->
+
+              <div class="gamesenseDefaultWidgetColorContainer">
+                <div class="gamesenseLed biggerLed" data-bind="template: {name: 'led', data: {led: { model: gamesenseDefault } } }, css: { disabledLighting: undeployedSettings().gamesense_lighting_disabled }"></div>
+                <div class="gamesenseLabels">
+                  <div class="color" data-bind="localizedText: 'widgets.color'"></div>
+                  <div class="singleColorOnly" data-bind="localizedText: 'widgets.led.singleColorOnly', visible: !undeployedSettings().gamesense_lighting_disabled()"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+      </div><!-- .col1 -->
+
+      <div class="col col2">
+
+        <div class="viewOptions">
+          <label class="productFeaturesLabel" data-bind="visible: (typeof showFeatureslabel) == 'undefined' ? false : showFeatureslabel, localizedText: { key: 'main.viewControls.title', '#DEVICE#': (typeof featuresLabelDeviceName) == 'undefined' ? 'M750' : featuresLabelDeviceName }"></label>
+          <ul class="viewControls">
+            <li class="buttonCombineLarge" data-bind="css:{ active: viewOptions.isKeyBindingsMode() }, click: viewOptions.activateKeyBindingsMode, localizedText:'widgets.keyBindings'"></li>
+            <li class="buttonCombineLarge" data-bind="css:{ active: viewOptions.isLightingMode() }, click: viewOptions.activateLightingMode, localizedText:'widgets.illumination'"></li>
+            <li class="buttonCombineLarge" data-bind="css:{ active: viewOptions.isSettingsMode() }, click: viewOptions.activateSettingsMode, localizedText:'main.settings'"></li>
+          </ul>
+        </div>
+
+        <!-- DEVICE IMAGE -->
+        <section>
+
+          <!-- ZONE BACKGROUNDS -->
+          <!-- ko if: selectedConfig().individualKeyLightingManager() != null -->
+          <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds region-'+selectedConfig().selectedRegion().id }, template:{ name: 'zoneColors', data:{ model: selectedConfig().individualKeyLightingManager }}, css:{ disabled: !viewOptions.isLightingMode() || !selectedConfig().selectedEffect().isCustom }, visible: selectedConfig().selectedMainEffect().isCustom"></div>
+          <!-- /ko -->
+
+          <!-- ko if: selectedConfig().selectedMainEffect().color != undefined -->
+          <div class="fwEffectsColorBackground" data-bind="visible: !selectedConfig().selectedMainEffect().isCustom, style: { backgroundColor: selectedConfig().selectedMainEffect().color.model.color.computedBackgroundColor(), backgroundImage: selectedConfig().selectedMainEffect().color.model.mode() ? 'linear-gradient(to right, rgb(255, 0, 0) 0%, rgb(255, 255, 0) 0%, rgb(0, 255, 0) 33%, rgb(0, 255, 255) 0%, rgb(0, 0, 255) 66%, rgb(255, 0, 255) 100%)' : 'none' }"></div>
+          <!--/ko-->
+
+          <!-- DEVICE IMAGE w/ TRANSPARENT KEYS -->
+          <div class="deviceImg" data-bind="css: 'region-' + selectedConfig().selectedRegion().id">
+            <div class="deviceImgContainer"></div>
+          </div>
+        </section>
+
+      </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+</div> <!-- device -->
+

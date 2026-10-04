@@ -1,0 +1,73 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+    <div class="deviceImgContainer" data-bind="css:{ txBox: settingsTabsProps.selectedTabIdKO() === settingsTabsProps.isSettingsMode }"></div>
+    <section class="scrollingSection">
+        <div class="settingsTabs" data-bind="template: { name: 'settingsTabs', data: settingsTabsProps }"></div>
+        <div class="audioTabContents" data-bind="if: settingsTabsProps.selectedTabIdKO() === settingsTabsProps.isAudioMode">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- EQ widget -->
+                    <section class="full-width opaque widget" style="width: auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.equalizer.title'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.equalizer', tooltip: {}"></a>
+                        <div class="equalizer" data-bind="template: { name: 'eq', data: eqProps }"></div>
+                    </section>
+
+                    <!-- Microphone volume widget -->
+                    <section class="opaque widget" style="width: auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.micVolume'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.micVolume', tooltip: {}"></a>
+                        <div class="micVolume" data-bind="template: {name: 'microphoneVolume', data: microphoneVolumeProps }"></div>
+                    </section>
+
+                    <!-- Mic preview widget -->
+                    <section class="opaque widget" style="width: auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.micPreview.title'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.micPreview.tooltip', tooltip: {}"></a>
+                        <div class="micPreview" data-bind="template: { name: 'micPreviewReact', data: micPreviewProps }"></div>
+                    </section>
+
+                    <!-- Volume limiter widget -->
+                    <section class="opaque widget" style="width: auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.volumeLimiter.title'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.volumeLimiter.tooltip', tooltip: {}"></a>
+                        <div class="volumeLimiter" data-bind="template: { name: 'volumeLimiterReact', data: volumeLimiterProps }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="settingsTabContents" data-bind="if: settingsTabsProps.selectedTabIdKO() === settingsTabsProps.isSettingsMode">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- Power options widget -->
+                    <section class="full-width opaque widget" style="width: auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.powerOptions.title'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.powerOptions.tooltip2', tooltip: {}"></a>
+                        <div class="powerOptions" data-bind="template: { name: 'powerOptions', data: powerOptionsProps }"></div>
+                    </section>
+
+                    <!-- Bluetooth Default widget -->
+                    <section class="opaque widget" style="width:auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.bluetooth.startupState.title2'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.bluetooth.startupState.tooltip', tooltip: {}"></a>
+                        <div class="bluetoothStartup" data-bind="template: { name: 'bluetoothStartup', data: bluetoothStartupProps }"></div>
+                    </section>
+
+                    <!-- Bluetooth call behaviour widget -->
+                    <section class="opaque widget" style="width: auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.bluetooth.autoMode.title'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.bluetooth.autoMode.tooltip', tooltip: {}"></a>
+                        <div class="btCallOptions" data-bind="template: { name: 'bluetoothCallReact', data: btCallProps }"></div>
+                    </section>
+
+                    <!-- Mic mute brightness widget -->
+                    <section class="full-width opaque widget" style="width: auto;">
+                        <div class="title" data-bind="localizedText: 'widgets.micMutedLEDBrightness.title'"></div>
+                        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.micMutedLEDBrightness.tooltip', tooltip: {}"></a>
+                        <div class="micBrightness" data-bind="template: { name: 'micBrightness', data: micBrightnessProps }"></div>
+                    </section>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

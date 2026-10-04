@@ -1,0 +1,78 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="css: {lightingMode: device.viewOptions.isLightingMode()}">
+
+  <div class="" data-bind="with: device">
+
+    <div class="col col1 fixedSection" data-bind="css:{ lightingMode: viewOptions.isLightingMode() }">
+      <!-- LIGHTING MODE WIDGETS for LEFT SIDE -->
+      <div class="modeSection modeLighting" data-bind="css:{ disabledSection: !viewOptions.isLightingMode() }">
+        <!-- Wrapper div required because the title hover will not show up if it's on the same element as the disabled class -->
+        <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}">
+          <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools', data:{ settings: { ...selectedConfig().lightingSettings, disabled: $root.device.isPrismEnabledForDevice() } }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS MODE -->
+      <div class="modeSection modeSettings" data-bind="css:{ disabledSection: viewOptions.isLightingMode() }">
+
+        <!-- TRIGGER MAPPING WIDGET -->
+        <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+        </div>
+
+        <!-- DEVICE IMAGE TOGGLES -->
+        <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientationModel">
+          <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><!-- No whitespace for inline-block
+          --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button>
+        </div>
+      </div>
+
+    </div><!-- .col1 -->
+
+    <div class="col col2 fixedSection">
+      <div class="viewOptions">
+        <ul class="viewControls">
+          <li class="buttonCombineLarge" data-bind="css:{ active: !viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(false);}, localizedText:'main.settings'"></li>
+          <li class="buttonCombineLarge" data-bind="css:{ active: viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(true);orientationModel.setDorsalView()}, localizedText:'widgets.illumination'"></li>
+        </ul>
+      </div>
+
+      <!-- DEVICE IMAGE -->
+      <section data-bind="with: orientationModel">
+        <div class="deviceImg" data-bind="css:{ lightingMode: $parent.viewOptions.isLightingMode() }">
+          <div class="deviceImgContainer" data-bind="css : view()"></div>
+        </div>
+      </section>
+
+      <div class="illuminationZoneSelectionHint" data-bind="css:{ disabledSection: !viewOptions.isLightingMode() }">
+        <label class="multizoneSelectText" data-bind="localizedText: 'widgets.lightingTools.multizoneSelection'"></label>
+      </div>
+
+      <!-- zone backgrounds -->
+      <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template:{ name: 'zoneColors', data:{ model: selectedConfig().individualZoneLightingManager, withZoneGuides: true, zoneGuidesOnByDefault: true } }, css:{ disabled: !viewOptions.isLightingMode(), lateralView: orientationModel.view() == 'lateralView' }"></div>
+    </div><!-- .col2 -->
+  </div><!-- .fixedSection -->
+
+  <div class="scrollingSection" data-bind="css:{ disabledSection: device.viewOptions.isLightingMode() }">
+
+    <div class="grid-widget-container" data-bind="with: device.selectedConfig()">
+
+      <section class="full-width widget" style="width: auto;">
+        <div data-bind="template: { name: 'multiCPI', data: { cpi: user_cpi } }"></div>
+      </section>
+
+      <section class="accelDecel widget">
+        <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: settings().exact_accel.level, exactAim: settings().exact_aim.level, color: $root.device.primaryColor, isLightingModeObservable: $root.device.viewOptions.isLightingMode } } }"></div>
+      </section>
+
+      <div class="rightColumn">
+        <section id="AngleSnap" class="widget">
+            <div data-bind="template: { name: 'angleSnap', data: { snapLevel: settings().free_move.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+        </section>
+
+        <section id="PollingRate" class="widget">
+          <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: settings().polling_rate.level, pollingRateHz: settings().polling_rate.hz } }"></div>
+        </section>
+      </div>
+    </div>
+
+  </div> <!-- scrollingSection -->
+</div>

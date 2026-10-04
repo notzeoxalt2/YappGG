@@ -1,0 +1,37 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device">
+
+  <div class="col col1">
+    <!-- LIGHTING TOOLS -->
+    <div class="modeSection modeLighting">
+      <div data-bind="template:{ name: 'lighting_tools', data:{ settings: selectedConfig().lightingSettings }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+    </div>
+
+    <!-- GLOBAL ILLUMINATION -->
+    <section class="widget">
+      <div data-bind="template: {name: 'global_illumination_slider', data: { values: brightnessValues, observables: selectedConfig().globalIlluminationModel.observables } }"></div>
+    </section>
+
+    <!-- LIGHTING TEMPLATES -->
+    <div class="lightingTemplatesWidget" data-bind="template: { name: 'lightingTemplatesDropdown', data: { templates: $root.device.lightingTemplates, lightingManager: selectedConfig().individualZoneLightingManager } }"></div>
+  </div>
+
+  <div class="col col2">
+    <!-- DEVICE IMAGE TOGGLES -->
+    <div id="DeviceOrientationToggle" class="button-container button-container--horizontal" data-bind="with: orientationModel">
+      <button class="button-highlighted-border button-highlighted-border--bottom" data-bind="localizedText: 'deviceConfig.deviceViewFront', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button>
+      <button class="button-highlighted-border button-highlighted-border--bottom" data-bind="localizedText: 'deviceConfig.deviceViewBack', css: {active: view() == 'lateralView'}, click: setLateralView"></button>
+    </div>
+
+    <!-- ZONE BACKGROUNDS -->
+    <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template: { name: 'zoneColors', data: { model: selectedConfig().individualZoneLightingManager, orientationModel: orientationModel, withZoneGroups: true, withZoneGuides: true, zoneGuidesOnByDefault: true }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+
+    <!-- DEVICE IMAGE -->
+    <section data-bind="with: orientationModel">
+      <div class="deviceImg">
+        <div class="deviceImgContainer" data-bind="css : view()"></div>
+      </div>
+    </section>
+  </div>
+
+</div>
+

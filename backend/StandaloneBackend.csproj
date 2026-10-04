@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFramework>net8.0-windows</TargetFramework><PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>MicBackend</AssemblyName><AssemblyTitle>YappGG Audio</AssemblyTitle><Product>YappGG</Product>
+    <ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport><PublishTrimmed>true</PublishTrimmed><TrimMode>partial</TrimMode><JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="GgCapture.cs"/><Compile Include="AudioPolicy.cs"/><Compile Include="StandaloneProgram.cs"/><Compile Include="IndependentEngine.cs"/><Compile Include="YappGGFeed.cs"/><Compile Include="MicrophoneApps.cs"/>
+    <PackageReference Include="NAudio.Core" Version="2.2.1"/><PackageReference Include="NAudio.Wasapi" Version="2.2.1"/>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11"/>
+    <TrimmerRootAssembly Include="MicBackend"/><TrimmerRootAssembly Include="NAudio.Core"/><TrimmerRootAssembly Include="NAudio.Wasapi"/>
+  </ItemGroup>
+</Project>

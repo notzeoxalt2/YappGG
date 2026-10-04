@@ -1,0 +1,9 @@
+const assert=require('node:assert/strict');const {AudioRecovery,transientAudioError}=require('../host/audio-recovery.cjs');const wait=ms=>new Promise(r=>setTimeout(r,ms));
+(async()=>{
+ assert(transientAudioError('0x80010012 (RPC_E_SERVER_DIED_DNE)'));assert(!transientAudioError('Unknown preset.'));
+ let tries=0,logs=[],states=[];const r=new AudioRecovery({enabled:()=>true,log:v=>logs.push(v),report:v=>states.push(v),delays:[1,1,1],reconnect:async()=>{if(++tries<2)throw Error('still disconnected');}});
+ r.handle(Error('0x80010012'));r.handle(Error('0x80010012'));await wait(40);assert.equal(tries,2);assert.equal(r.active,false);assert(logs.some(v=>v.kind==='audio-recovered'));
+ let failed=0;const f=new AudioRecovery({enabled:()=>true,log:()=>{},report:v=>states.push(v),delays:[1,1,1],reconnect:async()=>{failed++;throw Error('unplugged');}});f.handle(Error('88890004'));await wait(40);assert.equal(failed,3);assert(f.exhausted);f.handle(Error('88890004'));await wait(10);assert.equal(failed,3);f.cancel();assert(!f.exhausted);
+ let canceled=0;const c=new AudioRecovery({enabled:()=>true,log:()=>{},report:()=>{},delays:[10],reconnect:async()=>{canceled++;}});c.handle(Error('Microphone engine stopped.'));c.cancel();await wait(30);assert.equal(canceled,0);
+ require('fs').writeFileSync('../reports/audio-recovery-test.json',JSON.stringify({passed:true,retriedTransientFailure:true,retriesBounded:true,stopCancelsRetry:true},null,2));console.log('Audio recovery checks passed');
+})().catch(e=>{console.error(e);process.exitCode=1;});

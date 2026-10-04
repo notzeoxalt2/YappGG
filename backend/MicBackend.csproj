@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0-windows</TargetFramework><PlatformTarget>x64</PlatformTarget><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><AssemblyTitle>YappGG Audio</AssemblyTitle><Product>YappGG</Product><Description>YappGG microphone processing</Description></PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="StandaloneProgram.cs"/>
+    <PackageReference Include="NAudio" Version="2.2.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />
+    <Reference Include="Interop.SonarAPOSettingsControl"><HintPath>../native-runtime/Interop.SonarAPOSettingsControl.dll</HintPath><EmbedInteropTypes>false</EmbedInteropTypes></Reference>
+    <Reference Include="Interop.SoundStageAudioStreamProcessingInteropLib"><HintPath>../native-runtime/Interop.SoundStageAudioStreamProcessingInteropLib.dll</HintPath><EmbedInteropTypes>false</EmbedInteropTypes></Reference>
+    <Reference Include="Sonar.Logging"><HintPath>../native-runtime/Sonar.Logging.dll</HintPath></Reference>
+    <Reference Include="Sonar.Logging.Interop"><HintPath>../native-runtime/Sonar.Logging.Interop.dll</HintPath></Reference>
+    <Reference Include="SoundStage.Models"><HintPath>../native-runtime/SoundStage.Models.dll</HintPath></Reference>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,314 @@
+<div class="settings" data-bind="with: device.selectedConfig()">
+  
+    <!-- ACTUATION WIDGETS -->
+    <div class="modeSection modeActuation" data-bind="css: { visible: $parent.device.viewOptions.isActuationMode() }">
+      <!-- ACTUATION MAPPING WIDGET -->
+      <div class="highlightMarkers highlightMarkers--actuation" data-bind="
+        css: 'region-' + selectedRegion().id,
+        template: {
+          name: 'actuation',
+          data: {
+            ...actuationViewModel,
+            ...actuationSliderOpts,
+            ...advancedActuationOptions,
+            isVisible: $parent.device.viewOptions.isActuationMode(),
+          }
+        }
+      ">
+      </div>
+    </div><!-- .modeActuation -->
+
+    <!-- ACTUATION WIDGETS COLUMN 2 -->
+    <div class="modeSectionCol2 modeActuationCol2" data-bind="css: { visible: $parent.device.viewOptions.isActuationMode() }">
+      <!-- RAPID TRIGGER SENSITIVITY -->
+      <div class="rapidTriggerSensitivity" data-bind="
+      template: {
+        name: 'rapidTriggerSensitivity',
+        data: {
+          ...rapidTriggerSensitivityViewModel,
+          isVisible: $parent.device.viewOptions.isActuationMode(),
+        }
+      }">
+      </div>
+
+      <!-- RAPID TAP -->
+      <div class="rapidTap" data-bind="css: { visible: $parent.device.viewOptions.isActuationMode() }, template: {
+        name: 'rapidTap',
+        data: {
+          rapidTap: rapidTap,
+          renderKick: $parent.device.viewOptions.isActuationMode(),
+        }
+      }">
+      </div>
+    </div><!-- .modeActuationCol2 -->
+  
+    <!-- BINDINGS WIDGETS -->
+    <div class="modeSection modeBinding" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }">
+      <!-- TRIGGER MAPPING WIDGET -->
+      <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+          css: 'region-' + selectedRegion().id,
+          template: {
+            name: 'mappings',
+            data: {
+              bindings: bindings().filter((b) => !b.trigger.isMetaLayer && !b.trigger.isDualActuation),
+              selectBinding: actionsModel.selectBinding,
+              quicksetDialog: actionsModel.dialog,
+              orientationModel: {
+                view: function(){}
+              },
+              openMacroEditor: actionsModel.dialog.openMacroEditor,
+              ...advancedActuationOptions,
+            }
+          }
+        ">
+      </div>
+    </div><!-- .modeBinding -->
+  
+    <!-- METABINDINGS WIDGETS -->
+    <div class="modeSection modeBinding" data-bind="css: { visible: $parent.device.viewOptions.isMetaKeyBindingsMode() }">
+      <!-- TRIGGER MAPPING WIDGET -->
+      <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+          css: 'region-' + selectedRegion().id,
+          template: {
+            name: 'mappings',
+            data: {
+              bindings: bindings().filter((b) => b.trigger.isMetaLayer),
+              selectBinding: actionsModel.selectBinding,
+              quicksetDialog: actionsModel.dialog,
+              orientationModel: {
+                view: function(){}
+              },
+              openMacroEditor: actionsModel.dialog.openMacroEditor,
+              ...advancedActuationOptions,
+            }
+          }
+        ">
+      </div>
+    </div><!-- .modeBinding -->
+  
+    <!-- ko if: hasDualActuation -->
+      <!-- SECOND ACTUATION BINDING WIDGETS -->
+      <div class="modeSection modeSecondActuationBindings" data-bind="css: { visible: $parent.device.viewOptions.isSecondActuationBindingsMode() }">
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+              css: 'region-' + selectedRegion().id,
+              template: {
+              name: 'mappings',
+              data: {
+                  bindings: bindings().filter((b) => b.trigger.isDualActuation),
+                  selectBinding: actionsModel.selectBinding,
+                  quicksetDialog: actionsModel.dialog,
+                  orientationModel: {
+                  view: function(){}
+                  },
+                  openMacroEditor: actionsModel.dialog.openMacroEditor,
+                  ...advancedActuationOptions,
+              }
+              }
+          ">
+          </div>
+      </div><!-- .modeSecondActuationBindings -->
+  
+      <!-- SECOND ACTUATION LEVELS WIDGETS -->
+      <div class="modeSection modeSecondActuationLevels" data-bind="css: { visible: $parent.device.viewOptions.isSecondActuationLevelsMode() }">
+          <!-- ACTUATION MAPPING WIDGET -->
+          <div class="highlightMarkers highlightMarkers--actuation" data-bind="
+          css: 'region-' + selectedRegion().id,
+          template: {
+              name: 'dualActuation',
+              data: {
+                ...secondActuationViewModel,
+                ...actuationSliderOpts,
+                ...advancedActuationOptions,
+                resetButton: true,
+              }
+          }
+          ">
+          </div>
+      </div><!-- .modeSecondActuationLevels -->
+    <!-- /ko --> <!-- end if hasDualActuation -->
+  
+    <!-- SETTINGS WIDGETS -->
+    <div class="modeSection modeSettings" data-bind="css: { visible: $parent.device.viewOptions.isSettingsMode() }">
+      <!-- OLED WIDGET -->
+      <div class="oledWidget" data-bind="template: { name: 'screen-editor-widget', data: screenEditorViewModel }"></div>
+  
+      <!-- REGION SELECTION -->
+      <section id="RegionSelect" class="widget">
+        <div data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }"></div>
+      </section>
+  
+    </div><!-- .modeSettings -->
+  
+    <!-- VIEW CONTROLS -->
+    <ul class="viewControls">
+      <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateKeyBindingsMode, css: { active: $parent.device.viewOptions.isKeyBindingsMode() }, localizedText:'widgets.keyBindings'"></li>
+      <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateMetaKeyBindingsMode, css: { active: $parent.device.viewOptions.isMetaKeyBindingsMode() }, localizedText: 'widgets.metaBindings', visible: hasMetaLayer"></li>
+      <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateActuationMode, css: { active: $parent.device.viewOptions.isActuationMode() }, localizedText:'widgets.actuation.title'"></li>
+      <!-- ko if: hasDualActuation -->
+        <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateSecondActuationBindingsMode, css: { active: $parent.device.viewOptions.isSecondActuationBindingsMode() }, localizedText:'widgets.dualBindings.tabHeader'"></li>
+        <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateSecondActuationLevelsMode, css: { active: $parent.device.viewOptions.isSecondActuationLevelsMode() }, localizedText:'widgets.dualActuation.tabHeader'"></li>
+      <!-- /ko -->
+      <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateSettingsMode, css: { active: $parent.device.viewOptions.isSettingsMode() }, localizedText:'widgets.oledAndSettings.title'"></li>
+    </ul><!-- .viewControls -->
+  
+    <ul class="selectionTools" data-bind="with: actuationViewModel, css: { visible: $parent.device.viewOptions.isActuationMode() }">
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: useSelectorTool, attr: {title: tooltipFor('select')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}, css: { selected: isCurrentToolSelector() }">
+          <i class="icon selectIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: useMagicWandTool, attr: {title: tooltipFor('selectSame')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}, css: { selected: isCurrentToolMagicWand() }">
+          <i class="icon selectSameIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: selectAllKeys, attr: {title: tooltipFor('selectAllKeys')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon selectAllIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: useUndoTool, attr: {title: tooltipFor('undo')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon undoIcon"></i>
+        </button>
+      </li>
+    </ul>
+  
+    <ul class="selectionTools" data-bind="with: secondActuationViewModel, css: { visible: $parent.device.viewOptions.isSecondActuationLevelsMode() }">
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: useSelectorTool, attr: {title: tooltipFor('select')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}, css: { selected: isCurrentToolSelector() }">
+          <i class="icon selectIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: useMagicWandTool, attr: {title: tooltipFor('selectSame')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}, css: { selected: isCurrentToolMagicWand() }">
+          <i class="icon selectSameIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: selectAllKeys, attr: {title: tooltipFor('selectAllKeys')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon selectAllIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="click: useUndoTool, attr: {title: tooltipFor('undo')}, tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon undoIcon"></i>
+        </button>
+      </li>
+    </ul>
+  
+    <ul class="selectionTools" data-bind="with: keyLightingViewModel, css: { visible: $parent.device.viewOptions.isLightingMode() }">
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="
+        css: { selected: isSelectActive() },
+        click: useSelectorTool,
+        attr: {title: tooltipFor('select')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon selectIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="
+        css: { selected: isMagicWandActive() },
+        click: useMagicWandTool,
+        attr: {title: tooltipFor('selectSame')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon selectSameIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="
+        click: onClickSelectAllKeys,
+        attr: {title: tooltipFor('selectAllKeys')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon selectAllIcon"></i>
+        </button>
+      </li>
+      <li class="selectionTool">
+        <button class="toolButton" data-bind="
+        click: useUndoTool,
+        attr: {title: tooltipFor('undo')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+          <i class="icon undoIcon"></i>
+        </button>
+      </li>
+    </ul>
+  
+  
+    <div class="deviceImgContainer" data-bind="css: { oledZoom: $parent.device.viewOptions.isSettingsMode() }">
+      <div data-bind="svgDeviceImg: { deviceId: $root.device.id, deviceName: $root.device.name, zones: svgDeviceImageZones, regionIdStr: selectedRegion().css }"></div>
+
+      <div data-bind="css: $parent.device.keyboardRenderClasses()">
+        <div class="oled">
+          <canvas class="oled__preview" data-bind="
+            screenEditorPreview: screenEditorViewModel,
+            click: screenEditorViewModel.openScreenEditor,
+            css: { actionable: $parent.device.viewOptions.isSettingsMode() }
+          "></canvas>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Actuation Info -->
+    <div class="settingsInfo" data-bind="style: { display: $parent.device.viewOptions.isActuationMode() ? 'flex' : 'none' }">
+      <span class="message visible" data-bind="text: actuationViewModel.keysSelectedText"></span>
+    </div>
+  
+    <!-- Second Actuation Info -->
+    <!-- The knockout if statement is a guard here while the Apex Pro doesn't yet support DA -->
+    <!-- ko if: $parent.device.viewOptions.isSecondActuationLevelsMode() -->
+    <div class="settingsInfo" data-bind="style: { display: $parent.device.viewOptions.isSecondActuationLevelsMode() ? 'flex' : 'none' }">
+        <span class="message visible" data-bind="text: secondActuationViewModel.keysSelectedText"></span>
+    </div>
+    <!-- /ko -->
+  
+    <!-- Second Actuation Bindings Info -->
+    <!-- The knockout if statement is a guard here while the Apex Pro doesn't yet support DA -->
+    <!-- ko if: $parent.device.viewOptions.isSecondActuationBindingsMode() -->
+    <div class="settingsInfo" data-bind="style: { display: $parent.device.viewOptions.isSecondActuationBindingsMode() ? 'flex' : 'none' }">
+        <span class="message visible" data-bind="localizedText: maxDualActuationInfoKey"></span>
+    </div>
+    <!-- /ko -->
+  
+    <!-- Lighting Info -->
+    <div class="settingsInfo" data-bind="style: { display: $parent.device.viewOptions.isLightingMode() ? 'flex' : 'none' }">
+      <div class="message visible">
+        <span data-bind="text: keyLightingViewModel().keysSelectedText"></span>
+  
+        <span data-bind="style: {
+                        display: keyLightingViewModel().maxFoundationSlotsReached() ? 'block' : 'none'
+                      }">
+          <span style="margin: 0 0.25em;"></span>
+          <span data-bind="localizedText: 'widgets.lightingTools.maxBaseEffects'"></span>
+        </span>
+  
+        <span data-bind="style: {
+                        display: keyLightingViewModel().maxReactiveSlotsReached() ? 'block' : 'none'
+                      }">
+          <span style="margin: 0 0.25em;"></span>
+          <span data-bind="localizedText: 'widgets.lightingTools.maxReactiveEffects'"></span>
+        </span>
+  
+        <span data-bind="style: {
+                        display: keyLightingViewModel().maxAFKSlotsReached() ? 'block' : 'none'
+                      }">
+          <span style="margin: 0 0.25em;"></span>
+          <span data-bind="localizedText: 'widgets.lightingTools.maxIdleEffects'"></span>
+        </span>
+      </div>
+    </div>
+  
+    <!-- OLED EDITOR -->
+    <div data-bind="
+      template: {
+        name: 'screen-editor',
+        data: {
+          ...screenEditorViewModel,
+          defaultImage: defaultScreenImage,
+          screenedDeviceName: $parent.device.fullName,
+        }
+      }
+    "></div>
+  </div><!-- .settings -->
+  

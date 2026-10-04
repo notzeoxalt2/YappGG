@@ -1,0 +1,38 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+  <div class="deviceImgContainer"></div>
+
+  <section class="widgetsContainer">
+    <div class="widgetsColumn">
+      <!-- ko if: $data.settings().profile -->
+        <div class="widget widgetSource" data-bind="visible: $root.device.connected">
+          <div class="title" data-bind="localizedText: 'widgets.audioSource'"></div>
+          <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.audioSource', tooltip: {}"></a>
+
+          <div class="dropdownContainer" data-bind="dropdown: selectedSource">
+            <a href="javascript:void(0)" class="deviceConfigBtn dropdownButton withArrow" data-bind="text: selectedSource().name"></a>
+            <div class="dropdownContent topGradient">
+              <div class="scrollableArea">
+                <ul class="deviceCardConfigs" data-bind="foreach: sources">
+                  <li class="deviceCardConfig" data-bind="text: name"></li>
+                </ul>
+              </div>
+            </div>
+          </div> <!-- dropdownContainer -->
+        </div>
+        <div data-bind="template: {name: 'dolby', data: {toggleField: settings().profile.dolby, indicatorRed: dolby_indicator.red, indicatorGreen: dolby_indicator.green, indicatorBlue: dolby_indicator.blue}}"></div>
+      <!-- /ko -->
+      <!-- <div data-bind="template: {name: 'headsetVolume', data: {field: settings().profile.master_volume, minVolume: $root.device.masterVolumeMin, maxVolume: $root.device.masterVolumeMax} }"></div> This does not work in firmware right now -->
+      <div data-bind="template: {name: 'equalizer', data: { equalizer: $root.device.selectedConfig().equalizer }}"></div>
+    </div>
+
+    <div class="widgetsColumn">
+      <!-- ko if: $data.settings().profile -->
+        <div data-bind="template: {name: 'chatMix',   data: {level: settings().profile.chat_mix_level, vals: $root.device.selectedConfig().chatMixLevels()}}"></div>
+        <section class="liveMix widget">
+          <div data-bind="template: {name: 'liveMix', data: {liveMixData: {liveMixLevels: $root.device.selectedConfig().liveMixLevels, exactMixLevel: settings().profile.live_mix_level }} }"></div>
+        </section>
+      <!-- /ko -->
+    </div>
+  </section>
+</div>
+

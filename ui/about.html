@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
+    <!-- all styles -->
+    <link rel="stylesheet" href="index.css">
+
+    <link rel="shortcut icon" type="image/x-icon" href="images/icons/favicon.ico">
+  <script defer src="about.js"></script></head>
+
+  <body id="About" class="aboutWindow">
+    <div id="Container" class="ContainerAuto">
+      <div class="content" style="display:none" data-bind="visible: true">
+
+        <div data-bind="with: applicationInfo()">
+          <div class="versionInfo">
+            <span class="fieldLabel" data-bind="localizedText: {key: 'main.softwareVersion', suffix: ':'}"></span>
+            <span class="fieldValue" data-bind="text: version"></span>
+          </div>
+
+          <div class="appId">
+            <span class="fieldLabel" data-bind="localizedText: {key: 'main.appId', suffix: ':'}"></span>
+            <span class="fieldValue" data-bind="text: guid"></span>
+          </div>
+        </div>
+
+        <!-- ko if: devices().length > 0 -->
+        <ul class="devices" data-bind="foreach: devices()">
+          <li>
+            <h2 class="fieldTitle" data-bind="text: display_name"></h2>
+            <div data-bind="foreach: fw_version, visible: !hide_fw_version">
+              <div>
+                <span class="fieldLabel fieldLabelShrunken" data-bind="text: $data[0]"></span>
+                <span class="fieldValue fieldValueShrunken" data-bind="text: $data[1]"></span>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <!-- /ko -->
+      </div>
+      <footer>
+        <div class="btnGroup btnGroupRight">
+          <button class="positive" data-bind="click: $root.close, localizedText: 'common.close'"></button>
+        </div>
+      </footer>
+    </div>
+
+    <div id="FatalErrorMessageBox" class="content" title="">
+      <p>
+        <label></label>
+        </p><p class="text" data-bind="localizedHtml: {key: 'errors.fatalErrorMessage', SUPPORT_PAGE: 'https://steelseries.zendesk.com/requests/new'}">A fatal error was encountered and has been logged. SteelSeries Engine will now close. If you continue to encounter this error, please file a ticket on our <a href="https://steelseries.zendesk.com/requests/new">Support Page</a>.</p>
+      <p></p>
+    </div>
+  </body>
+</html>

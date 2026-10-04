@@ -1,0 +1,82 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical">
+    <div class="" data-bind="with: device">
+
+        <div class="col col1 fixedSection">
+          <!-- LOGO LED WIDGET  -->
+          <div class="LEDhotspot  logoLED" id="LogoLED" data-bind="css: orientation.view()">
+              <div data-bind="template:{ name: 'lightingCustom', data:{
+              lightingCustomModel: { lighting: selectedConfig().logoLightModel } } }, css: selectedConfig().logoLightModel.templateCssClass">
+              </div>
+          </div>
+          <!-- BASE LED WIDGET  -->
+           <div class="LEDhotspot baseLED" id="BaseLED" data-bind="css: orientation.view()">
+               <div data-bind="template:{ name: 'lightingCustom', data:{
+               lightingCustomModel: { lighting: selectedConfig().baseLightModel } } }, css: selectedConfig().baseLightModel.templateCssClass">
+               </div>
+          </div>
+
+          <!-- BUTTON MARKER LABELS -->
+          <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientation, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+          </div>
+
+          <!-- DEVICE IMAGE TOGGLES -->
+          <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientation">
+            <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><!-- No whitespace for inline-block
+            --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button><!-- No whitespace for inline-block
+            --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewRight', css: {active: view() == 'lateralViewAlt'}, click: setLateralViewAlt"></button>
+          </div>
+
+        </div><!-- .col1 -->
+
+        <div class="col col2 fixedSection">
+
+          <section data-bind="">
+            <div class="deviceImg">
+              <div class="deviceImgContainer" data-bind="css: orientation.view()"></div>
+            </div>
+          </section>
+        </div><!-- .col2 -->
+
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection">
+      <div class="widgetsContainer widgetsContainerStatic">
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+          <section id="Resolution1" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel1}}"></div>
+          </section>
+
+          <section id="Resolution2" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel2}}"></div>
+          </section>
+
+          <section id="BatteryPerformance" class="widget">
+            <div data-bind="template: {name: 'batteryPerformance', data: $root.device.selectedConfig().batteryPerformanceModel, afterRender: $root.device.selectedConfig().batteryPerformanceModel.onTemplateLoaded }"></div>
+          </section>
+        </div>
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig().settings()">
+          <section class="accelDecel widget" data-bind="with: $root.device.selectedConfig()">
+            <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: settings().exact_accel.level, exactAim: settings().exact_aim.level }} }"></div>
+          </section>
+
+          <section id="LiftDistance" class="widget" data-bind="with: $root.device.selectedConfig().settings().exact_lift.displayModel">
+            <div data-bind="template: {name: 'liftDistance', data: { liftDistanceData: { min: liftDistanceMin, max: liftDistanceMax, value: displayValue, grid: [1, 2, 3, 4, 5], topCalc: topCalc } }, afterRender: onLiftDistanceRender }"></div>
+          </section>
+
+          <section id="AngleSnap" class="widget" data-bind="with: $root.device">
+            <div data-bind="template: { name: 'angleSnap', data: { snapLevel: selectedConfig().settings().free_move.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+          </section>
+
+          <section id="PollingRate" class="widget">
+            <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: polling_rate.level, pollingRateHz: polling_rate.hz } }"></div>
+          </section>
+
+        </div>
+
+      </div>
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+

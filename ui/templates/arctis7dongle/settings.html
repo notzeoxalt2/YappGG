@@ -1,0 +1,37 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig()">
+  <div class="fixedSection">
+    <div class="deviceImgContainer">
+
+    </div>
+  </div>
+
+  <section class="widgetsContainer">
+    <div class="widgetsColumn">
+      <label class="widgetGroupLabel speakers" data-bind="localizedText: 'common.speakers'"></label>
+      <!-- ko if: $data.dtsHeadphoneXModel && $data.dtsHeadphoneXModel() != null -->
+      <div data-bind="template: {name: 'dtsHeadphoneX', data: {toggleField: dtsHeadphoneXModel().toggle, modes: dtsHeadphoneXModel().modes, currentMode: dtsHeadphoneXModel().currentMode, enabled: $root.device.softwareInstalled}}"></div>
+      <!-- /ko -->
+      <!-- ko if: $data.dtsHeadphoneXv2Model && $data.dtsHeadphoneXv2Model() != null -->
+      <div data-bind="template: {name: 'dtsHeadphoneXv2', data: {model: dtsHeadphoneXv2Model(), softwareUpToDate: $root.device.softwareInstalled}}"></div>
+      <!-- /ko -->
+      <div data-bind="template: {name: 'equalizer', data: { equalizer: equalizer }}"></div>
+      <div data-bind="template: {name: 'dynamic_range_comp', data: {value: currentDrc, audioCompressionValues: drcPresets, localizedTooltip: 'widgets.dynamicRangeCompression.tooltip' }}"></div>
+    </div>
+    <div class="widgetsColumn">
+      <label class="widgetGroupLabel microphone" data-bind="localizedText: 'common.microphone'"></label>
+      <div data-bind="template: {name: 'micPreview', data: { micName: micName } }"></div>
+      <div data-bind="template: {name: 'sideToneSlider', data: {value: settings().sidetone.amplitude, sideToneValues: $root.device.sideToneValues, enabled: settings().sidetone.enabled}}"></div>
+      <div data-bind="template: {name: 'micVolumeSlider', data: {
+        field: micVolume, 
+        minVolume: $root.device.minVolume, 
+        maxVolume: $root.device.maxVolume,
+      }}"></div>
+      <!-- Not implemented in firmware
+      <div data-bind="template: {name: 'batteryLife', data: {options: $root.device.powerOffTimes, value: settings().power_off_time.value}}"></div>
+      -->
+      <div class="autoOffTime" data-bind="template: {name: 'genericDropdown', data: autoOffTimeData }"></div>
+    </div>
+  </section>
+</div>
+
+<!-- include "widgets/batteryLife.html" -->

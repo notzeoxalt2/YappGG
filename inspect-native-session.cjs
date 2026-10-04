@@ -1,0 +1,1 @@
+const Native=require('./host/native-client.cjs'),path=require('path');(async()=>{let c=new Native(path.resolve('build/compact-native/MicBackend.exe'),console.log,'exclusive');try{await c.command('start',{inputId:'{0.0.1.00000000}.{f37f97bb-6614-413a-a27b-533a3b8db0f8}'});console.log(await c.command('status'));}finally{await c.close();}})().catch(console.error);

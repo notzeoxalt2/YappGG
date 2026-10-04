@@ -1,0 +1,91 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical">
+  <div class="" data-bind="with: device">
+      <div class="col col1 fixedSection">
+
+        <!-- TRIGGER MAPPING WIDGET -->
+        <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+        </div>
+
+        <!-- OLED WIDGETS -->
+        <section class="oledWidgets widget">
+          <header class="oled-section__title title" data-bind="localizedText: 'widgets.oledDisplay.oledScreen'"></header>
+
+          <div class="oledScreenWidget" data-bind="template: { name: 'screen-editor-preview-widget', data: { screenEditorViewModel: $root.device.selectedConfig().screenEditorViewModel } }"></div>
+        </section>
+
+      <!-- MOUSE WHEEL BRIGHTNESS -->
+      <section id="LEDBrightness" class="widget">
+        <div data-bind="template: {name: 'global_illumination_slider', data: { transitionDuration: selectedConfig().globalIlluminationModel.transitionDuration, values: $root.device.brightnessValues, observables: selectedConfig().globalIlluminationModel.observables, titleText: selectedConfig().globalIlluminationModel.titleText } }"></div>
+      </section>
+
+      </div><!-- .col1 -->
+
+      <div class="col col2 fixedSection">
+
+        <!-- DEVICE IMAGE -->
+        <section>
+
+          <!-- SOLID COLOR ZONE FOREGROUNDS OVERLAID OVER RENDER -->
+          <ul class="zoneForegrounds" data-bind="with: selectedConfig(), css: orientationModel.view()">
+            <!-- ko if: typeof wheelLightModel != "undefined" -->
+            <li class="zoneForeground scroll left" data-bind="style: { backgroundColor: wheelLightModel.shiftSequenceColor() }"></li>
+            <li class="zoneForeground scrollGlow left" data-bind="style: { background: ('radial-gradient(46% 38% at 54% 100%, ' + wheelLightModel.shiftSequenceColor() + ' 0%, ' + wheelLightModel.shiftSequenceColorZeroAlpha() + ' 100%)')}"></li>
+            <li class="zoneForeground scroll right" data-bind="style: { backgroundColor: wheelLightModel.shiftSequenceColor() }"></li>
+            <li class="zoneForeground scrollGlow right" data-bind="style: { background: ('radial-gradient(46% 38% at 54% 100%, ' + wheelLightModel.shiftSequenceColor() + ' 0%, ' + wheelLightModel.shiftSequenceColorZeroAlpha() + ' 100%)')}"></li>
+            <!-- /ko -->
+          </ul>
+
+          <div class="deviceImg" data-bind="with: orientationModel">
+            <div class="deviceImgContainer" data-bind="css : view()"></div>
+          </div>
+        </section>
+
+      </div><!-- .col2 -->
+  </div><!-- .fixedSection -->
+
+  <div class="scrollingSection">
+    <div class="grid-widget-container widgetsContainerStatic" data-bind="with: device.selectedConfig()">
+      <section class="full-width widget" style="width: auto;">
+          <div data-bind="template: {
+                          name: 'multiCPI',
+                          data: {
+                            cpi: cpi,
+                          }
+                        }">
+          </div>
+      </section>
+
+      <section class="widgetColumn">
+        <section class="accelDecel widget">
+            <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: accelerationLevels, exactAccel: settings().exact_accel.level, exactAim: settings().exact_aim.level, color: $root.device.primaryColor }} }"></div>
+        </section>
+      </section>
+
+      <section class="widgetColumn">
+        <section id="AngleSnap" class="widget">
+            <div data-bind="template: { name: 'angleSnap', data: { snapLevel: settings().free_move.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+        </section>
+
+        <section id="PollingRate" class="widget">
+          <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: settings().polling_rate.level, pollingRateHz: settings().polling_rate.hz } }"></div>
+        </section>
+
+        <section id="ProximityLiftOff">
+          <div id="proximity_lift_off" class="labeledToggleSlider" data-bind="template: {name: 'labeledToggleSlider', data: {titleLocaleKey: 'widgets.liftOffDistance.title', tooltipLocaleKey: 'widgets.liftDistance.tooltip', labelLocaleKey: 'common.enabled', toggleField: settings().liftoff_enable.enable, numericalValues: [1,0], value: settings().liftoff_distance.setting, values: liftoffRange, displayOptions: liftoffLabels, hideMiddleLabels: true, sliderDisabled: liftoffSliderDisabled}}"></div>
+        </section>
+      </section>
+    </div>
+  </div><!-- .scrollingSection -->
+
+  <!-- LCD EDITOR -->
+  <div data-bind="
+    template: {
+      name: 'screen-editor',
+      data: {
+        ...$root.device.selectedConfig().screenEditorViewModel,
+        screenedDeviceName: $root.device.fullName,
+      }
+    }">
+  </div>
+
+</div> <!-- device -->

@@ -1,0 +1,38 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device">
+  <!-- DEVICE SECTION -->
+  <section class="deviceSection">
+    <!-- ko if: selectedConfig().isSettingsMode -->
+    <div class="renderedDeviceImg"></div>
+    <!-- /ko -->
+    <!-- ko if: selectedConfig().isLightingMode -->
+    <div class="svgDeviceImg" data-bind="svgDeviceImg: { deviceId: $root.device.id, deviceName: $root.device.name, zones: selectedConfig().svgDeviceImageZones(), useZoneSelection: true, onZoneSelect: selectedConfig().onZoneSelect }"></div>
+    <!-- /ko -->
+  </section>
+
+  <section class="widgetsSection">
+    <div class="settingsTabs" data-bind="template: { name: 'settingsTabs', data: selectedConfig().settingsTabsProps }"></div>
+
+    <!-- LIGHTING MODE WIDGETS -->
+    <div data-bind="if: selectedConfig().isLightingMode">
+      <div class="lightingPalette" data-bind="template: { name: 'lightingPalette', data: { ...selectedConfig().lightingPaletteProps, disabledKO: $root.device.isPrismEnabledForDevice } }"></div>
+      <div class="dragSelectionDescription" data-bind="localizedText: 'widgets.lightingMode.zoneDragHelp'"></div>
+    </div>
+
+    <!-- SETTINGS MODE WIDGETS -->
+    <div class="grid-widget-container" data-bind="if: selectedConfig().isSettingsMode">
+      <!-- EQ widget -->
+      <section class="full-width opaque widget" style="width: auto;">
+        <div class="title" data-bind="localizedText: 'widgets.equalizer.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.equalizer', tooltip: {}"></a>
+        <div class="equalizer" data-bind="template: { name: 'eq', data: selectedConfig().equalizerProps }"></div>
+      </section>
+
+      <!-- Inactivity timer widget -->
+      <section class="full-width opaque widget" style="width: auto;">
+        <div class="title" data-bind="localizedText: 'widgets.lightingTimeout.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.lightingTimeout.tooltip', tooltip: {}"></a>
+        <div class="powerOptions" data-bind="template: { name: 'powerOptions', data: selectedConfig().powerOptionsProps }"></div>
+      </section>
+    </div>
+  </section>
+</div> <!-- device -->

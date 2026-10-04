@@ -1,0 +1,116 @@
+<div class="settings scrollableContainer horizontal vertical cf" data-bind="css: { leftSideClosed: !device.viewOptions.leftVisible(), rightSideClosed: !device.viewOptions.rightVisible()}">
+
+    <div class="cols cf" data-bind="with: device">
+
+      <div class="col col1" data-bind="css: { leftSideClosed: !viewOptions.leftVisible(), rightSideClosed: !viewOptions.rightVisible()}">
+
+        <!-- TRIGGER MAPPING WIDGET -->
+        <div class="highlightMarkers" data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: {view: function(){}}, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }, css: 'region-' + selectedConfig().selectedRegion().id">
+        </div>
+        
+      </div><!-- .col1 -->
+
+      <div class="col col2" data-bind="css: { leftSideClosed: !viewOptions.leftVisible(), rightSideClosed: !viewOptions.rightVisible() }">
+
+        <!-- VIEW OPTIONS and LAYERS -->
+        <div class="viewOptions">
+          <ul class="viewControls">
+            <li data-bind="localizedText: 'widgets.viewOptions'"></li>
+            <li>
+              <input type="checkbox" id="viewToggleQuickset" data-bind="checked: viewOptions.leftVisible" />
+              <label for="viewToggleQuickset"><i class="icon iconMiddle configIconMuted"></i></label>
+            </li>
+            <li>
+              <input type="checkbox" id="viewToggleWidgets" data-bind="checked: viewOptions.rightVisible" />
+              <label for="viewToggleWidgets"><i class="icon iconMiddle cogIconMuted"></i></label>
+            </li>
+          </ul>
+        </div>
+
+        <!-- DEVICE IMAGE -->
+        <section>
+
+          <!-- SOLID COLOR ZONE BACKGROUNDS -->
+
+          <!-- DEVICE IMAGE w/ TRANSPARENT KEYS -->
+          <div class="deviceImg" data-bind="css: 'region-' + selectedConfig().selectedRegion().id">
+            <div class="deviceImgContainer"></div>
+          </div>
+        </section>
+
+      </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection" data-bind="with: device.selectedConfig, css: {leftSideClosed: !device.viewOptions.leftVisible()}, visible: device.viewOptions.rightVisible()">
+
+      <div class="widget widgetEffect">
+        <div class="title" data-bind="localizedText: 'widgets.effect.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle:  'widgets.effect.tooltip', tooltip: {}"></a>
+
+        <div class="dropdownContainer" data-bind="dropdown: selectedEffect">
+          <a href="javascript:void(0)" class="deviceConfigBtn dropdownButton withArrow" data-bind="text: selectedEffect().name"></a>
+          <div class="dropdownContent topGradient">
+            <div class="scrollableArea">
+              <ul class="deviceCardConfigs" data-bind="foreach: effects">
+                <li class="deviceCardConfig" data-bind="text: name"></li>
+              </ul>
+            </div>
+          </div>
+        </div> <!-- dropdownContainer  -->
+        <div class="colorControl">
+          <div class="colorLED" data-bind="css: { disabled: rgbpicker() }">
+            <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: backLightModel, disabled: rgbpicker } } }"></div>
+          </div>
+          <div class="toggleButton" data-bind="toggle: {field: ledrgbmode, numerical: [0,1]}, disable: (selectedEffect().f == static_disabled) || (selectedEffect().f == RGB_disabled),
+          css: {disabledButton: (selectedEffect().f == static_disabled) || (selectedEffect().f == RGB_disabled)}">
+            <label class="labelButton" data-bind="css: {on: ledrgbmode()}"></label>
+          </div>
+          <label class="multicolorLabel" data-bind="localizedText: 'widgets.effect.multicolor', css: { disabled: !rgbpicker() }"></label>
+        </div>
+        <label class="speedLabel" data-bind="localizedText: 'common.speed', css: { disabled: disableSpeed() }"></label>
+        <div class="sliderContainer" data-bind="css: { disabled: disableSpeed() }">
+          <div class="sliderWidget" data-bind="template: {name: 'horizSlider', data: {options: [1,2,3,4,5,6,7], value: effectSpeed, hideMiddleLabels: true, sliderDisabled: disableSpeed} }"></div>
+        </div>
+      </div>
+
+      <div class="widget widgetEffect">
+        <div class="title" data-bind="localizedText: 'widgets.inputEffect.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.inputEffect.tooltip', tooltip: {}"></a>
+
+        <div class="dropdownContainer" data-bind="dropdown: selectedInputEffect">
+          <a href="javascript:void(0)" class="deviceConfigBtn dropdownButton withArrow" data-bind="text: selectedInputEffect().name"></a>
+          <div class="dropdownContent topGradient">
+            <div class="scrollableArea">
+              <ul class="deviceCardConfigs" data-bind="foreach: input_effects">
+                <li class="deviceCardConfig" data-bind="text: name"></li>
+              </ul>
+            </div>
+          </div>
+        </div> <!-- dropdownContainer -->
+        <div class="colorControl">
+          <div class="colorLED" data-bind="css: { disabled: inputEffectMode() }">
+            <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: inputLightModel, disabled: inputEffectMode } } }"></div>
+          </div>
+          <div class="toggleButton" data-bind="toggle: {field: settings().input_led_effect.mode, numerical: [0,1]}, disabled: selectedInputEffect().id == 0 || selectedInputEffect().id == 2,
+          css: {disabledButton: selectedInputEffect().id == 0 || selectedInputEffect().id == 2}">
+            <label class="labelButton" data-bind="css: {on: inputEffectMode()}"></label>
+          </div>
+          <label class="multicolorLabel" data-bind="localizedText: 'widgets.effect.multicolor', css: { disabled: !settings().input_led_effect.mode() }"></label>
+        </div>
+        <label class="speedLabel" data-bind="localizedText: 'common.speed', css: { disabled: disableInputSpeed() }"></label>
+        <div class="sliderContainer" data-bind="css: { disabled: disableInputSpeed() }">
+          <div class="sliderWidget" data-bind="template: {name: 'horizSlider', data: {options: [1,2,3,4,5,6,7], value: inputEffectSpeed, hideMiddleLabels: true, sliderDisabled: disableInputSpeed} }"></div>
+        </div>
+      </div>
+
+      <!-- GLOBAL ILLUMINATION -->
+      <section class="widget">
+        <div data-bind="template: {name: 'global_illumination', data: { transitionDuration: globalIlluminationModel.transitionDuration, values: $root.device.brightnessValues, observables: globalIlluminationModel.observables } }"></div>
+      </section>    
+
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+

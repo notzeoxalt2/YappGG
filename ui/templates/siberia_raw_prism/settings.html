@@ -1,0 +1,23 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig().settings">
+
+  <div class="fixedSection">
+    <div class="deviceImgContainer">
+      <div class="tag rawPrismLED" data-bind="template:{ name: 'lightingCustom', data:{
+      lightingCustomModel: { lighting: $root.device.selectedConfig().lightingModel } } }, css: $root.device.selectedConfig().lightingModel.templateCssClass">
+      </div>
+    </div>
+  </div>
+
+  <div class="scrollingSection">
+
+    <div class="widgetsColumn">
+      <div data-bind="template: {name: 'equalizer', data: { equalizer: $root.device.selectedConfig().equalizer }}"></div>
+    </div>
+
+
+    <div class="widgetsColumn">
+      <div data-bind="template: {name: 'auto_mic_gain', data: { toggleField: agc_on_off.state, titleLocaleKey: 'widgets.micAutoOptimization', tooltipLocaleKey: 'widgets.tooltip.micAutoOptimization', numericalValues: [241,0]} }"></div>
+    </div>
+  </div>
+</div>
+

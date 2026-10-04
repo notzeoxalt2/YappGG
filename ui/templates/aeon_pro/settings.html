@@ -1,0 +1,57 @@
+<div class="settings scrollableContainer vertical" data-bind="with: device.selectedConfig()">
+    <a class="productInfo" data-bind="click: $parent.device.openURL.bind(null, $parent.device.helpUrl), visible: $parent.device.helpUrl">
+      <span class="productInfoLabel" data-bind="localizedText: 'deviceConfig.infoAndHelp'"></span>
+      <span class="productInfoIcon"></span>
+    </a>
+    <!-- VIEW CONTROLS -->
+    <div class='viewControls'>
+      <h1 class="viewTitle" data-bind="text: name"></h1>
+      <ul>
+        <li class="buttonCombineLarge"
+          data-bind="click: $parent.device.viewOptions.activateMappingMode, css: { active: $parent.device.viewOptions.isMappingMode() }, localizedText:'widgets.controllerButtonMapping.title'">
+        </li>
+        <li class="buttonCombineLarge"
+          data-bind="click: $parent.device.viewOptions.activateSticksMode, css: { active: $parent.device.viewOptions.isSticksMode() }, localizedText:'widgets.sticks.title'">
+        </li>
+        <li class="buttonCombineLarge"
+          data-bind="click: $parent.device.viewOptions.activateTriggersMode, css: { active: $parent.device.viewOptions.isTriggersMode() }, localizedText: 'widgets.triggers.title'">
+        </li>
+        <li class="buttonCombineLarge"
+          data-bind="click: $parent.device.viewOptions.activateVibrationMode, css: { active: $parent.device.viewOptions.isVibrationMode() }, localizedText: 'controller.haptics'">
+        </li>
+        <li class="buttonCombineLarge"
+          data-bind="click: $parent.device.viewOptions.activateSystemMode, css: { active: $parent.device.viewOptions.isSystemMode() }, localizedText:'widgets.oledAndSettings.title'">
+        </li>
+      </ul>
+      <div class="controllerStatus" data-bind="template: { name: 'controllerStatus', data: $parent.device.controllerStatusProps }"></div>
+    </div><!-- .viewControls -->
+    <!-- Mapping WIDGETS -->
+    <div class="modeSection modeMapping" data-bind="css: { visible: $parent.device.viewOptions.isMappingMode() }">
+      <div class="fullWidthContainer">
+        <div class="controllerButtonMapping" data-bind="template: { name: 'controllerButtonMapping', data: { deviceName: $parent.device.deviceName, mappingProps: mappingProps, showGGActions: $parent.device.showGGActions} }"></div>
+      </div>
+    </div><!-- .modeMapping -->
+
+    <!-- Sticks WIDGETS -->
+    <div class="modeSection modeSticks" data-bind="css: { visible: $parent.device.viewOptions.isSticksMode() }">
+      <!-- pageVisible binding is used to trigger the React component to re-render when the user switches between tabs, ensure the Calibration component is properly unmounted and remounted when navigating away and back to the sticks tab, which allows the calibration interruption logic to work correctly. -->
+      <div class="controllerSticksSettings" data-bind="template: { name: 'controllerSticksSettings', data: { pageVisible: $parent.device.viewOptions.isSticksMode(), isControllerConnected: $parent.device.isControllerConnected, isControllerReady: $parent.device.isControllerReady, deviceName: $parent.device.deviceName, sticksObservables: stickProps, liveDataKO: $parent.device.liveDataKO, calibrationActions: $parent.device.calibrationActions, checkForChangesAndCall: $parent.device.checkForChangesAndCall} }"></div>
+    </div><!-- .modeSticks -->
+
+    <!-- Triggers WIDGETS -->
+    <div class="modeSection modeTriggers" data-bind="css: { visible: $parent.device.viewOptions.isTriggersMode() }">
+      <div class="controllerTriggerSettings" data-bind="template: { name: 'controllerTriggerSettings', data: { pageVisible: $parent.device.viewOptions.isTriggersMode(), deviceName: $parent.device.deviceName, triggerObservables: triggerObservables, liveDataKO: $parent.device.liveDataKO, calibrationActions: $parent.device.calibrationActions, isControllerConnected: $parent.device.isControllerConnected, isControllerReady: $parent.device.isControllerReady, checkForChangesAndCall: $parent.device.checkForChangesAndCall} }"></div>
+    </div><!-- .modeTriggers -->
+
+    <!-- Vibration WIDGETS -->
+    <div class="modeSection modeVibration" data-bind="css: { visible: $parent.device.viewOptions.isVibrationMode() }">
+      <!-- Vibration Widget -->
+      <div class="controllerVibrationSettings" data-bind="template: { name: 'controllerVibrationSettings', data: { deviceName: $parent.device.deviceName, globalSettingsProps: $parent.device.globalSettingsProps, vibrationObservables: vibrationProps, liveVibrationActions: $parent.device.deviceVibrationActions} }"></div>
+    </div><!-- .modeVibration -->
+
+    <!-- System WIDGETS -->
+    <div class="modeSection modeSystem" data-bind="css: { visible: $parent.device.viewOptions.isSystemMode() }">
+        <div class="controllerSystemSettings" data-bind="template: { name: 'controllerSystemSettings', data: { deviceName: $parent.device.deviceName, isControllerConnected: $parent.device.isControllerConnected, globalSettingsProps: $parent.device.globalSettingsProps, onFactoryReset: $parent.device.onFactoryReset} }"></div>
+    </div><!-- .modeSystem -->
+
+</div>

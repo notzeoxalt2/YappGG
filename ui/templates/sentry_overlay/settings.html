@@ -1,0 +1,51 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+
+    <div class="fixedSection" data-bind="template: { afterRender: $root.device.selectedConfig().onTemplateLoaded }">
+      <button class="positive tutorialButton" data-bind="click: viewTutorial, localizedText: 'widgets.viewTutorial'"></button>
+      <div class="userImageContainer" data-bind="template: {name: 'user_image', data: {model: $root.device.userImages, internalCss: watermarkLocation} }"></div>
+      <div class="gazeColor" id="gazeColor" data-bind="template: {name: 'led', data: {led: { model: gazeColor} } }"></div>
+    </div><!-- .fixedSection -->
+
+      <div class="scrollingSection">
+
+        <div class="widgetsContainer">
+
+          <div class="widgetsColumn">
+
+            <div id="OverlayWidget" class="widget">
+              <div class="title" data-bind="localizedText: 'widgets.streamingOverlayLabel'"></div>
+              <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.streamingOverlay', tooltip: {}"></a>
+              <div class="content narrow controlContainer">
+                <label class="icon" data-bind="css: {off: !settings().running(), on: settings().running()}"></label>
+                <div class="toggleButton streamToggle" data-bind="toggle: {field: settings().running, numerical: [1,0]}">
+                  <label class="labelButton" data-bind="css: {on: settings().running()}"></label>
+                  <label class="before" data-bind="localizedText: 'common.on'"></label>
+                  <label class="after" data-bind="localizedText: 'common.off'"></label>
+                </div>
+              </div>
+            </div>
+
+            <section class="VisualizationWidget">
+              <div data-bind="template: { name: 'visualization', data: { model: gazes } }"></div>
+            </section>
+
+          </div>
+          <div class="widgetsColumn">
+
+            <!-- STREAM CAPTURE MODE -->
+            <section class="CaptureModeWidget">
+              <div data-bind="template: {name: 'stream_capture_mode', data: { model: captureModeModel, modes: $root.device.captureModes }}"></div>
+            </section>
+
+            <!-- STREAM LOGO PLACEMENT -->
+            <section class="LogoPlacementWidget">
+              <div data-bind="template: {name: 'stream_logo', data: { model: logoPlacementModel }}"></div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+</div> <!-- device -->
+
+

@@ -1,0 +1,102 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+    <section class="scrollingSection">
+        <div data-bind="template: { name: 'deviceConfigHeader', data: deviceConfigHeaderProps }"></div>
+        <div class="audioTabContents" role="tabpanel" data-bind="if: deviceConfigHeaderProps.selectedTabIdKO() === deviceConfigHeaderProps.isAudioMode, localizedAttr: { key: 'common.audio', attr: 'aria-label' }">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- Enable Sonar widget -->
+                     <!-- ko if: enableSonarProps.shouldShowBanner() -->
+                    <section class="full-width opaque widgetFlat" style="width: auto;">
+                        <div class="enableSonarBanner" data-bind="template: { name: 'enableSonarBanner', data: enableSonarProps }"></div>
+                    </section>
+                    <!-- /ko -->
+                    <!-- Parametric EQ widget -->
+                    <section class="full-width opaque widgetFlat" style="width: auto;">
+                        <div data-bind="if: selectedEQTabProps.selectedEQTabKO() === selectedEQTabProps.dongle">
+                            <div class="parametricEQMini" data-bind="template: { name: 'parametricEQMini', data: parametricEQMiniProps }"></div>
+                        </div>
+                        <div data-bind="if: selectedEQTabProps.selectedEQTabKO() === selectedEQTabProps.bt">
+                            <div class="tenBandEQ" data-bind="template: { name: 'tenBandsEQWithPresetMenu', data: bluetoothEQProps }"></div>
+                        </div>
+                    </section>
+                    <!-- Output widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="lineOutput" data-bind="template: { name: 'lineOutputFlat', data: lineOutputProps }"></div>
+                    </section>
+                    <!-- ANC and Transparency widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="ancTransparencyControl" data-bind="template: { name: 'ancTransparencyControl', data: ancAndTransparencyProps }"></div>
+                    </section>
+                    <!-- Volume limiter widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="gainLimiter" data-bind="template: { name: 'gainLimiter', data: volumeLimiterProps }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="microphoneTabContents" role="tabpanel" data-bind="if: deviceConfigHeaderProps.selectedTabIdKO() === deviceConfigHeaderProps.isMicrophoneMode, localizedAttr: { key: 'common.microphone', attr: 'aria-label' }">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- Ten Bands EQ widget -->
+                    <section class="full-width opaque widgetFlat" style="width: auto;">
+                        <div class="tenBandEQ" data-bind="template: { name: 'tenBandsEQWithPresetMenu', data: microphoneEQProps }"></div>
+                    </section>
+                    <!-- Microphone volume widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="micVolume" data-bind="template: { name: 'microphoneVolumeFlat', data: microphoneVolumeProps }"></div>
+                    </section>
+                    <!-- Sidetone widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="micSidetone" data-bind="template: { name: 'micSidetoneSplit', data: sidetoneProps }"></div>
+                    </section>
+                    <!-- Mic mute brightness widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="micBrightness" data-bind="template: { name: 'muteLedBrightness', data: micBrightnessProps }"></div>
+                    </section>
+                    <!-- Mic noise cancellation widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="micNoiseCancellation" data-bind="template: { name: 'micNoiseCancellation', data: micNoiseCancellationProps }"></div>
+                    </section>
+                    <!-- Mic preview widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="micPreview" data-bind="template: { name: 'micPreviewFlat', data: micPreviewProps }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="settingsTabContents" role="tabpanel" data-bind="if: deviceConfigHeaderProps.selectedTabIdKO() === deviceConfigHeaderProps.isSettingsMode, localizedAttr: { key: 'common.settings', attr: 'aria-label' }">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- Power options widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="powerOptions" data-bind="template: { name: 'powerOptionsFlat', data: powerOptionsProps }"></div>
+                    </section>
+                    <!-- OLED screen brightness widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="oledScreenBrightness" data-bind="template: { name: 'oledBrightnessFlat', data: oledBrightnessProps }"></div>
+                    </section>
+                    <!-- OLED home screen display mode widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="oledScreenDisplay" data-bind="template: { name: 'homeScreenDisplayMode', data: homeScreenDisplayModeProps }"></div>
+                    </section>
+                    <!-- OLED screen saver options widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="oledScreenDisplay" data-bind="template: { name: 'oledScreenSaver', data: oledScreenSaverProps }"></div>
+                    </section>
+                    <!-- Bluetooth call widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="bluetoothCall" data-bind="template: { name: 'bluetoothCall', data: bluetoothCallProps }"></div>
+                    </section>
+                    <!-- Bluetooth default widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="bluetoothDefault" data-bind="template: { name: 'bluetoothDefault', data: bluetoothDefaultProps }"></div>
+                    </section>
+                    <!-- Factory reset widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="factoryReset" data-bind="template: { name: 'factoryReset', data: restoreFactoryProps }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

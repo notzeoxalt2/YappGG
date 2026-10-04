@@ -1,0 +1,47 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+  <div class="fixedSection">
+    <div class="deviceImgContainer"></div>
+    <div class="sonarCallToAction" data-bind="template: { name: 'sonarCallToAction', data: {} }"></div>
+    <div id="MultimediaControls" data-bind="template: { name: 'multimediaControls', data: {} }"></div>
+  </div>
+  <section class="scrollingSection">
+    <div class="widgetsContainer">
+      <div class="grid-widget-container widgetsContainerStatic">
+        <!-- EQ widget -->
+        <section class="full-width opaque widget" style="width: auto;">
+          <div class="title" data-bind="localizedText: 'widgets.equalizer.title'"></div>
+          <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.equalizer', tooltip: {}"></a>
+          <div class="eqDeprecated" data-bind="template: { name: 'eqDeprecated', data: eqProps }"></div>
+        </section>
+
+        <!-- Power options widget -->
+        <section class="full-width opaque widget" style="width: auto;">
+          <div class="title" data-bind="localizedText: 'widgets.powerOptions.title'"></div>
+          <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.powerOptions.tooltip2', tooltip: {}"></a>
+          <div class="powerOptions" data-bind="template: { name: 'powerOptions', data: powerOptionsProps }"></div>
+        </section>
+
+        <!-- Microphone volume widget -->
+        <section class="opaque widget" style="width: auto;">
+          <div class="title" data-bind="localizedText: 'widgets.micVolume'"></div>
+          <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.micVolume', tooltip: {}"></a>
+          <div class="micVolume" data-bind="template: {name: 'microphoneVolume', data: microphoneVolumeProps }"></div>
+        </section>
+
+        <!-- Sidetone widget -->
+        <section class="opaque widget" style="width: auto;">
+          <div class="title" data-bind="localizedText: 'widgets.sideTone'"></div>
+          <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.sidetone', tooltip: {}"></a>
+          <div class="sidetoneSlider" data-bind="template: { name: 'sidetoneSliderReact', data: sidetoneProps }"></div>
+        </section>
+
+        <!-- Mic preview widget -->
+        <section class="opaque widget" style="width: auto;">
+          <div class="title" data-bind="localizedText: 'widgets.micPreview.title'"></div>
+          <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.micPreview.tooltip', tooltip: {}"></a>
+          <div class="micPreview" data-bind="template: { name: 'micPreviewReact', data: micPreviewProps }"></div>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>

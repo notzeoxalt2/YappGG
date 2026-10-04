@@ -1,0 +1,68 @@
+<div class="settings" data-bind="with: device.selectedConfig()">
+
+   <!-- LIGHTING WIDGETS -->
+  <div class="modeSection modeLighting" data-bind="css: { visible: $parent.device.viewOptions.isLightingMode() }">
+    <!-- GLOBAL ILLUMINATION -->
+    <section class="globalIllumination widget">
+      <div data-bind="template: {name: 'global_illumination_slider', data: { transitionDuration: globalIlluminationModel.transitionDuration, values: $root.device.brightnessValues, observables: globalIlluminationModel.observables } }"></div>
+    </section>
+    <!-- Wrapper div required because the title hover will not show up if it's on the same element as the disabled class -->
+    <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}">
+      <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools', data:{ settings: { ...$parent.device.selectedConfig().lightingSettings, disabled: $root.device.isPrismEnabledForDevice }}, afterRender: $parent.device.selectedConfig().onTemplateLoaded }"></div>
+    </div>
+    
+  </div><!-- .modeLighting -->
+
+  <!-- BINDINGS WIDGETS -->
+  <div class="modeSection modeBinding" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }">
+    <!-- TRIGGER MAPPING WIDGET -->
+    <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+      css: 'region-' + selectedRegion().id,
+      template: {
+        name: 'mappings',
+        data: {
+          bindings: bindings(),
+          selectBinding: actionsModel.selectBinding,
+          quicksetDialog: actionsModel.dialog,
+          orientationModel: {
+            view: function(){}
+          },
+          openMacroEditor: actionsModel.dialog.openMacroEditor
+        }
+      }">
+    </div>
+  </div><!-- .modeBinding -->
+
+  <div class="modeSection modeSettings" data-bind="css: { visible: $parent.device.viewOptions.isSettingsMode() }">
+    <!-- USB POLLING RATE -->
+    <section id="PollingRate" class="widget">
+      <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: polling_rate.level, pollingRateHz: polling_rate.hz } }"></div>
+    </section>
+    <!-- REGION SELECTION -->
+    <section id="RegionSelect" class="widget">
+      <div data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }"></div>
+    </section>
+  </div><!-- .modeSettings -->
+
+  <!-- VIEW CONTROLS -->
+  <ul class="viewControls">
+    <li class="buttonCombineLarge"
+      data-bind="click: $parent.device.viewOptions.activateKeyBindingsMode, css: { active: $parent.device.viewOptions.isKeyBindingsMode() }, localizedText:'widgets.keyBindings'">
+    </li>
+    <li class="buttonCombineLarge"
+      data-bind="click: $parent.device.viewOptions.activateLightingMode, css: { active: $parent.device.viewOptions.isLightingMode() }, localizedText:'widgets.illumination'">
+    </li>
+    <li class="buttonCombineLarge"
+      data-bind="click: $parent.device.viewOptions.activateSettingsMode, css: { active: $parent.device.viewOptions.isSettingsMode() }, localizedText:'main.settings'">
+    </li>
+  </ul><!-- .viewControls -->
+
+  <div class="illuminationZoneSelectionHint" data-bind="css:{ disabledSection: !$parent.device.viewOptions.isLightingMode() }">
+    <label class="multizoneSelectText" data-bind="localizedText: 'widgets.lightingTools.multizoneSelection'"></label>
+  </div>
+  <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template:{ name: 'zoneColors', data:{ model: $parent.device.selectedConfig().individualZoneLightingManager, withZoneGuides: true, zoneGuidesOnByDefault: true } }, css:{ disabled: !$parent.device.viewOptions.isLightingMode()}"></div>
+  <!-- DEVICE IMAGE w/ TRANSPARENT KEYS -->
+  <div class="deviceImgContainer">
+    <div class="deviceImg" data-bind="css: 'region-' + $parent.device.selectedConfig().selectedRegion().id"></div>
+  </div>
+</div> <!-- device -->

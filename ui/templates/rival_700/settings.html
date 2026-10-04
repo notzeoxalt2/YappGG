@@ -1,0 +1,201 @@
+<!--static templates-->
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+  <div>
+    <div class="col col1 fixedSection">
+      <!-- TRIGGER MAPPING WIDGET -->
+      <div data-bind="
+        template: {
+          name: 'mappings',
+          data: {
+            bindings: bindings(),
+            selectBinding: actionsModel.selectBinding,
+            quicksetDialog: actionsModel.dialog,
+            orientationModel: $root.device.orientationModel,
+            openMacroEditor: actionsModel.dialog.openMacroEditor
+          }
+        }
+      "></div>
+
+      <!-- DEVICE IMAGE TOGGLES -->
+      <div id="DeviceOrientationToggle" class="btnList btnListStack">
+        <button class="box boxHighlight" data-bind="
+          click: $root.device.orientationModel.setLateralView,
+          localizedText: 'deviceConfig.deviceViewLeft',
+          css: { active: $root.device.orientationModel.view() == 'lateralView' }
+        "></button>
+
+        <button class="box boxHighlight" data-bind="
+          click: $root.device.orientationModel.setDorsalView,
+          localizedText: 'deviceConfig.deviceViewTop',
+          css: { active: $root.device.orientationModel.view() == 'dorsalView' }
+        "></button>
+      </div>
+
+      <!-- ko if: logoLightModel -->
+      <!-- LOGO LIGHTING WIDGET  -->
+      <div class="LEDhotspot logoLED" id="LogoLED" data-bind="css: $root.device.orientationModel.view()">
+        <div data-bind="
+          template: {
+            name: 'lightingCustom',
+            data: {
+              lightingCustomModel: {
+                lighting: logoLightModel,
+                sequence_step_ms: $root.device.sequenceStepMs()
+              }
+            }
+          },
+          css: logoLightModel.templateCssClass
+        "></div>
+      </div>
+      <!-- /ko -->
+    </div>
+
+    <div class="col col2 fixedSection">
+      <!-- DEVICE IMAGE -->
+      <div class="deviceImg">
+        <div class="deviceImgContainer" data-bind="css: $root.device.orientationModel.view()"></div>
+
+        <canvas id="rival-7xx-oled-preview" data-bind="
+          screenEditorPreview: screenEditorViewModel,
+          click: screenEditorViewModel.openScreenEditor,
+          visible: $root.device.orientationModel.view() === 'lateralView'
+        "></canvas>
+
+        <div id="rival-7xx-oled-marker" data-bind="
+          template: {
+            name: 'screen-editor-marker',
+            data: screenEditorViewModel
+          },
+          css: $root.device.orientationModel.view()
+        "></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrollingSection">
+    <div class="widgetsContainer widgetsContainerStatic">
+      <div class="widgetsColumn">
+        <!-- All of these need to be contained within ko if bindings because the read callback can come back late due to onboard config loading -->
+
+        <!-- A stock Rival 710 houses the TrueMove 3 sensor, which has the same sensor PID as the 3360 so no additional handling was necessary here -->
+
+        <!-- ko if: cpiLevel1_3360() != null -->
+        <section id="Resolution1 sensor3360" class="widget" data-bind="css: {unpadded: currentSensorPid() != sensorPid3360}">
+          <div data-bind="
+            template: { name: 'cpi', data: { cpiModel: cpiLevel1_3360() } },
+            visible: currentSensorPid() == sensorPid3360
+          "></div>
+        </section>
+        <!-- /ko -->
+
+        <!-- ko if: cpiLevel2_3360() != null -->
+        <section id="Resolution2 sensor3360" class="widget" data-bind="css: {unpadded: currentSensorPid() != sensorPid3360}">
+          <div data-bind="
+            template: { name: 'cpi', data: { cpiModel: cpiLevel2_3360() } },
+            visible: currentSensorPid() == sensorPid3360
+          "></div>
+        </section>
+        <!-- /ko -->
+
+        <!-- ko if: cpiLevel1_9800() != null -->
+        <section id="Resolution1 sensor9800" class="widget" data-bind="css: {unpadded: currentSensorPid() != sensorPid9800}">
+          <div data-bind="
+            template: { name: 'cpi', data: { cpiModel: cpiLevel1_9800() } },
+            visible: currentSensorPid() == sensorPid9800
+          "></div>
+        </section>
+        <!-- /ko -->
+
+        <!-- ko if: cpiLevel2_9800() != null -->
+        <section id="Resolution2 sensor9800" class="widget" data-bind="css: {unpadded: currentSensorPid() != sensorPid9800}">
+          <div data-bind="
+            template: { name: 'cpi', data: { cpiModel : cpiLevel2_9800() } },
+            visible: currentSensorPid() == sensorPid9800
+          "></div>
+        </section>
+        <!-- /ko -->
+
+        <!-- ko if: cpiLevel1_3398() != null -->
+        <section id="Resolution1 sensor3398" class="widget" data-bind="css: {unpadded: currentSensorPid() != sensorPid3398}">
+          <div data-bind="
+            template: { name: 'cpi', data: { cpiModel: cpiLevel1_3398() } },
+            visible: currentSensorPid() == sensorPid3398
+          "></div>
+        </section>
+        <!-- /ko -->
+
+        <!-- ko if: cpiLevel2_3398() != null -->
+        <section id="Resolution2 sensor3398" class="widget" data-bind="css: {unpadded: currentSensorPid() != sensorPid3398}">
+          <div data-bind="
+            template: { name: 'cpi', data: { cpiModel: cpiLevel2_3398() } },
+            visible: currentSensorPid() == sensorPid3398
+          "></div>
+        </section>
+        <!-- /ko -->
+
+        <section class="tactileCooldowns widget">
+          <div data-bind="template: { name: 'tactileCooldowns', data: { tactileCooldownsModel: tactileCooldownsModel() } }"></div>
+        </section>
+      </div>
+
+      <div class="widgetsColumn">
+        <!-- MOUSE ACCELERATION/DECELERATION WIDGET -->
+        <section class="accelDecel widget">
+          <div data-bind="
+            template: {
+              name: 'accelDecel',
+              data: {
+                accelDecelData: {
+                  accelerationLevels: accelerationLevels,
+                  exactAccel: settings().accel.level,
+                  exactAim: settings().decel.level,
+                  color: $root.device.primaryColor,
+                }
+              }
+            }
+          "></div>
+        </section>
+
+        <!-- ANGLE SNAPPING WIDGET -->
+        <section id="AngleSnap" class="widget">
+          <div data-bind="
+            template: {
+              name: 'angleSnap',
+              data: {
+                snapLevel: settings().angle_snapping.level,
+                snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+              }
+            }
+          "></div>
+        </section>
+
+        <!-- POLLING RATE WIDGET -->
+        <section id="PollingRate" class="widget">
+          <div data-bind="
+            template: {
+              name: 'pollingRate',
+              data: {
+                pollingRateRange: [4, 3, 2, 1],
+                pollingRateLevel: settings().polling_rate.level,
+                pollingRateHz: settings().polling_rate.hz
+              }
+            }
+          "></div>
+        </section>
+
+        <!-- SCREEN EDITOR WIDGET -->
+        <div data-bind="
+          template: {
+            name: 'screen-editor',
+            data: {
+              ...screenEditorViewModel,
+              defaultImage: defaultScreenImage,
+              screenedDeviceName: $root.device.fullName,
+            }
+          }
+        "></div>
+      </div>
+    </div>
+  </div>
+</div>
+

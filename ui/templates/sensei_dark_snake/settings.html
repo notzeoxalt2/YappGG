@@ -1,0 +1,152 @@
+<!-- use Sensei settings -->
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical">
+
+    <div class="cols" data-bind="with: device">
+
+        <div class="col col1 fixedSection">
+
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+          </div>
+
+          <div class="markers" data-bind="css: orientationModel.view()">
+            <!-- BOGUS MARKER FOR NON-BINDABLE CPI BUTTON -->
+            <li class="marker B8 mouseButton cpiToggle" data-bind="css: orientationModel.view()">
+              <div class="helperBlock"></div>
+              <a href="javascript:void(0)" data-bind="localizedText: 'widgets.cpiInputLabel'"></a>
+            </li>
+          </div>
+
+          <!-- DEVICE IMAGE TOGGLES -->
+          <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientationModel">
+            <div class="viewToggles">
+              <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><!-- No whitespace for inline-block
+              --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button><!-- No whitespace for inline-block
+              --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewBottom', css: {active: view() == 'anteriorView'}, click: setAnteriorView"></button><!-- No whitespace for inline-block
+              --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewRight', css: {active: view() == 'lateralViewAlt'}, click: setLateralViewAlt"></button>
+            </div>
+          </div>
+
+          <!-- LCD MARKER -->
+          <div id="sensei-lcd-marker" class="lcdMarker" data-bind="
+            template: {
+              name: 'screen-editor-marker',
+              data: selectedConfig().screenEditorViewModel
+            },
+            css: $root.device.orientationModel.view()
+          "></div>
+
+          <!-- LOGO LED WIDGET  -->
+          <div class="LEDhotspot logoLED" id="LogoLED" data-bind="css: orientationModel.view()">
+            <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().logoLightModel } } }, css: selectedConfig().logoLightModel.templateCssClass">
+            </div>
+          </div>
+
+          <div class="LEDhotspot cpi1LED" data-bind="css: orientationModel.view()">
+            <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().cpi1LightModel } } }, css: selectedConfig().cpi1LightModel.templateCssClass">
+            </div>
+          </div>
+
+          <div class="LEDhotspot cpi2LED" data-bind="css: orientationModel.view()">
+            <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().cpi2LightModel } } }, css: selectedConfig().cpi2LightModel.templateCssClass">
+            </div>
+          </div>
+        </div><!-- .col1 -->
+
+        <div class="col col2 fixedSection">
+
+          <!-- DEVICE IMAGE -->
+          <section>
+            <div class="deviceImg">
+              <div class="deviceImgContainer" data-bind="css: orientationModel.view()"></div>
+              <canvas id="sensei-lcd-preview" class="actionable" data-bind="
+                screenEditorPreview: selectedConfig().screenEditorViewModel,
+                click: selectedConfig().screenEditorViewModel.openScreenEditor,
+                visible: orientationModel.view() === 'anteriorView',
+              "></canvas>
+            </div>
+          </section>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection">
+      <div class="widgetsContainer widgetsContainerStatic">
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+          <!-- CPI 1 WIDGET -->
+          <section id="Resolution1" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel1, customTitle: 'sensei.exactSens'}}"></div>
+          </section>
+
+          <!-- CPI 2 WIDGET -->
+          <section id="Resolution2" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel2, customTitle: 'sensei.exactSens'}}"></div>
+          </section>
+
+          <!-- ACCEL & DECEL WIDGET -->
+          <section class="accelDecel widget">
+            <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: accelerationLevels, exactAccel: settings().active_profile.sensor.acceleration.degree, exactAim: settings().active_profile.sensor.deceleration.degree }, customTitle: 'sensei.exactAccelExactAim', customAccel: 'sensei.exactAccel', customDecel: 'sensei.exactAim' } }"></div>
+          </section>
+        </div>
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig().settings()">
+          <section id="LiftDistance" class="widget" data-bind="with: $root.device.selectedConfig().settings().liftDistanceDisplayModel">
+            <div data-bind="template: {name: 'liftDistance', data: { liftDistanceData: { min: liftDistanceMin, max: liftDistanceMax, value: displayValue, step: step, grid: new Array(11).fill(''), topCalc, topCalc }, customTitle: 'sensei.exactLift' }, afterRender: onLiftDistanceRender }"></div>
+          </section>
+
+          <!-- ANGLE SNAPPING WIDGET -->
+          <section id="AngleSnap" class="widget" data-bind="with: $root.device">
+              <div data-bind="template: { name: 'angleSnap', data: { snapLevel: selectedConfig().settings().active_profile.sensor.angle_snap.degree, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], customTitle: 'sensei.freeMove' } }"></div>
+          </section>
+
+          <!-- POLLING RATE WIDGET -->
+          <section id="PollingRate" class="widget">
+            <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [8, 4, 2, 1], pollingRateLevel: active_profile.polling_rate.level, pollingRateHz: active_profile.polling_rate.hz } }"></div>
+          </section>
+
+          <!-- BRIGHTNESS & CONTRAST WIDGET -->
+          <section id="BrightnessAndContrast" class="widget">
+            <header class="title" data-bind="localizedText: 'common.lcdScreen'"></header>
+            <div class="content">
+              <span class="sliderLabel" data-bind="localizedText: 'common.brightness'"></span>
+              <div data-bind="
+                template: {
+                  name: 'horizSlider',
+                  data: {
+                    options: $root.device.brightnessValues,
+                    value: $root.device.selectedConfig().brightness
+                  }
+                }
+              "></div>
+              <span class="sliderLabel" data-bind="localizedText: 'common.contrast'"></span>
+              <div data-bind="
+                template: {
+                  name: 'horizSlider',
+                  data: {
+                    options: $root.device.contrastValues,
+                    value: $root.device.selectedConfig().contrast
+                  }
+                }
+              "></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div><!-- .scrollingSection -->
+
+    <!-- LCD EDITOR -->
+    <div data-bind="
+      template: {
+        name: 'screen-editor',
+        data: {
+          ...$root.device.selectedConfig().screenEditorViewModel,
+          defaultImage: $root.device.selectedConfig().defaultScreenImage,
+          screenedDeviceName: $root.device.fullName,
+        }
+      }
+    "></div>
+</div> <!-- device -->
+

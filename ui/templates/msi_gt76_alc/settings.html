@@ -1,0 +1,15 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device">
+
+  <div class="col col1">
+    <div class="modeSection modeLighting">
+      <div data-bind="template:{ name: 'lighting_tools', data:{ settings: selectedConfig().lightingSettings }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+      <div class="lightingTemplatesWidget" data-bind="template: { name: 'lightingTemplatesDropdown', data: { templates: $root.device.lightingTemplates, lightingManager: selectedConfig().individualZoneLightingManager } }"></div>
+    </div>
+  </div>
+
+  <div class="col col2">
+    <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template: { name: 'zoneColors', data: { model: selectedConfig().individualZoneLightingManager, withZoneGuides: true, zoneGuidesOnByDefault: true  }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+    <div class="deviceImgContainer"></div>
+  </div>
+
+</div>

@@ -1,0 +1,65 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+
+  <div class="fixedSection" data-bind="template: { afterRender: $root.device.selectedConfig().onTemplateLoaded }">
+    <div class="deviceImgContainer"></div>
+  </div><!-- .fixedSection -->
+
+  <div class="scrollingSection">
+    <div class="widgetsContainer">
+      <div id="renderWidgets" class="widgetsColumn">
+
+        <section class="audioDeviceSelect">
+          <label>
+            <span class="widgetsColumnTitle" data-bind="localizedText: 'common.speakers'"></span>
+            <span class="widgetsColumnTooltip" data-bind="localizedText: 'deviceConfig.chooseOutputDevice'"></span>
+          </label>
+          <div class="dropdownContainer" data-bind="dropdown: selectRenderDevice">
+            <a href="javascript:void(0)" class="deviceConfigBtn dropdownButton withArrow" data-bind="text: selectedRenderDevice().friendly_name"></a>
+            <div class="dropdownContent topGradient">
+              <div class="scrollableArea">
+                <ul class="deviceCardConfigs" data-bind="foreach: $root.device.renderDevices()">
+                  <li class="deviceCardConfig" data-bind="text: friendly_name, css: { disabled: !is_supported }"></li>
+                </ul>
+              </div>
+            </div>
+          </div> <!-- dropdownContainer -->
+        </section> <!-- audioDeviceSelect -->
+
+        <section id="globalRender">
+          <div data-bind="template: {name: 'virtualSurround', data: {toggleField: settings().render_virtual_surround.enabled, numericalValues: [1,0]}}"></div>
+          <div data-bind="template: {name: 'equalizer', data: { equalizer: $root.device.selectedConfig().equalizer, noAlignTicks: true }}"></div>
+          <div id="bassBoost" class="toggleSlider" data-bind="template: {name: 'toggleSlider', data: {titleLocaleKey: 'widgets.render.bassBoost', tooltipLocaleKey: 'widgets.render.bassBoostTooltip', toggleField: settings().render_bass_boost.enabled, numericalValues: [1,0], value: settings().render_bass_boost.gain, values: twelveLevelGainValues}}"></div>
+        </section> <!-- globalRender -->
+
+      </div> <!-- widgetsColumn -->
+      <div id="captureWidgets" class="widgetsColumn">
+
+        <section class="audioDeviceSelect">
+          <label>
+            <span class="widgetsColumnTitle" data-bind="localizedText: 'common.microphone'"></span>
+            <span class="widgetsColumnTooltip" data-bind="localizedText: 'deviceConfig.chooseInputDevice'"></span>
+          </label>
+          <div class="dropdownContainer" data-bind="dropdown: selectCaptureDevice">
+            <a href="javascript:void(0)" class="deviceConfigBtn dropdownButton withArrow" data-bind="text: selectedCaptureDevice().friendly_name"></a>
+            <div class="dropdownContent topGradient">
+              <div class="scrollableArea">
+                <ul class="deviceCardConfigs" data-bind="foreach: $root.device.captureDevices()">
+                  <li class="deviceCardConfig" data-bind="text: friendly_name, css: { disabled: !is_supported }"></li>
+                </ul>
+              </div>
+            </div>
+          </div> <!-- dropdownContainer -->
+        </section> <!-- audioDeviceSelect -->
+
+        <section id="globalCapture">
+          <div data-bind="template: {name: 'micPreview', data: { micName: micName, isDefault: isDefault }}"></div>
+          <div data-bind="template: {name: 'dynamic_range_comp', data: {value: settings().capture_compressor.level, audioCompressionValues: compressorValues, localizedTooltip: 'widgets.voiceLeveler.tooltip', enabled: settings().capture_compressor.enabled }}"></div>
+          <div data-bind="template: {name: 'noiseGate', data: {value: settings().capture_noise_gate.threshold, noiseGateValues: noiseGateValues, enabled: settings().capture_noise_gate.enabled}}"></div>
+          <div data-bind="template: {name: 'noiseReduction', data: {value: settings().capture_noise_reduction.rate, noiseReductionValues: noiseReductionValues, enabled: settings().capture_noise_reduction.enabled}}"></div>
+        </section> <!-- globalCapture -->
+      </div> <!-- widgetsColumn -->
+    </div> <!-- widgetsContainer -->
+  </div> <!-- scrollingContainer -->
+
+</div> <!-- device -->
+

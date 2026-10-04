@@ -1,0 +1,179 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig()">
+  <div class="fixedSection">
+    <div class="deviceImgContainer"></div>
+    <div class="dongleImgContainer">
+      <button class="pairingButton" data-bind="
+        localizedTitle: $root.device.connected() ? 'main.pairing.tooltip' : 'main.reconnectHeadset',
+        disable: !$root.device.connected(),
+        click: initializePairing,
+        tooltip: {
+          hover: true,
+          belowCenter: true,
+          noArrow: true,
+        }
+      "></button>
+    </div>
+    <div id="MultimediaControls" data-bind="template: { name: 'multimediaControls', data: {} }"></div>
+  </div>
+
+  <section class="widgetsContainer">
+    <div class="widgetsColumn">
+      <label class="widgetGroupLabel speakers" data-bind="localizedText: 'common.speakers'"></label>
+      <div data-bind="template: {name: 'equalizer', data: { equalizer: equalizer }}"></div>
+      <div data-bind="template: {name: 'dynamic_range_comp', data: {value: currentDrc, audioCompressionValues: drcPresets, localizedTooltip: 'widgets.dynamicRangeCompression.tooltip' }}"></div>
+    </div>
+    <div class="widgetsColumn">
+      <label class="widgetGroupLabel microphone" data-bind="localizedText: 'common.microphone'"></label>
+      <div data-bind="template: {name: 'micPreview', data: { micName: micName } }"></div>
+      <div data-bind="template: {name: 'sideToneSlider', data: {value: settings().sidetone.amplitude, sideToneValues: $root.device.sideToneValues, enabled: settings().sidetone.enabled}}"></div>
+      <div data-bind="template: {name: 'micVolumeSlider', data: {field: settings().mic_volume.amplitude, minVolume: $root.device.minVolume, maxVolume: $root.device.maxVolume}}"></div>
+      <div class="autoOffTime" data-bind="template: {name: 'genericDropdown', data: autoOffTimeData }"></div>
+    </div>
+  </section>
+</div>
+
+<div style="display: none">
+<!-- The class names in this file are used to achieve DOM manipulation; be careful when changing them -->
+
+<div id="WirelessDeviceConnectionModal" style="display: none">
+  <div class="content">
+    <div class="warning">
+      <i class="icon icon--warning"></i>
+      <span class="text text--light text--warning"></span>
+    </div>
+
+    <div class="instructions">
+      <span class="text text--light text--large text--bold text--uppercase text--required-instructions"></span>
+      <span class="text text--light text--optional-instructions "></span>
+    </div>
+
+    <div class="step step--1">
+      <span class="text text--light text--large text--bold">
+        <span>1. </span>
+        <span class="text--connect-transmitter"></span>
+      </span>
+      <span class="text text--light text--italicized text--connect-transmitter-instructions"></span>
+    </div>
+
+    <div class="step step--2">
+      <span class="text text--light text--large text--bold">
+        <span>2. </span>
+        <span class="text--connect-receiver"></span>
+      </span>
+      <span class="text text--light text--italicized text--light text--connect-receiver-instructions"></span>
+    </div>
+
+    <div class="image-container image-container--transmitter">
+      <img class="image image--transmitter"></img>
+    </div>
+
+    <div class="image-container image-container--receiver">
+      <img class="image image--receiver"></img>
+    </div>
+
+    <div class="status status--transmitter">
+      <span class="text text--light text--bold text--uppercase">
+        <span data-bind="localizedText: { key: 'common.status', suffix: ': ' } "></span>
+        <span class="text--transmitter-status"></span>
+      </span>
+      <img class="icon icon--status icon--transmitter-status"></img>
+    </div>
+
+    <div class="status status--receiver">
+      <span class="text text--light text--bold text--uppercase">
+        <span data-bind="localizedText: { key: 'common.status', suffix: ': ' }"></span>
+        <span class="text--receiver-status"></span>
+      </span>
+      <img class="icon icon--status icon--receiver-status"></img>
+    </div>
+  </div>
+</div>
+
+<div id="WirelessDeviceConnectionModalStepOne" style="display: none">
+  <div class="content">
+    <div class="warning">
+      <i class="icon icon--warning"></i>
+      <span class="text text--light text--warning"></span>
+    </div>
+
+    <div class="instructions">
+      <span class="text text--light text--large text--bold text--uppercase text--required-instructions"></span>
+      <span class="text text--light text--optional-instructions "></span>
+    </div>
+
+    <div class="step">
+      <span class="text text--light text--large text--bold">
+        <span>1. </span>
+        <span class="text--connect-transmitter"></span>
+      </span>
+      <span class="text text--light text--italicized text--connect-transmitter-instructions"></span>
+    </div>
+
+    <div class="image-container">
+      <img class="image image--transmitter"></img>
+    </div>
+
+    <div class="status">
+      <span class="text text--light text--bold text--uppercase">
+        <span data-bind="localizedText: { key: 'common.status', suffix: ': ' } "></span>
+        <span class="text--transmitter-status"></span>
+      </span>
+      <img class="icon icon--status icon--transmitter-status"></img>
+    </div>
+  </div>
+</div>
+
+<div id="WirelessDeviceConnectionModalStepTwo" style="display: none">
+  <div class="content">
+    <div class="warning">
+      <i class="icon icon--warning"></i>
+      <span class="text text--light text--warning"></span>
+    </div>
+
+    <div class="instructions">
+      <span class="text text--light text--large text--bold text--uppercase text--required-instructions"></span>
+      <span class="text text--light text--optional-instructions "></span>
+    </div>
+
+    <div class="step step--2">
+      <span class="text text--light text--large text--bold">
+        <span>2. </span>
+        <span class="text--connect-receiver"></span>
+      </span>
+      <span class="text text--light text--italicized text--light text--connect-receiver-instructions"></span>
+    </div>
+
+    <div class="image-container image-container--receiver">
+      <img class="image image--receiver"></img>
+    </div>
+
+    <div class="status status--receiver">
+      <span class="text text--light text--bold text--uppercase">
+        <span data-bind="localizedText: { key: 'common.status', suffix: ': ' }"></span>
+        <span class="text--receiver-status"></span>
+      </span>
+      <img class="icon icon--status icon--receiver-status"></img>
+    </div>
+  </div>
+</div>
+<div id="WirelessDevicePairingUnderwayModal" style="display: none">
+  <div class="content">
+    <span class="text text--dark text--large text--bold text--uppercase" data-bind="localizedText: 'main.pairing.currentlyPairing'"></span>
+    <span class="text text--dark" data-bind="localizedText: 'main.pairing.pleaseWait'"></span>
+    <span class="text text--dark" data-bind="localizedText: 'main.pairing.thingsNotToDoWhenPairing'"></span>
+  </div>
+</div>
+<div id="WirelessDevicePairingSuccessModal" style="display: none">
+  <div class="content">
+    <span class="text text--dark text--large text--bold text--uppercase" data-bind="localizedText: 'main.pairing.pairingSuccess'"></span>
+    <span class="text text--dark text--italicized" data-bind="localizedText: 'main.pairing.postPairingSuccess'"></span>
+    <img class="image image--pairing-success"></img>
+  </div>
+</div>
+<div id="WirelessDevicePairingFailureModal" style="display: none">
+  <div class="content">
+    <span class="text text--dark text--large text--bold text--uppercase" data-bind="localizedText: 'main.pairing.pairingFailure'"></span>
+    <img class="image image--pairing-failure"></img>
+  </div>
+</div>
+</div>

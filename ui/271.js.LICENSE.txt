@@ -1,0 +1,10 @@
+/*!
+ * jQuery scrollintoview() plugin and :scrollable selector filter
+ *
+ * Version 1.9.4 (06 April 2016)
+ * Requires jQuery 1.4 or newer
+ *
+ * Copyright (c) 2011 Robert Koritnik
+ * Licensed under the terms of the MIT license
+ * http://www.opensource.org/licenses/mit-license.php
+ */

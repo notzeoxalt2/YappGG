@@ -1,0 +1,101 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="css: {lightingMode: device.viewOptions.isLightingMode()}">
+
+    <div class="" data-bind="with: device">
+
+        <div class="col col1 fixedSection" data-bind="css:{ lightingMode: viewOptions.isLightingMode() }">
+
+          <!-- LIGHTING MODE WIDGETS for LEFT SIDE -->
+          <div class="modeSection modeLighting" data-bind="css:{ disabledSection: !viewOptions.isLightingMode() }">
+            <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}">
+              <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools', data:{ settings: { ...selectedConfig().lightingSettings, disabled: $root.device.isPrismEnabledForDevice() } }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+            </div>
+          </div>
+
+          <!-- SETTINGS MODE -->
+          <div class="modeSection modeSettings" data-bind="css:{ disabledSection: viewOptions.isLightingMode() }">
+
+            <!-- TRIGGER MAPPING WIDGET -->
+            <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+            </div>
+
+            <!-- DEVICE IMAGE TOGGLES -->
+            <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientationModel">
+              <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><!-- No whitespace for inline-block
+              --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button>
+            </div>
+          </div>
+
+        </div><!-- .col1 -->
+
+        <div class="col col2 fixedSection">
+          <div class="viewOptions">
+            <ul class="viewControls">
+              <li class="buttonCombineLarge" data-bind="css:{ active: !viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(false);}, localizedText:'main.settings'"></li>
+              <li class="buttonCombineLarge" data-bind="css:{ active: viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(true);orientationModel.setDorsalView()}, localizedText:'widgets.illumination'"></li>
+            </ul>
+          </div>
+
+          <!-- DEVICE IMAGE -->
+          <section data-bind="with: orientationModel">
+            <div class="deviceImg">
+              <div class="deviceImgContainer" data-bind="css : view()">
+              </div>
+            </div>
+          </section>
+
+          <!-- zone backgrounds -->
+          <!-- <pre data-bind="text: ko.toJSON($data, null, 2)"></pre> -->
+
+          <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template:{ name: 'zoneColors', data:{ model: selectedConfig().individualZoneLightingManager, withZoneGuides: true, zoneGuidesOnByDefault: true } }, css:{ disabled: !viewOptions.isLightingMode(), lateralView: orientationModel.view() == 'lateralView' }"></div>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection" data-bind="css:{ disabledSection: device.viewOptions.isLightingMode() }">
+      <div class="widgetsContainer widgetsContainerStatic">
+
+        <div class="lightingPalette" data-bind="template: { name: 'lightingPalette', data: { ...device.selectedConfig().lightingPaletteProps, disabledKO: $root.device.isPrismEnabledForDevice } }"></div>
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+          <!-- All of these need to be contained within ko if bindings because the read callback can come back late due to onboard config loading -->
+
+          <section id="Resolution1 sensor3360" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel1}}"></div>
+          </section>
+
+          <section id="Resolution2 sensor3360" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel2}}"></div>
+          </section>
+
+          <!-- <section class="tactileCooldowns widget">
+            <div data-bind="template: {name: 'tactileCooldowns', data:{ tactileCooldownsModel: tactileCooldownsModel() } }"></div>
+          </section> -->
+
+          <section id="ProximityLiftOff" class="widget">
+            <!-- <pre data-bind="text: ko.toJSON($data, null, 2)"></pre> -->
+            <div data-bind="template: { name: 'proximity_lift_off', data: { proximityRange: proximityRange, level: proximityLevel, minMaxLabels: proximityLabels  } }"></div>
+          </section>
+
+        </div>
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig().settings">
+
+          <section class="accelDecel widget">
+            <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: accel.level, exactAim: decel.level, color: $root.device.primaryColor, isLightingModeObservable: $root.device.viewOptions.isLightingMode } } }"></div>
+          </section>
+
+          <section id="AngleSnap" class="widget" data-bind="with: $root.device">
+              <div data-bind="template: { name: 'angleSnap', data: { snapLevel: selectedConfig().settings().angle_snapping.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+          </section>
+
+          <section id="PollingRate" class="widget">
+            <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: polling_rate.level, pollingRateHz: polling_rate.hz } }"></div>
+          </section>
+
+        </div>
+
+      </div>
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+

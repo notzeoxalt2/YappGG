@@ -1,0 +1,44 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+     <!-- DEVICE SECTION -->
+    <section class="deviceSection">
+    <!-- ko if: settingsTabsProps.selectedTabIdKO() === settingsTabsProps.isAudioMode -->
+    <div class="renderedDeviceImg"></div>
+    <!-- /ko -->
+    <!-- ko if: settingsTabsProps.selectedTabIdKO() === settingsTabsProps.isLightingMode -->
+    <div class="svgDeviceImg" data-bind="svgDeviceImg: { deviceId: $root.device.id, deviceName: $root.device.name, zones: svgDeviceImgZones(), useZoneSelection: true, onZoneSelect: onZoneSelect }"></div>    
+    <!-- /ko -->
+    </section>
+    <section class="scrollingSection">
+        <div class="settingsTabs" data-bind="template: { name: 'settingsTabs', data: settingsTabsProps }"></div>
+        <div class="audioTabContents" data-bind="if: settingsTabsProps.selectedTabIdKO() === settingsTabsProps.isAudioMode">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- Sidetone widget -->
+                    <section class="full-width opaque widget" style="width: auto;">
+                        <div class="micSidetone" data-bind="template: { name: 'micSidetone', data: sidetoneProps }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="settingsTabContents" data-bind="if: settingsTabsProps.selectedTabIdKO() === settingsTabsProps.isLightingMode">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- LED Gain Indicator widget -->
+                    <section class="full-width opaque widget" style="width: auto;">
+                        <div class="gainIndicator" data-bind="template: { name: 'gainIndicator', data: gainIndicatorProps }"></div>
+                    </section>
+
+                    <!-- Mute LED brightness widget -->
+                    <section class="full-width opaque widget" style="width: auto;">
+                        <div class="muteLedBrightness" data-bind="template: { name: 'muteLedBrightness', data: muteLedBrightnessProps }"></div>
+                    </section>
+
+                    <!-- Ambient LED widget -->
+                    <section class="full-width opaque widget" style="width: auto;">
+                        <div class="ambientLighting" data-bind="template: { name: 'ambientLighting', data: {...ambientLightingProps, disabledKO: $root.device.isPrismEnabledForDevice } }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

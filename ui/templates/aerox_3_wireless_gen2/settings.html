@@ -1,0 +1,122 @@
+<div class="settings"  data-bind="with: device.selectedConfig()">
+    <ul class="viewControls">
+        <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateSettingsMode, css: { active: $parent.device.viewOptions.isSettingsMode() }, localizedText:'main.settings'"></li>
+        <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateAdvancedMode, css: { active: $parent.device.viewOptions.isAdvancedMode(), invisible: $parent.device.isMacOS() }, localizedText:'main.advanced'"></li>
+        <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateIlluminationMode, css: { active: $parent.device.viewOptions.isIlluminationMode() }, localizedText:'widgets.illumination'"></li>
+    </ul>
+
+    <h1 class="headerText" data-bind="text: $parent.device.fullName"></h1>
+
+    <!-- SETTINGS MODE -->
+    <div class="modeSection modeSettings" data-bind="css: { visible: $parent.device.viewOptions.isSettingsMode(), disabledSection: !bluetoothConnected() }" >
+        <div>
+            <!-- TRIGGER MAPPING WIDGET -->
+            <!-- Wrapper div required because the title hover will not show up if it's on the same element as the disabled class -->
+            <div class="widget" data-bind="localizedTitleConditional: { titleTrue: 'widgets.bluetooth.disabledHover', conditional: bluetoothConnected }">
+                <div data-bind="template: {name: 'mappings', data: { bindings: bindings(), selectBinding: actionsModel.selectBinding, quicksetDialog: actionsModel.dialog, orientationModel: $parent.device.orientationModel, openMacroEditor: actionsModel.dialog.openMacroEditor } }, css: { disabled: bluetoothConnected }"></div>
+            </div>
+
+            <div class="bluetoothMode" data-bind="template: { name: 'bluetoothMode', data: { enabled: bluetoothConnected, deviceConnected: $root.device.connected, btModeTextKey: 'widgets.bluetooth.bluetoothMode.description5' }}"></div>
+        </div>
+        <!-- DEVICE IMAGE -->
+        <section>
+            <div class="deviceImg">
+                <div class="deviceImgContainer"></div>
+            </div>
+        </section>
+    </div>
+
+    <!-- ADVANCED MODE -->
+    <div class="modeAdvanced" data-bind="css: { visible: $parent.device.viewOptions.isAdvancedMode() }">
+        <div class="advancedViewControls">
+            <ul class="advancedButtons" >
+                <li class="buttonCombine" data-bind="click: $parent.device.viewOptions.toggleSensitivityMode, css: { active: $parent.device.viewOptions.isSensitivityMode() }, localizedText:'widgets.sensitivityMatcher.title'"></li>
+                <li class="buttonCombine" data-bind="click: $parent.device.viewOptions.toggleAcceleration, css: { active: $parent.device.viewOptions.isAccelerationMode() }, localizedText:'widgets.acceleration'"></li>
+                <li class="buttonCombine" data-bind="click: $parent.device.viewOptions.togglePrecision, css: { active: $parent.device.viewOptions.isPrecisionMode() }, localizedText:'widgets.precision.title'"></li>
+            </ul>
+        </div>
+        <!-- PRECISION SECTION -->
+        <div class="modeSection precisionSection" data-bind="css: { visible: $parent.device.viewOptions.isPrecisionMode()}">
+            <div class="grid-widget-container">
+                <div class="widgetsColumn" >
+                    <section id="MouseRotation" class="widget">
+                        <div data-bind="template: { name: 'mouseRotation', data: mouseRotationProps }, css: { disabled: bluetoothConnected }"></div>
+                    </section>
+                </div>
+                <div class="rightColumn">
+                    <section id="AngleSnap" class="widget">
+                        <div data-bind="template: { name: 'angleSnap', data: angleSnappingProps }, css: { disabled: bluetoothConnected }"></div>
+                    </section>
+                    <section id="ScrollJump" class="widget toggleSliderDescWidget">
+                        <div data-bind="template: { name: 'toggleSliderDesc', data: scrollJumpProps }, css: { disabled: bluetoothConnected }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <!-- ACCELERATION SECTION -->
+        <div class="modeSection accelerationSection" data-bind="css: { visible: $parent.device.viewOptions.isAccelerationMode() }, localizedTitleConditional: { titleTrue: 'widgets.bluetooth.disabledHover', conditional: bluetoothConnected }">
+            <section class="acceleration" data-bind="css: { disabled: bluetoothConnected}">
+                <div data-bind="template: {name: 'acceleration', data: accelerationProps} "></div>
+            </section>
+        </div>
+
+        <!-- SENSITIVITY SECTION -->
+        <div class="modeSection sensitivitySection" data-bind="css: { visible: $parent.device.viewOptions.isSensitivityMode() }, localizedTitleConditional: { titleTrue: 'widgets.bluetooth.disabledHover', conditional: bluetoothConnected }">
+            <section class="sensitivity" data-bind="css: { disabled: bluetoothConnected }">
+                <div data-bind="template: {name: 'mouseSensitivityMatcher', data: {...mouseSenseMatcherProps, linkToSettings: () => { $parent.device.viewOptions.activateSettingsMode(); onApplySensitivityMatcher(); } } } "></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- ILLUMINATION MODE -->
+    <div class="modeSection modeLighting" data-bind="css: { visible: $parent.device.viewOptions.isIlluminationMode() }" >
+        <div class="grid-widget-container">
+            <div class="widgetsColumn" >
+                <!-- global illumination -->
+                <section class="globalIllumination widget" >
+                    <div data-bind="template: { name: 'global_illumination_slider', data: { transitionDuration: globalIlluminationModel.transitionDuration, values: $root.device.brightnessValues, observables: globalIlluminationModel.observables, titleText: globalIlluminationModel.titleText, tooltipText: 'widgets.illuminationBrightnessV2.tooltip', ticks: 5  } }, css: { disabled: bluetoothConnected }"></div>
+                </section>
+                <section id="illuminationDimTimer" class="widget toggleSliderDescWidget">
+                    <div data-bind="template: { name: 'toggleSliderDesc', data: illuminationDimTimerProps }, css: { disabled: bluetoothConnected }"></div>
+                </section>
+            </div>
+            <div class="rightColumn">
+                <section id="illuminationSmartMode" class="widget toggleSliderDescWidget">
+                    <div data-bind="template: { name: 'toggleSliderDesc', data: illuminationSmartModeProps }, css: { disabled: bluetoothConnected }"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS SECTION -->
+    <div class="settingsSection" data-bind="css: { visible: $parent.device.viewOptions.isSettingsMode()}">
+        <div class="grid-widget-container">
+            <section class="full-width widget" style="width: auto;">
+                <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.independentXYDPI.withLiftOffDistance.tooltip', tooltip: {}"></a>
+                <div class="independentXYDPI" data-bind="template: { name: 'independentXYDPI', data: { cpi: user_cpi } }"></div>
+            </section>
+
+            <div class="widgetsColumn" >
+                <section id="HighEfficiency" class="widget">
+                    <div data-bind="template: { name: 'highEfficiency', data: highEfficiencyProps }, css: { disabled: bluetoothConnected }"></div>
+                </section>
+                <section id="PollingRateDual" class="widget">
+                    <div data-bind="template: { name: 'pollingRateDual', data: pollingRateDualProps }, css: { disabled: bluetoothConnected }"></div>
+                </section>
+            </div>
+            <div class="rightColumn">
+                <section id="sleepTimer" class="widget toggleSliderDescWidget">
+                    <div data-bind="template: { name: 'toggleSliderDesc', data: sleepTimerProps }, css: { disabled: bluetoothConnected }"></div>
+                </section>
+                <section id="ConnectionOptimization" class="widget">
+                    <section>
+                        <div data-bind="template: { name: 'connectionOptimization', data: $root.device.selectedConfig().connectionOptimizationProps }, css: { disabled: bluetoothConnected }"></div>
+                    </section>
+                </section>
+                <section id="RestoreFactoryDefault" class="widget buttonWithHeader">
+                    <div data-bind="template: { name: 'buttonWithHeader', data: restoreFactoryProps }"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

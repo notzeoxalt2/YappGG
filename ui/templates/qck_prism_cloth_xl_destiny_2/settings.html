@@ -1,0 +1,54 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig()">
+  
+  <div class="col col1">
+    <!-- SOLID COLOR ZONE BACKGROUNDS -->
+    <ul class="zoneBackgrounds">
+      <li class="zoneBackground zone0" data-bind="style: { background: 'linear-gradient(to top, ' + zoneColorModel.z0combinedZones() + ', ' + zoneColorModel.z0combinedZones() + ' 70%, transparent 100%)' }"></li>
+      <li class="zoneBackground zone1" data-bind="style: { background: 'linear-gradient(to bottom, ' + zoneColorModel.z1combinedZones() + ', ' + zoneColorModel.z1combinedZones() + ' 90%, transparent 100%)' }"></li>
+    </ul>
+    
+    <!-- DEVICE IMAGE -->
+    <div class="deviceImg">
+      <div class="deviceImgContainer">
+
+        <!-- ko ifnot: $root.device.isPrismEnabledForDevice -->
+        <div class="tag z0LED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: z0LightModel, disabled: undeployedSettings().dual_zone_active } } }, css: { disabled: multiZoneOn }"></div>
+        <div class="tag z1LED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: z1LightModel, disabled: undeployedSettings().dual_zone_active } } }, css: { disabled: multiZoneOn }"></div>
+        <div class="dualLEDContainer" data-bind="css: { disabled: !multiZoneOn() }">
+          <div class="dualLEDtoggle" data-bind="click: toggleMultiZone"></div>
+          <div class="tag dualLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: dualLightModel, enabled: undeployedSettings().dual_zone_active } } }"></div>
+        </div>
+        <!-- /ko --> 
+
+        <!-- Swap in a set of fully-disabled components if the device is enabled in Prism -->
+        <!-- We're passing the conditional to the lightingCustom instead of just true or false because it's expecting to receive a function -->
+        <!-- ko if: $root.device.isPrismEnabledForDevice -->
+        <!-- Wrapper divs required because the title hover will not show up if it's on the same element as the disabled class -->
+        <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationZonesDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}, class: 'prismDisabledZone'">
+          <div class="tag z0LED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: z0LightModel, disabled: $root.device.isPrismEnabledForDevice } } }, css: { disabled: true }"></div>
+        </div>
+        <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationZonesDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}, class: 'prismDisabledZone'">
+          <div class="tag z1LED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: z1LightModel, disabled: $root.device.isPrismEnabledForDevice } } }, css: { disabled: true }"></div>
+        </div>
+        <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationZonesDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}, class: 'prismDisabledZone'">
+          <div class="dualLEDContainer" data-bind="css: { disabled: !multiZoneOn() }">
+            <div class="dualLEDtoggle"></div> <!-- No click binding for the disabled version -->
+            <div class="tag dualLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: dualLightModel, disabled: $root.device.isPrismEnabledForDevice } } }"></div>
+          </div>
+        </div>
+        <!-- /ko -->
+
+
+      </div><!-- .deviceImgContainer -->
+    </div><!-- .deviceImg -->
+  </div><!-- .col1 -->
+
+  <div class="col col2">
+    <!-- BRIGHTNESS -->
+    <section class="widget">
+      <div data-bind="template: { name: 'global_illumination', data: { observables: globalIlluminationModel.observables, values: $root.device.globalIlluminationValues, tooltipLocalizationKey: globalIlluminationModel.tooltipLocalizationKey } }"></div>
+    </section>
+  </div>
+
+</div>
+

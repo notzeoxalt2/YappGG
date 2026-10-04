@@ -1,0 +1,104 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="css: {lightingMode: device.viewOptions.isLightingMode()}">
+
+  <div class="" data-bind="with: device">
+
+    <div class="col col1 fixedSection" data-bind="css:{ lightingMode: viewOptions.isLightingMode() }">
+      <!-- SETTINGS MODE -->
+      <div class="modeSection modeSettings" data-bind="css:{ disabledSection: viewOptions.isLightingMode() }">
+
+        <!-- TRIGGER MAPPING WIDGET -->
+        <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+        </div>
+        <div class="bluetoothMode" data-bind="template: {name: 'bluetoothMode', data: { enabled: selectedConfig().bluetoothConnected, deviceConnected: $root.device.connected }}"></div>
+      </div>
+
+      
+      <!-- MOUSE WHEEL ILLUMINATION -->
+      <!-- Disabling it if Prism is enabled takes precedence over the other states -->
+      <!-- ko if: $root.device.isPrismEnabledForDevice() -->
+        <section id="WheelLEDDisabled" class="widget" data-bind="localizedTitle: 'widgets.illuminationDisabledForPrism'">
+          <div data-bind="click: function(){ return false }, template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().wheelLightModel, disabled: $root.device.isPrismEnabledForDevice  } } }, css: selectedConfig().wheelLightModel.templateCssClass">
+          </div>
+        </section>
+      <!-- /ko -->
+      <!-- ko ifnot: $root.device.isPrismEnabledForDevice() -->
+        <!-- If Prism is NOT enabled for a device, we use the old conditional for whether
+            high-efficiency mode is on or not -->
+        <!-- ko if: selectedConfig().batteryPerformanceModel.model.lowPowerMode.field() == '0' -->
+        <section id="WheelLED" class="widget">
+          <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().wheelLightModel } } }, css: selectedConfig().wheelLightModel.templateCssClass">
+            </div>
+        </section>
+        <!-- /ko -->
+        <!-- ko ifnot: selectedConfig().batteryPerformanceModel.model.lowPowerMode.field() == '0' -->
+        <section id="WheelLEDDisabled" class="widget" data-bind="localizedTitle : 'widgets.batteryPerformanceV3.disabledHover'">
+          <div data-bind="click: $root.device.selectedConfig().batteryPerformanceModel.setLPGM, template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().wheelLightModel } } }, css: selectedConfig().wheelLightModel.templateCssClass">
+          </div>
+          </section>
+        <!-- /ko -->
+      <!-- /ko -->
+    </div><!-- .col1 -->
+
+    <div class="col col2 fixedSection">
+      <!-- DEVICE IMAGE -->
+      <section>
+        <!-- ko if: selectedConfig().batteryPerformanceModel.model.lowPowerMode.field() == '0' -->
+        <!-- SOLID COLOR ZONE FOREGROUNDS OVERLAID OVER RENDER -->
+        <ul class="zoneForegrounds" data-bind="with: selectedConfig(), css: orientationModel.view()">
+          <!-- ko if: typeof wheelLightModel != "undefined" -->
+          <li class="zoneForeground scroll left" data-bind="style: { backgroundColor: wheelLightModel.shiftSequenceColor() }"></li>
+          <li class="zoneForeground scrollGlow left" data-bind="style: { background: ('radial-gradient(46% 38% at 54% 100%, ' + wheelLightModel.shiftSequenceColor() + ' 0%, ' + wheelLightModel.shiftSequenceColorZeroAlpha() + ' 100%)')}"></li>
+          <li class="zoneForeground scroll right" data-bind="style: { backgroundColor: wheelLightModel.shiftSequenceColor() }"></li>
+          <li class="zoneForeground scrollGlow right" data-bind="style: { background: ('radial-gradient(46% 38% at 54% 100%, ' + wheelLightModel.shiftSequenceColor() + ' 0%, ' + wheelLightModel.shiftSequenceColorZeroAlpha() + ' 100%)')}"></li>
+          <!-- /ko -->
+        </ul>
+        <!-- /ko -->
+        
+        <div class="deviceImg" data-bind="with: orientationModel">
+          <div class="deviceImgContainer" data-bind="css : view()"></div>
+        </div>
+      </section>
+
+    </div> <!-- .col2 -->
+  </div> <!-- .fixedSection -->
+
+  <div class="scrollingSection" data-bind="css:{ disabledSection: device.viewOptions.isLightingMode() }">
+    <div class="grid-widget-container" data-bind="with: device.selectedConfig()">
+      
+      <section class="full-width widget" style="width: auto;">
+        <div data-bind="template: { name: 'multiCPI', data: { cpi: user_cpi } }"></div>
+      </section>
+
+      <div class="widgetsColumn">
+        <section id="BatteryPerformanceV3" class="widget">
+          <div data-bind="template: {name: 'batteryPerformanceV3', data: $root.device.selectedConfig().batteryPerformanceModel, afterRender: $root.device.selectedConfig().batteryPerformanceModel.onTemplateLoaded }"></div>
+        </section>
+        <!-- ko if: batteryPerformanceModel.model.lowPowerMode.field() == '0' -->
+        <section id="PollingRate" class="widget">
+          <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [3, 2, 1, 0], pollingRateLevel: settings().polling_rate.level, pollingRateHz: settings().polling_rate.hz } }"></div>
+        </section>
+        <!-- /ko -->
+        <!-- ko ifnot: batteryPerformanceModel.model.lowPowerMode.field() == '0' -->
+        <section id="PollingRate" class="widget" data-bind="localizedTitle : 'widgets.batteryPerformanceV3.disabledHover'">
+          <div data-bind="click: $root.device.selectedConfig().batteryPerformanceModel.setLPGM, template: {name: 'pollingRate', data: { pollingRateRange: [3, 2, 1, 0], pollingRateLevel: settings().polling_rate.lpgm, pollingRateHz: settings().polling_rate.lpgmhz } }, css: 'pollingRateDisabled' "></div>
+        </section>
+        <!-- /ko -->
+        
+      </div>
+
+      <div class="widgetsColumn">
+        <section class="accelDecel widget">
+          <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: settings().accel.level, exactAim: settings().decel.level, color: $root.device.primaryColor, isLightingModeObservable: $root.device.viewOptions.isLightingMode } } }"></div>
+        </section>
+
+        <section id="AngleSnap" class="widget">
+            <div data-bind="template: { name: 'angleSnap', data: { snapLevel: settings().angle_snapping.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+        </section>
+
+      </div> <!-- .widgetsColumn -->
+    </div>
+  </div> <!-- .scrollingSection -->
+</div> 

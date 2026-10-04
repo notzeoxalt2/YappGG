@@ -1,0 +1,21 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig()">
+  <div class="fixedSection">
+    <div class="deviceImgContainer">
+
+    </div>
+  </div>
+
+  <section class="scrollingSection">
+    <div class="widgetsContainer">
+      <div class="widgetsColumn">
+        <div data-bind="template: {name: 'multiProfileEQ', data: { EQs: equalizers, currentEQ: currentEQ, EQready: EQready }}"></div>
+      </div>
+      <div class="widgetsColumn">
+        <div data-bind="template: {name: 'sideToneSlider', data: {value: sideToneVal, sideToneValues: $root.device.sidetoneValues }}"></div>
+        <div data-bind="template: {name: 'micVolumeSlider', data: {field: settings().mic_level.value, minVolume: $root.device.minVolume, maxVolume: $root.device.maxVolume, step: $root.device.micVolumeStep }}"></div>
+        <div class="bluetoothStartup" data-bind="template: {name: 'genericToggle', data: $root.device.selectedConfig().bluetoothStartupData }"></div>
+        <div class="bluetoothCallDuck" data-bind="template: {name: 'bluetoothVolumeDuckerv2', data: $root.device.selectedConfig().bluetoothCallDuckData }"></div>
+      </div>
+    </div>
+  </section>
+</div>

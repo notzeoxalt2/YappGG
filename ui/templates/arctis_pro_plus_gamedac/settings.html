@@ -1,0 +1,82 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device">
+
+  <div class="col col1">
+    <section class="widgetsContainer">
+
+      <!-- AUDIO MODE WIDGETS -->
+      <!-- ko if: viewOptions.isAudioMode() -->
+      <div class="widgetsColumn" data-bind="with: selectedConfig()">
+        <!-- ko if: $data.dtsHeadphoneXModel -->
+        <div data-bind="template: {name: 'dtsHeadphoneX', data: {toggleField: dtsHeadphoneXModel().toggle, modes: dtsHeadphoneXModel().modes, currentMode: dtsHeadphoneXModel().currentMode, disableToggle: $parent.disableDTSHXToggle}}"></div>
+        <!-- /ko -->
+        <!-- ko if: $data.dtsHeadphoneXv2Model -->
+        <div data-bind="template: {name: 'dtsHeadphoneXv2', data: {model: dtsHeadphoneXv2Model(), softwareUpToDate: $root.device.softwareInstalled, disabledForHiRes: $parent.disableDTSHXToggle}}"></div>
+        <!-- /ko -->
+        <div data-bind="template: {name: 'equalizer', data: { equalizer: equalizer }}"></div>
+        <div data-bind="template: {name: 'gainControl', data: { field: gain, numerical: $root.device.gainLevels, deviceName: 'GameDAC' }}"></div>
+        <div data-bind="template: {name: 'output', data: { lineOutMode: lineOutMode, streamMix: streamMix }}"></div>
+      </div>
+      <!-- /ko -->
+
+      <!-- SETTINGS MODE WIDGETS -->
+      <!-- ko if: viewOptions.isSettingsMode() -->
+      <div class="widgetsColumn" data-bind="with: selectedConfig()">
+        <div class="screenBrightness" data-bind="template: {name: 'genericSlider', data: { value: screenBrightness, options: $root.device.screenBrightnessValues, hideMiddleLabels: true, replaceTextInHiddenLabels: ['', ''], titleLocalizationKey: 'widgets.oledDisplay.screenBrightness.title', tooltipLocalizationKey: 'widgets.oledDisplay.screenBrightness.tooltip', localizationReplacements: { '#DEVICENAME#': 'GameDAC'} } }"></div>
+        <div class="screenIdleTimeout" data-bind="template: {name: 'genericSlider', data: { value: screenIdleTimeout, options: $root.device.screenIdleTimeoutValues, displayOptions: $root.device.screenIdleTimeoutValueLabels, titleLocalizationKey: 'widgets.oledDisplay.screenIdleTimeout.title', tooltipLocalizationKey: 'widgets.oledDisplay.screenIdleTimeout.tooltip', localizationReplacements: { '#DEVICENAME#': 'GameDAC'} } }"></div>
+      </div>
+      <!-- /ko -->
+
+    </section>
+  </div>
+
+  <div class="col col2">
+    <div class="viewOptions" data-bind="with: viewOptions">
+      <label class="productFeaturesLabel" data-bind="localizedText: { key: 'main.viewControls.title', '#DEVICE#': gameDacCombinedName() }"></label>
+      <ul class="viewControls">
+        <li class="buttonCombineLarge" data-bind="css:{ active: isAudioMode() }, click: function(){ isAudioMode(true); isLightingMode(false); isSettingsMode(false); }, localizedText:'common.audio'"></li>
+        <!-- ko if: headsetConnected() != 0 -->
+        <li class="buttonCombineLarge" data-bind="css:{ active: isLightingMode() }, click: function(){ isAudioMode(false); isLightingMode(true); isSettingsMode(false); }, localizedText:'widgets.illumination'"></li>
+        <!-- /ko -->
+        <li class="buttonCombineLarge" data-bind="css:{ active: isSettingsMode() }, click: function(){ isAudioMode(false); isLightingMode(false); isSettingsMode(true); }, localizedText:'main.settings'"></li>
+      </ul>
+    </div>
+    <div class="deviceImgContainer" data-bind="css: { lightingMode: viewOptions.isLightingMode() }">
+      <!-- ko if: viewOptions.isLightingMode() -->
+      <!-- ko if: selectedConfig().viewLighting -->
+
+      <!-- ko if: viewOptions.headsetConnected() ==  viewOptions.headsetConnectedExpected() -->
+      <div class="tag micLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: selectedConfig().micLightModel} } }"></div>
+      <div class="tag mutedLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: selectedConfig().mutedMicLightModel } } }"></div>
+      <!-- /ko -->
+
+      <!-- ko with: selectedConfig() -->
+      <div class="tag leftLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: leftLightModel, disabled: undeployedSettings().dual_zone_active } } }, css: { disabled: multiZoneOn }"></div>
+      <div class="tag rightLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: rightLightModel, disabled: undeployedSettings().dual_zone_active } } }, css: { disabled: multiZoneOn }"></div>
+      <div class="dualLEDContainer" data-bind="css: { disabled: !multiZoneOn() }">
+        <div class="dualLEDtoggle" data-bind="click: toggleMultiZone"></div>
+        <div class="tag dualLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: dualLightModel, enabled: undeployedSettings().dual_zone_active } } }"></div>
+      </div>
+      <!-- /ko -->
+      <!-- /ko -->
+      <!-- /ko -->
+    </div>
+  </div>
+
+  <div class="col col3">
+    <section class="widgetsContainer">
+
+      <!-- AUDIO MODE WIDGETS -->
+      <!-- ko if: viewOptions.isAudioMode() -->
+      <div class="widgetsColumn" data-bind="with: selectedConfig()">
+        <div data-bind="template: {name: 'sideToneSlider', data: {value: settings().side_tone.sidetone, sideToneValues: sideToneValues }}"></div>
+        <div data-bind="template: {name: 'micVolumeSlider', data: {field: settings().mic_volume.volume, minVolume: $root.device.minVolume, maxVolume: $root.device.maxVolume, step: $root.device.micVolumeStep }}"></div>
+        <div data-bind="template: {name: 'micPreview', data: { micName: micName } }"></div>
+      </div>
+      <!-- /ko -->
+
+    </section>
+  </div>
+
+</div>
+
+

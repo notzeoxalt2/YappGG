@@ -1,0 +1,123 @@
+<div class="settings" data-bind="with: device.selectedConfig()">
+    <div class="deviceConfigTabsHeader">
+        <div class="deviceConfigTabsWrapper" data-bind="template: { name: 'deviceConfigTabs', data: deviceConfigTabsProps }"></div>
+        <div class="mouseStatus" data-bind="template: { name: 'mouseStatus', data: mouseStatusProps }"></div>
+    </div>
+    <!-- Sensitivity SECTION -->
+    <div class="sensitivityTab" data-bind="if: deviceConfigTabsProps.selectedTabIdKO() === deviceConfigTabsProps.isSensitivityMode">
+        <!-- ko ifnot: showSensitivityMatcher() -->
+        <div>
+            <!-- TRIGGER MAPPING WIDGET -->
+            <!-- Wrapper div required because the title hover will not show up if it's on the same element as the disabled class -->
+            <div>
+                <div data-bind="template: {name: 'mappings', data: { bindings: bindings(), selectBinding: actionsModel.selectBinding, quicksetDialog: actionsModel.dialog, orientationModel: $parent.device.orientationModel, openMacroEditor: actionsModel.dialog.openMacroEditor } }"></div>
+            </div>
+            <section class="widget">
+                    <div class="scrollJumpFlat" data-bind="template: {name: 'scrollJumpFlat', data: scrollJumpProps} "></div>
+            </section>
+        </div>
+        <section>
+            <div class="deviceImg">
+                <div class="deviceImgContainer" data-bind="css: 'deviceImgContainer-' + $parent.device.deviceName"></div>
+            </div>
+        </section>
+        <div class="widgetsContainer">
+            <div class="grid-widget-container">
+                <section class="full-width widget">
+                    <div class="independentXYDPI" data-bind="template: { name: 'independentXYDPISensor', data: { cpi: user_cpi } }"></div>
+                </section>
+                <section class="full-width widget">
+                    <div data-bind="template: {name: 'sensitivityMatcherLauncher', data: {showSensitivityMatcher: showSensitivityMatcher} } "></div>
+                </section>
+            </div>
+        </div>
+        <!-- /ko -->
+        <!-- ko if: showSensitivityMatcher() -->
+        <section>
+            <div class="mouseSensitivityMatcher" data-bind="template: {name: 'mouseSensitivityMatcher', data: {...mouseSenseMatcherProps, linkToSettings: () => { showSensitivityMatcher(false); onApplySensitivityMatcher(); } } } "></div>
+        </section>
+        <!-- /ko -->
+    </div>
+    <!-- TRACKING TOOLS SECTION -->
+    <div class="trackingToolsTab" data-bind="if: deviceConfigTabsProps.selectedTabIdKO() === deviceConfigTabsProps.isTrackingToolsMode">
+        <div class="widgetsContainer">
+            <div class="large-widget-container">
+                <section class="widget">
+                    <div class="acceleration" data-bind="template: {name: 'acceleration', data: accelerationProps} "></div>
+                </section>
+                <section class="widget rotation">
+                    <div class="mouseRotation" data-bind="template: {name: 'mouseRotationFlat', data: mouseRotationProps} "></div>
+                </section>
+            </div>
+            <div class="grid-widget-container">
+                <section class="widget">
+                    <div class="angleSnapping" data-bind="template: {name: 'angleSnappingFlat', data: angleSnappingProps} "></div>
+                </section>
+                <section class="widget" style="width: auto;">
+                    <div class="motionSync" data-bind="template: {name: 'motionSync', data: motionSyncProps} "></div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+    <!-- PERFORMANCE SECTION -->
+    <div class="performanceTab" data-bind="if: deviceConfigTabsProps.selectedTabIdKO() === deviceConfigTabsProps.isPerformanceMode">
+        <div class="performanceLayout">
+            <div class="deviceImgWrapper">
+                <div class="deviceImgContainer" data-bind="css: 'baseStationDongleImg-' + $parent.device.deviceName">
+                    <div class="cycleProfilesCallout">
+                        <span class="line h1"></span>
+                        <span class="line v1"></span>
+                        <span class="line v2"></span>
+                        <div class="label" data-bind="localizedText: 'widgets.cyclePerformanceProfiles.title'"></div>
+                    </div>
+                </div>
+                <div class="cycleProfilesInfo" data-bind="template: { name: 'cycleProfilesInfo', data: cycleProfilesInfoProps }"></div>
+            </div>
+            <div class="performanceContent">
+                <section class="full-width widget">
+                    <div class="performanceCycleProfiles" data-bind="template: { name: 'performanceCycleProfiles', data: { performanceCycleProfiles: performance_cycle_profiles } }"></div>
+                </section>
+                <div class="widgetsContainer">
+                    <section class="widget">
+                        <div class="lanMode" data-bind="template: { name: 'lanMode', data: lanModeProps }"></div>
+                    </section>
+                    <section class="widget">
+                        <div class="maxPerformance" data-bind="template: {name: 'maxPerformance', data: maxPerformanceProps} "></div>
+                    </section>
+
+                </div>
+                <section class="full-width widget">
+                    <div class="clickResponse" data-bind="clickResponse: $parent.device.clickResponseProps"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!-- POWER AND DEVICE SECTION -->
+    <div class="powerAndDeviceTab" data-bind="if: deviceConfigTabsProps.selectedTabIdKO() === deviceConfigTabsProps.isPowerAndDeviceMode">
+        <div class="deviceImgContainer" data-bind="css: 'baseStationDongleImg-' + $parent.device.deviceName">
+            <div class="cycleProfilesCallout">
+                <span class="line h1"></span>
+                <span class="line v1"></span>
+                <span class="line v2"></span>
+                <div class="label" data-bind="localizedText: 'widgets.cyclePerformanceProfiles.title'"></div>
+            </div>
+        </div>
+        <div class="cycleProfilesInfo" data-bind="template: { name: 'cycleProfilesInfo', data: cycleProfilesInfoProps }"></div>
+        <div class="widgetsContainer">
+            <section class="widget" style="width: auto;">
+                <div class="highEfficiencyMode" data-bind="template: { name: 'highEfficiencyMode', data: highEfficiencyModeProps }"></div>
+            </section>
+            <section class="widget" style="width: auto;">
+                <div data-bind="template: { name: 'sleepTimerFlat', data: sleepTimerProps }"></div>
+            </section>
+            <section class="widget" style="width: auto;">
+                <div data-bind="template: {name: 'ledConfiguration', data: ledConfigurationProps} "></div>
+            </section>
+            <section class="widget" style="width: auto;">
+                <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.restoreFactoryDefault.tooltip', tooltip: {}"></a>
+                <div data-bind="template: { name: 'factoryResetFlat', data: factoryResetProps }"></div>
+            </section>
+        </div>
+    </div>
+</div>

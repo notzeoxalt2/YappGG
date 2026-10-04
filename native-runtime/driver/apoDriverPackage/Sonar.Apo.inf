@@ -1,0 +1,190 @@
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = AudioProcessingObject
+ClassGuid   = {5989fce8-9cd0-467d-8a6a-5419e31529d4}
+Provider    = %Provider%
+DriverVer = 09/09/2026,3.9.0.0
+CatalogFile = Sonar.APO.cat
+PnpLockdown = 1
+
+[SourceDisksNames]
+222="A-Volute APO Installation Disk",,,
+
+[SourceDisksFiles]
+Sonar.APO.dll=222
+Sonar.APOAPI.dll=222
+DirectML.dll=222
+DnnProcessor.dll=222
+microsoft.ai.machinelearning.dll=222
+onnxruntime.dll=222
+
+[DestinationDirs]
+APO_CopyList       = 13          ; %windir%\system32\DriverStore\FileRepository
+Control_CopyList   = 13          ; %windir%\system32\DriverStore\FileRepository
+
+[SignatureAttributes]
+Sonar.APO.dll=SignatureAttributes.PETrust
+
+[SignatureAttributes.DRM]
+DRMLevel=1300
+
+[SignatureAttributes.PETrust]
+PETrust=true
+
+[Manufacturer]
+%Mfg% = ApoComponents,NTamd64.10.0...17763
+
+[ApoComponents.NTamd64.10.0...17763]
+%Apo.ComponentDesc% = ApoComponent_Install,SWC\VEN_SSGG&AID_0001
+%Apo.ComponentDesc% = ApoComponent_Install,SWC\VEN_SSGG&AID_FFFE
+
+[ApoComponent_Install]
+CopyFiles = APO_CopyList,Control_CopyList
+AddReg    = APO_AddReg
+
+
+[ApoComponent_Install.Services]
+AddService = ,2    ; no function driver
+
+[APO_CopyList]
+Sonar.APO.dll
+
+[Control_CopyList]
+Sonar.APOAPI.dll
+DirectML.dll
+DnnProcessor.dll
+microsoft.ai.machinelearning.dll
+onnxruntime.dll
+
+[APO_AddReg]
+; Mic Endpoint effect APO COM registration
+HKR,Classes\CLSID\%FX_MODE_MIC_ENDPOINT_CLSID%,,,%MIC_MFX_FriendlyName%
+HKR,Classes\CLSID\%FX_MODE_MIC_ENDPOINT_CLSID%\InProcServer32,,0x00020000,"%13%\Sonar.APO.dll"
+HKR,Classes\CLSID\%FX_MODE_MIC_ENDPOINT_CLSID%\InProcServer32,ThreadingModel,,"Both"
+
+; Chat Endpoint effect APO COM registration
+HKR,Classes\CLSID\%FX_MODE_CHAT_ENDPOINT_CLSID%,,,%CHAT_MFX_FriendlyName%
+HKR,Classes\CLSID\%FX_MODE_CHAT_ENDPOINT_CLSID%\InProcServer32,,0x00020000,"%13%\Sonar.APO.dll"
+HKR,Classes\CLSID\%FX_MODE_CHAT_ENDPOINT_CLSID%\InProcServer32,ThreadingModel,,"Both"
+
+; Engine Chat Endpoint effect APO COM registration
+HKR,Classes\CLSID\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%,,,%ENGINE_CHAT_EFX_FriendlyName%
+HKR,Classes\CLSID\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%\InProcServer32,,0x00020000,"%13%\Sonar.APO.dll"
+HKR,Classes\CLSID\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%\InProcServer32,ThreadingModel,,"Both"
+
+; Game Endpoint effect APO COM registration
+HKR,Classes\CLSID\%FX_GAME_ENDPOINT_CLSID%,,,%GAME_EFX_FriendlyName%
+HKR,Classes\CLSID\%FX_GAME_ENDPOINT_CLSID%\InProcServer32,,0x00020000,"%13%\Sonar.APO.dll"
+HKR,Classes\CLSID\%FX_GAME_ENDPOINT_CLSID%\InProcServer32,ThreadingModel,,"Both"
+
+; Engine Render Endpoint effect APO COM registration
+HKR,Classes\CLSID\%FX_RENDER_ENGINE_ENDPOINT_CLSID%,,,%ENGINE_EFX_FriendlyName%
+HKR,Classes\CLSID\%FX_RENDER_ENGINE_ENDPOINT_CLSID%\InProcServer32,,0x00020000,"%13%\Sonar.APO.dll"
+HKR,Classes\CLSID\%FX_RENDER_ENGINE_ENDPOINT_CLSID%\InProcServer32,ThreadingModel,,"Both"
+
+; Mic Endpoint effect APO registration
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "FriendlyName", ,%MIC_MFX_FriendlyName%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "Copyright", ,%APOCopyRight%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "MajorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "MinorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "Flags", 0x00010001, %MIC_MFX_APO_FLAG%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "MinInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "MaxInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "MinOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "MaxOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "MaxInstances", 0x00010001, 0xffffffff
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "NumAPOInterfaces", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_MIC_ENDPOINT_CLSID%, "APOInterface0", ,%APO_INTERFACE_MFX_MIC%
+
+; Chat Endpoint effect APO registration
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "FriendlyName", ,%CHAT_MFX_FriendlyName%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "Copyright", ,%APOCopyRight%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "MajorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "MinorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "Flags", 0x00010001, %CHAT_MFX_APO_FLAG%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "MinInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "MaxInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "MinOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "MaxOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "MaxInstances", 0x00010001, 0xffffffff
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "NumAPOInterfaces", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_CHAT_ENDPOINT_CLSID%, "APOInterface0", ,%APO_INTERFACE_MFX_CHAT%
+
+; Engine Chat Endpoint effect APO registration
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "FriendlyName", ,%ENGINE_CHAT_EFX_FriendlyName%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "Copyright", ,%APOCopyRight%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "MajorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "MinorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "Flags", 0x00010001, %ENGINE_CHAT_EFX_APO_FLAG%
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "MinInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "MaxInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "MinOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "MaxOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "MaxInstances", 0x00010001, 0xffffffff
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "NumAPOInterfaces", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID%, "APOInterface0", ,%APO_INTERFACE_EFX_ENGINE_CHAT%
+
+; Game Endpoint effect APO registration
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "FriendlyName", ,%GAME_EFX_FriendlyName%
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "Copyright", ,%APOCopyRight%
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "MajorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "MinorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "Flags", 0x00010001, %GAME_EFX_APO_FLAG%
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "MinInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "MaxInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "MinOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "MaxOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "MaxInstances", 0x00010001, 0xffffffff
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "NumAPOInterfaces", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_GAME_ENDPOINT_CLSID%, "APOInterface0", ,%APO_INTERFACE_EFX%
+
+; Engine Render Endpoint effect APO registration
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "FriendlyName", ,%ENGINE_EFX_FriendlyName%
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "Copyright", ,%APOCopyRight%
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "MajorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "MinorVersion", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "Flags", 0x00010001, %ENGINE_EFX_APO_FLAG%
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "MinInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "MaxInputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "MinOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "MaxOutputConnections", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "MaxInstances", 0x00010001, 0xffffffff
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "NumAPOInterfaces", 0x00010001, 1
+HKR,AudioEngine\AudioProcessingObjects\%FX_RENDER_ENGINE_ENDPOINT_CLSID%, "APOInterface0", ,%APO_INTERFACE_EFX_ENGINE%
+
+[Strings]
+Provider          = "SteelSeries ApS"
+Mfg               = "SteelSeries ApS"
+Apo.ComponentDesc = "Sonar APO"
+
+FX_MODE_MIC_ENDPOINT_CLSID = "{4B7758C2-9361-4F88-83E9-44D8F05184EF}"
+FX_MODE_CHAT_ENDPOINT_CLSID = "{4B7758D2-9361-4F88-83E9-44D8F05184EF}"
+FX_MODE_ENGINE_CHAT_ENDPOINT_CLSID = "{EFD9D21B-A603-4DF7-89C8-5A8AD9A3C912}"
+FX_GAME_ENDPOINT_CLSID = "{4B7758E3-9361-4F88-83E9-44D8F05184EF}"
+FX_RENDER_ENGINE_ENDPOINT_CLSID = "{C921E6F5-B190-4DF6-A84A-8DC8B73F2298}"
+
+APO_INTERFACE_MFX_MIC = "{658A4079-B277-4D14-97E1-0356044D8110}"
+APO_INTERFACE_MFX_CHAT = "{658C4081-B277-4d14-97E1-05560DCD8110}"
+APO_INTERFACE_EFX_ENGINE_CHAT = "{6A61B5DA-6F30-4597-B321-67FCAEDEB1D4}"
+APO_INTERFACE_EFX = "{658B4080-B277-4d14-97E1-045604CD8110}"
+APO_INTERFACE_EFX_ENGINE = "{65B5609F-7A3A-423F-8317-0A0968C5B8B7}"
+
+MIC_MFX_FriendlyName = "Sonar Mic Audio Effects (Endpoint)"
+CHAT_MFX_FriendlyName = "Sonar Chat Audio Effects (Endpoint)"
+ENGINE_CHAT_EFX_FriendlyName = "Sonar Engine Chat Audio Effects (Endpoint)"
+GAME_EFX_FriendlyName  = "Sonar Game Audio Effects (Endpoint)"
+ENGINE_EFX_FriendlyName  = "Sonar Engine Render Audio Effects (Endpoint)"
+APOCopyRight      = "Copyright (c) 2026 SteelSeries ApS"
+
+MIC_MFX_APO_FLAG  = "0x0000000f"
+CHAT_MFX_APO_FLAG  = "0x0000000f"
+ENGINE_CHAT_EFX_APO_FLAG  = "0x0000000f"
+GAME_EFX_APO_FLAG  = "0x0000000f"
+ENGINE_EFX_APO_FLAG  = "0x0000000f"
+
+REG_BINARY    = 0x00000001
+REG_DWORD     = 0x00010001
+REG_MULTI_SZ  = 0x00010000
+REG_EXPAND_SZ = 0x00020000
+
+FLG_ADDREG_KEYONLY = 0x00000010

@@ -1,0 +1,68 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig()">
+  <div class="fixedSection">
+    <div class="deviceImgContainer">
+
+    </div>
+  </div>
+
+  <!-- VIEW CONTROLS -->
+  <ul class="viewControls">
+    <label class="productFeaturesLabel" data-bind="localizedText: { key: 'main.viewControls.title', '#DEVICE#': 'Arctis 9' }"></label>
+    <li class="buttonCombineLarge leftButton"
+      data-bind="click: $parent.device.viewOptions.activateAudioMode, css: { active: $parent.device.viewOptions.isAudioMode() }, localizedText:'common.audio'">
+    </li>
+    <li class="buttonCombineLarge rightButton"
+      data-bind="click: $parent.device.viewOptions.activateSettingsMode, css: { active: $parent.device.viewOptions.isSettingsMode() }, localizedText:'main.settings'">
+    </li>
+  </ul><!-- .viewControls -->
+
+  <section class="scrollingSection">
+    <div class="modeSection modeAudio" data-bind="visible: $parent.device.viewOptions.isAudioMode()">
+      <div class="widgetsContainer">
+        <div class="widgetsColumn">
+          <!-- ko if: $data.dtsHeadphoneXModel && $data.dtsHeadphoneXModel() != null -->
+          <div data-bind="template: {name: 'dtsHeadphoneX', data: {toggleField: dtsHeadphoneXModel().toggle, modes: dtsHeadphoneXModel().modes, currentMode: dtsHeadphoneXModel().currentMode, enabled: $root.device.softwareInstalled}}"></div>
+          <!-- /ko -->
+          <!-- ko if: $data.dtsHeadphoneXv2Model && $data.dtsHeadphoneXv2Model() != null -->
+          <div data-bind="template: {name: 'dtsHeadphoneXv2', data: {model: dtsHeadphoneXv2Model(), softwareUpToDate: $root.device.softwareInstalled}}"></div>
+          <!-- /ko -->
+
+          <!-- EQUALIZER -->
+          <div data-bind="template: {name: 'equalizer', data: { equalizer: equalizer }}"></div>
+
+        </div>
+
+        <div class="widgetsColumn">
+          <!-- MIC PREVIEW -->
+          <div data-bind="template: {name: 'micPreview', data: { micName: micName } }"></div>
+
+          <!-- MIC VOLUME -->
+          <div data-bind="template: {name: 'micVolumeSlider', data: {field: micGainObservable, minVolume: $root.device.micGainMinValue, maxVolume: $root.device.micGainMaxValue, step: $root.device.micGainStep }}"></div>
+
+          <!-- MIC SIDETONE -->
+          <div data-bind="template: {name: 'sideToneSlider', data: {value: settings().sidetone_gain.gain, sideToneValues: $root.device.sidetoneValues }}"></div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="modeSection modeSettings" data-bind="visible: $parent.device.viewOptions.isSettingsMode()">
+      <div class="widgetsContainer">
+        <div class="widgetsColumn">
+          <!-- POWER OPTIONS / INACTIVITY TIMER -->
+          <div class="autoOffTime" data-bind="template: {name: 'genericDropdown', data: autoOffTimeData }"></div>
+
+          <!-- BLUETOOTH AUTO STARTUP -->
+          <div class="bluetoothStartup" data-bind="template: {name: 'genericToggle', data: $root.device.selectedConfig().bluetoothStartupData }"></div>
+
+        </div>
+
+        <div class="widgetsColumn">
+          <!-- BLUETOOTH MODE -->
+        <div class="bluetoothAutoMode" data-bind="template: {name: 'bluetoothVolumeDuckerv2', data: $root.device.selectedConfig().bluetoothAutoModeData }"></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>

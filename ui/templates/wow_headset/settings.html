@@ -1,0 +1,25 @@
+<!--static templates-->
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig().settings">
+  <div class="deviceImgContainer">
+    <div id="TagLED1" data-bind="template:{ name: 'lightingCustom', data:{
+    lightingCustomModel: { lighting: $root.device.selectedConfig().lightingModel, sequence_step_ms: $root.device.sequenceStepMs() } } }, css: $root.device.selectedConfig().lightingModel.templateCssClass">
+    </div>
+  </div>
+
+  <div class="widgetsContainer">
+<div class="widgetsColumn">
+  <div data-bind="template: {name: 'dolby', data: {toggleField: dolby_on_off.state, indicatorRed: dolby_indicator.red, indicatorGreen: dolby_indicator.green, indicatorBlue: dolby_indicator.blue}}"></div>
+  <div data-bind="template: {name: 'equalizer', data: { equalizer: $root.device.selectedConfig().equalizer }}"></div>
+  <div data-bind="template: {name: 'noise_cancellation', data: {toggleField: capture_noise_reduction_on_off.state}}"></div>
+</div>
+
+
+<div class="widgetsColumn">
+  <div data-bind="template: {name: 'auto_mic_gain', data: { toggleField: drc_on_off.state, titleLocaleKey: 'widgets.autoMicGain', tooltipLocaleKey: 'widgets.tooltip.autoMicGain', numericalValues: [1,0]} }"></div>
+  <div data-bind="template: {name: 'side_tone_talk_back', data: {state: sidetone_on_off.state, volume: sidetone_volume.volume, vals: $root.device.selectedConfig().sideToneVolumes()} }"></div>
+  <div data-bind="template: {name: 'micVolume', data: {field: mic_volume.volume, minVolume: $root.device.minVolume, maxVolume: $root.device.maxVolume}}"></div>
+</div>
+
+  </div>
+</div>
+

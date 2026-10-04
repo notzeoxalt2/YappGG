@@ -1,0 +1,91 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+    <section class="scrollingSection">
+        <div data-bind="template: { name: 'deviceTitleWithTabs', data: deviceTitleWithTabsProps }"></div>
+        <div class="audioTabContents" data-bind="if: deviceTitleWithTabsProps.selectedTabIdKO() === deviceTitleWithTabsProps.audioMode">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                     <!-- ko if: enableSonarProps.shouldShowBanner() -->
+                    <section class="full-width opaque widgetFlat" style="width: auto;">
+                        <div class="enableSonarBanner" data-bind="template: { name: 'enableSonarBanner', data: enableSonarProps }"></div>
+                    </section>
+                    <!-- /ko -->
+                    <!-- Parametric EQ widget -->
+                     <!-- ko if: $parent.device.showVol-->
+                    <section class="full-width opaque widgetFlat" style="width: auto;">
+                        <label class="audioModeLabel">AUDIO MODE</label>
+                          <div class="parametricEQMini2" data-bind="template: { name: 'parametricEQMini', data: parametricEQMiniProps }"></div>
+                    </section>
+                    <!-- /ko -->
+                    <!-- ko ifnot: $parent.device.showVol-->
+                    <!-- Parametric EQ widget -->
+                    <section class="full-width opaque widgetFlat" style="width: auto;">
+                        <div class="parametricEQMini" data-bind="template: { name: 'parametricEQMini', data: parametricEQMiniProps }"></div>
+                  </section>
+                     <!-- /ko -->
+
+                    <div class="widgetsContainer">
+                        <!-- Microphone volume widget -->
+                        <section class="opaque widgetFlat" style="width: auto;">
+                            <div class="micVolume" data-bind="template: { name: 'microphoneVolumeFlat', data: microphoneVolumeProps }"></div>
+                        </section>
+
+                        <!-- Sidetone widget -->
+                        <section class="opaque widgetFlat" style="width: auto; margin-top: 20px;">
+                            <div class="micSidetone" data-bind="template: { name: 'micSidetoneSliderLabel', data: sidetoneProps }"></div>
+                        </section>
+                    </div>
+
+                    <!-- Volume -->
+                     <!-- ko if: $parent.device.showVol-->
+                        <!-- <section class="opaque widgetFlat" style="width: auto;" > -->
+                            <div class="playbackVol" visible="$parent.device.showVol" 
+                               data-bind="template: { name: 'playbackVolumeFlat', data: playbackVolProps },
+                                          css: { adjustVolumeForSonarBanner: enableSonarProps.shouldShowBanner()}"></div>
+                        <!-- </section> -->
+                     <!-- /ko -->
+                    <div class="widgetsContainer">
+                        <!-- ANC & Transparency widget -->
+                        <section class="opaque widgetFlat" style="width: auto;">
+                            <div class="ancTransparencyControl" data-bind="template: { name: 'ancTransparencyControl', data: ancTransparencyProps }"></div>
+                        </section>
+                        <!-- Volume limiter widget -->
+                        <section class="opaque widgetFlat" style="width: auto; margin-top: 20px;">
+                            <div class="volumeLimiterFlat" data-bind="template: { name: 'volumeLimiterFlat', data: volumeLimiterProps }"></div>
+                        </section>
+                    </div>
+                    <!-- Mic preview widget -->
+                    <section class="opaque widgetFlat" style="width: auto; margin-top: 0px;">
+                        <div class="micPreview" data-bind="template: { name: 'micPreviewFlat', data: micPreviewProps }"></div>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="settingsTabContents" data-bind="if: deviceTitleWithTabsProps.selectedTabIdKO() === deviceTitleWithTabsProps.settingsMode">
+            <div class="widgetsContainer">
+                <div class="grid-widget-container widgetsContainerStatic">
+                    <!-- Button Mapping widget -->
+                    <section class="opaque widgetFlat" style="width: auto; height: 200px">
+                        <div class="buttonMapping" data-bind="template: { name: 'buttonMapping', data: buttonMappingProps }"></div>
+                    </section>
+
+                    <!-- Wear sense configuration widget -->
+                    <section class="opaque widgetFlat" style="width: auto; height: 200px">
+                        <div class="wearSense" data-bind="template: { name: 'wearSense', data: wearSenseProps }"></div>
+                    </section>
+
+                    <!-- Fixed Gestures Widget -->
+                    <section class="opaque widgetFlat" style="width: auto;">
+                        <div class="fixedGestures" data-bind="template: { name: 'tableContent', data: fixedGesturesProps }"></div>
+                    </section>
+
+                    <!-- Power options widget -->
+                    <section class="opaque widgetFlat" style="width: auto; height: 120px">
+                        <div class="powerOptions" data-bind="template: { name: 'powerOptionsFlat', data: powerOptionsProps }"></div>
+                    </section>
+                </div>
+                <span style="height:500px"></span>
+            </div>
+            <div class="restoreFactoryDefault" data-bind="template: { name: 'restoreFactoryDefault', data: restoreFactoryProps }"></div>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,53 @@
+<!-- base static template -->
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig()">
+
+  <div class="fixedSection">
+    <!-- DEVICE IMAGE -->
+    <section>
+      <!-- SOLID COLOR ZONE BACKGROUNDS -->
+      <ul class="zoneBackgrounds">
+        <li class="zoneBackground zone1" data-bind="style: { backgroundColor: zoneColorModel.combinedZones() }"></li>
+      </ul>
+
+      <div class="deviceImg">
+        <div class="deviceImgContainer">
+          <!-- ko if: $data.micLightModel -->
+          <div class="tag micLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: micLightModel } } }"></div>
+          <!-- /ko -->
+          <!-- ko if: $data.mutedLightModel -->
+          <div class="tag mutedLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: mutedLightModel } } }"></div>
+          <!-- /ko -->
+          <div class="tag leftLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: leftLightModel, disabled: undeployedSettings().dual_zone_active } } }, css: { disabled: multiZoneOn }"></div>
+          <div class="tag rightLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: rightLightModel, disabled: undeployedSettings().dual_zone_active } } }, css: { disabled: multiZoneOn }"></div>
+          <div class="dualLEDContainer" data-bind="css: { disabled: !multiZoneOn() }">
+            <div class="dualLEDtoggle" data-bind="click: toggleMultiZone"></div>
+            <div class="tag dualLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: dualLightModel, enabled: undeployedSettings().dual_zone_active } } }"></div>
+          </div>
+        </div><!-- .deviceImgContainer -->
+      </div><!-- .deviceImg -->
+    </section>
+  </div><!-- .fixedSection -->
+
+  <section class="widgetsContainer">
+    <div class="widgetsColumn">
+      <label class="widgetGroupLabel speakers" data-bind="localizedText: 'common.speakers'"></label>
+      <!-- ko if: $data.dtsHeadphoneXModel -->
+      <div data-bind="template: {name: 'dtsHeadphoneX', data: {toggleField: dtsHeadphoneXModel().toggle, modes: dtsHeadphoneXModel().modes, currentMode: dtsHeadphoneXModel().currentMode, enabled: $root.device.softwareInstalled}}"></div>
+      <!-- /ko -->
+      <!-- ko if: $data.dtsHeadphoneXv2Model -->
+      <div data-bind="template: {name: 'dtsHeadphoneXv2', data: {model: dtsHeadphoneXv2Model(), softwareUpToDate: $root.device.softwareInstalled}}"></div>
+      <!-- /ko -->
+      <div data-bind="template: {name: 'equalizer', data: { equalizer: equalizer }}"></div>
+      <div data-bind="template: {name: 'dynamic_range_comp', data: {value: currentDrc, audioCompressionValues: drcPresets, localizedTooltip: 'widgets.dynamicRangeCompression.tooltip' }}"></div>
+    </div>
+    <div class="widgetsColumn">
+      <label class="widgetGroupLabel microphone" data-bind="localizedText: 'common.microphone'"></label>
+      <div data-bind="template: {name: 'micPreview', data: { micName: micName } }"></div>
+      <div data-bind="template: {name: 'micVolumeSlider', data: {field: settings().mic_volume.gain, minVolume: $root.device.minVolume, maxVolume: $root.device.maxVolume}}"></div>
+      <div data-bind="template: {name: 'noiseReduction', data: {value: settings().mic_noise_reduction.min_gain, noiseReductionValues: noiseReductionValues}}"></div>
+      <div data-bind="template: {name: 'sideToneSlider', data: {value: settings().sidetone.gain, sideToneValues: sideToneValues }}"></div>
+    </div>
+  </section>
+
+</div>
+

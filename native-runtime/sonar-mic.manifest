@@ -1,0 +1,8 @@
+<assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <assemblyIdentity name="SteelSeriesSonar.exe" version="1.0.0.0" processorArchitecture="amd64" type="win32"></assemblyIdentity>
+  <file name="Sonar.AudioStreamProcessing.Interop.dll" hashalg="SHA1">
+    <comClass clsid="{2A0F0908-AC42-4697-AA83-67BE3AB88B53}" tlbid="{fc6b2cbb-2ab4-42f7-a3b4-63e0fc29f86c}"></comClass>
+    <typelib tlbid="{fc6b2cbb-2ab4-42f7-a3b4-63e0fc29f86c}" resourceid="1" version="1.0" helpdir="" flags="HASDISKIMAGE"></typelib>
+  </file>
+  <comInterfaceExternalProxyStub name="IAudioStreamManager" iid="{B1BA2252-66E7-484D-A744-D44C4FACF212}" tlbid="{fc6b2cbb-2ab4-42f7-a3b4-63e0fc29f86c}" proxyStubClsid32="{00020424-0000-0000-C000-000000000046}"></comInterfaceExternalProxyStub>
+</assembly>

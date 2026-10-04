@@ -1,0 +1,29 @@
+/*!
+ * Number-To-Words util
+ * @version v1.2.4
+ * @link https://github.com/marlun78/number-to-words
+ * @author Martin Eneqvist (https://github.com/marlun78)
+ * @contributors Aleksey Pilyugin (https://github.com/pilyugin),Jeremiah Hall (https://github.com/jeremiahrhall),Adriano Melo (https://github.com/adrianomelo),dmrzn (https://github.com/dmrzn)
+ * @license MIT
+ */
+
+/*!
+ * jQuery scrollintoview() plugin and :scrollable selector filter
+ *
+ * Version 1.9.4 (06 April 2016)
+ * Requires jQuery 1.4 or newer
+ *
+ * Copyright (c) 2011 Robert Koritnik
+ * Licensed under the terms of the MIT license
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+
+/**
+ * @license React
+ * react-jsx-runtime.production.min.js
+ *
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */

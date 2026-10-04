@@ -1,0 +1,98 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical">
+    <div class="" data-bind="with: device">
+        <div class="col col1 fixedSection" data-bind="css:{ lightingMode: viewOptions.isLightingMode() }">
+            <!-- LIGHTING MODE WIDGETS for LEFT SIDE -->
+            <div class="modeSection modeLighting" data-bind="with: selectedConfig(), css:{ disabledSection: !viewOptions.isLightingMode() }">
+
+                <div class="widgetsContainer">
+
+                    <!-- ACTIVE/REACTIVE TABS -->
+                    <div class="modeSelection">
+                        <ul class="modeTabs">
+                        <li class="modeTab activeMode" data-bind="css: { modeTabActive: !$parent.viewOptions.isReactiveLightingMode() }, click:function(){$parent.viewOptions.isReactiveLightingMode(false) }, localizedText:'common.active'">
+                        </li>
+                        <li class="modeTab reactiveMode" data-bind="css: { modeTabActive: $parent.viewOptions.isReactiveLightingMode() }, click:function(){ $parent.viewOptions.isReactiveLightingMode(true) }, localizedText:'common.reactive'">
+                        </li>
+                        </ul>
+                    </div>
+
+                    <!-- Wrapper div required because the title hover will not show up if it's on the same element as the disabled class -->
+                    <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}">
+                        <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools', data:{ settings: { ...lightingSettings, disabled: $root.device.isPrismEnabledForDevice() } }, afterRender: individualZoneLightingManager().onTemplateLoaded }, visible: ($parent.viewOptions.isLightingMode() && !$parent.viewOptions.isReactiveLightingMode())"></div>
+                    </div>
+
+                    <div class="reactiveColorWidget" data-bind="template:{ name: 'reactive_color_selection', data:{ reactiveColorObservables: reactiveModel.reactiveColor, supportsColorRandomization: true, colorRandomizationEnabledObservable: reactiveModel.randomizationEnabled, reactiveEnabledObservable: reactiveModel.reactiveEnabled, effectsTooltipKeys: reactiveModel.effectsTooltipKeys}}, visible: ($parent.viewOptions.isLightingMode() && $parent.viewOptions.isReactiveLightingMode())"></div>
+                </div>
+            </div><!-- .modeLighting -->
+
+            <!-- SETTINGS MODE -->
+            <div class="modeSection modeSettings" data-bind="css:{ disabledSection: viewOptions.isLightingMode() }">
+
+                <!-- TRIGGER MAPPING WIDGET -->
+                <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }"></div>
+
+                <!-- DEVICE IMAGE TOGGLES -->
+                <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientationModel">
+                    <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><!-- No whitespace for inline-block -->
+                    <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button>
+                </div>
+            </div>
+        </div> <!-- .col1 -->
+
+        <div class="col col2 fixedSection">
+            <div class="viewOptions">
+                <ul class="viewControls">
+                  <li class="buttonCombineLarge" data-bind="css:{ active: !viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(false);}, localizedText:'main.settings'"></li>
+
+                  <li class="buttonCombineLarge" data-bind="css:{ active: viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(true);orientationModel.setDorsalView()}, localizedText:'widgets.illumination'"></li>
+                </ul>
+              </div>
+
+            <!-- DEVICE IMAGE -->
+            <section data-bind="with: orientationModel">
+                <div class="deviceImg">
+                    <div class="deviceImgContainer" data-bind="css : view()"></div>
+                </div>
+            </section>
+
+            <div class="illuminationZoneSelectionHint" data-bind="css:{ disabledSection: !viewOptions.isLightingMode() }">
+                <label class="multizoneSelectText" data-bind="localizedText: 'widgets.lightingTools.multizoneSelection', visible: (viewOptions.isLightingMode() && !viewOptions.isReactiveLightingMode())"></label>
+                <label class="noReactiveZoneSelection" data-bind="localizedText:  'widgets.zoneColors.noPerZoneReactive', visible: (viewOptions.isLightingMode() && viewOptions.isReactiveLightingMode())"></label>
+            </div>
+
+            <!-- zone backgrounds -->
+            <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template:{ name: 'zoneColors', data:{ model: selectedConfig().individualZoneLightingManager, withZoneGuides: true, zoneGuidesOnByDefault: true } }, css:{ disabled: !viewOptions.isLightingMode(), lateralView: orientationModel.view() == 'lateralView', reactive: viewOptions.isReactiveLightingMode() && viewOptions.isLightingMode(), activeBackgrounds: true }"></div>
+
+            <!-- fake zone colors backgrounds widget for reactive background colors -->
+            <div class="zoneBackgrounds reactiveBackgrounds disabled" data-bind="visible: (viewOptions.isLightingMode() && viewOptions.isReactiveLightingMode())">
+                <div id="ZoneColors">
+                <ul class="colorZones">
+                    <li class="zone code0"><div class="bgShape" data-bind="style: { backgroundColor: selectedConfig().reactiveModel.reactiveBackgroundColor }"></div></li>
+                    <li class="zone code1"><div class="bgShape" data-bind="style: { backgroundColor: selectedConfig().reactiveModel.reactiveBackgroundColor }"></div></li>
+                    <li class="zone code2"><div class="bgShape" data-bind="style: { backgroundColor: selectedConfig().reactiveModel.reactiveBackgroundColor }"></div></li>
+                </ul>
+                </div>
+            </div>
+        </div> <!-- .col2 -->
+    </div> <!-- .fixedSection -->
+
+    <div class="scrollingSection" data-bind="css:{ disabledSection: device.viewOptions.isLightingMode() }">
+        <div class="grid-widget-container" data-bind="with: device.selectedConfig()">
+            <section class="full-width widget" style="width: auto;">
+                <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.independentXYDPI.tooltip', tooltip: {}"></a>
+                <div class="independentXYDPI" data-bind="template: { name: 'independentXYDPI', data: { cpi: user_cpi } }"></div>
+            </section>
+            <section class="accelDecel widget">
+                <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: settings().exact_accel.level, exactAim: settings().exact_aim.level, color: $root.device.primaryColor, isLightingModeObservable: $root.device.viewOptions.isLightingMode}, customTooltip: 'widgets.tooltip.accelDecelV2' } }"></div>
+            </section>
+            <div class="rightColumn">
+                <section id="AngleSnap" class="widget">
+                    <div data-bind="template: { name: 'angleSnap', data: { snapLevel: settings().angle_snapping.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+                </section>
+                <section id="PollingRate" class="widget">
+                    <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: pollingRateProps.level, pollingRateHz: pollingRateProps.hz } }"></div>
+                </section>
+            </div>
+        </div>
+    </div> <!-- scrollingSection -->
+</div>

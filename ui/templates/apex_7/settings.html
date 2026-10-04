@@ -1,0 +1,311 @@
+<div class="settings" data-bind="with: device.selectedConfig()">
+
+  <!-- LIGHTING WIDGETS -->
+  <div class="modeSection modeLighting" data-bind="css: { visible: $parent.device.viewOptions.isLightingMode() }">
+    <!-- KEY ZONES -->
+    <div class="highlightMarkers highlightMarkers--lighting" data-bind="
+            keyLightingZones: { keyLighting: keyLightingViewModel },
+            css: 'region-' + selectedRegion().id,
+        ">
+
+      <section class="buttonMarkers" data-bind="css: 'tool-'">
+        <ul class="zones" data-bind="foreach: {
+            data: keyLightingViewModel().currentLayoutKeys,
+            afterRender: keyLightingViewModel().selectionTools.recacheKeyNodes
+          }">
+          <li class="zone ui-selected" data-bind="event: {
+            click: $parent.keyLightingViewModel().zoneClick,
+            mousedown: $parent.keyLightingViewModel().zoneDown,
+            mouseenter: $parent.keyLightingViewModel().zoneEnter,
+            mouseleave: $parent.keyLightingViewModel().zoneLeave
+            }, attr: {
+              'data-code': $data,
+              'data-hotspot': 'code' + $data},
+              css: $parent.keyLightingViewModel().zoneCss($data)">
+            <div class="keyBorder" data-bind="style: {borderColor: $parent.keyLightingViewModel().keyColorPreview($data)}"></div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="buttonMarkers buttonMarkersBackground" data-bind="css: 'tool-'">
+        <ul class="zones" data-bind="foreach: {
+          data: keyLightingViewModel().currentLayoutKeys,
+        }">
+          <li class="zone buttonMarkerBackground" data-bind="css: $parent.keyLightingViewModel().zoneCss($data), style: {backgroundColor: $parent.keyLightingViewModel().keyColorPreview($data)}">
+          </li>
+        </ul>
+      </section>
+
+      <div class="lightingToolsInfo">
+      </div>
+    </div>
+
+    <!-- BASE EFFECT -->
+    <div class="widgetsContainer scrollableContainer vertical">
+      <section class="widget" style="padding-bottom: 0;">
+        <div class="widget-overlay" data-bind="
+          css: {
+            active: keyLightingViewModel().isBaseLayerActive(),
+            disabled: $root.device.isPrismEnabledForDevice,
+        }"></div>
+        <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}, css: {
+          active: keyLightingViewModel().isBaseLayerActive(),
+        }">
+          <div data-bind="
+            template: {
+              name: 'baseLightingEffect',
+              data: {
+                keyLighting: keyLightingViewModel,
+              },
+            },
+            event: { mousedown: keyLightingViewModel().setBaseLayerActive },
+            css: { disabled: $root.device.isPrismEnabledForDevice },
+          ">
+          </div>
+        </div>
+
+      </section>
+
+      <!-- REACTIVE EFFECT -->
+      <section class="widget" style="padding-bottom: 0;">
+        <div class="widget-overlay" data-bind="
+          css: {
+            active: keyLightingViewModel().isReactiveLayerActive(),
+            disabled: $root.device.isPrismEnabledForDevice,
+          }"></div>
+        <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}">
+          <div data-bind="
+              template: {
+                name: 'reactiveLightingEffect',
+                data: {
+                  keyLighting: keyLightingViewModel,
+                },
+              },
+              event: { mousedown: keyLightingViewModel().setReactiveLayerActive },
+              css: { disabled: $root.device.isPrismEnabledForDevice },
+            ">
+          </div>
+        </div>
+      </section>
+
+      <!-- AFK EFFECT -->
+      <section class="widget" style="padding-bottom: 0;">
+      <div class="widget-overlay" data-bind="
+        css: {
+          active: keyLightingViewModel().isAfkLayerActive(),
+          disabled: $root.device.isPrismEnabledForDevice,
+        }"></div>
+        <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}">
+          <div data-bind="
+            template: {
+              name: 'afkLightingEffect',
+              data: {
+                keyLighting: keyLightingViewModel,
+                idleTimeoutData: idleTimeoutData(),
+                idleDimmerSetting: idleDimmerSetting,
+              },
+            },
+            event: { mousedown: keyLightingViewModel().setAfkLayerActive },
+            css: { disabled: $root.device.isPrismEnabledForDevice },
+          ">
+          </div>
+        </div>
+
+      </section>
+
+      <section class="widget" style="padding-bottom: 0;">
+        <div data-bind="template: { name: 'lockKeyColor',
+                          data: {
+                            color: lockKeyColorVM.color,
+                            storageKeyPrefix: lockKeyColorVM.storageKeyPrefix,
+                            cannotLiveDeploy: true,
+                          }
+        }">
+        </div>
+      </section>
+
+    </div>
+  </div><!-- .modeLighting -->
+
+  <!-- BINDINGS WIDGETS -->
+  <div class="modeSection modeBinding" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }">
+    <!-- TRIGGER MAPPING WIDGET -->
+    <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+        css: 'region-' + selectedRegion().id,
+        template: {
+          name: 'mappings',
+          data: {
+            bindings: bindings().filter((b) => !b.trigger.isMetaLayer),
+            selectBinding: actionsModel.selectBinding,
+            quicksetDialog: actionsModel.dialog,
+            orientationModel: {
+              view: function(){}
+            },
+            openMacroEditor: actionsModel.dialog.openMacroEditor
+          }
+        }
+      ">
+    </div>
+  </div><!-- .modeBinding -->
+
+  <!-- RAPID TAP, in RIGHT COLUMN -->
+  <!--ko if: $data.rapidTap-->
+  <div class="modeSection modeRapidTap" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }">
+    <div class="rapidTap" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }, template: {
+      name: 'rapidTap',
+      data: {
+        rapidTap: rapidTap,
+        renderKick: $parent.device.viewOptions.isActuationMode(),
+      }
+    }">
+    </div>
+  </div><!-- .modeActuation -->
+  <!--/ko-->
+
+  <!-- METABINDINGS WIDGETS -->
+  <div class="modeSection modeBinding" data-bind="css: { visible: $parent.device.viewOptions.isMetaKeyBindingsMode() }">
+    <!-- TRIGGER MAPPING WIDGET -->
+    <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+        css: 'region-' + selectedRegion().id,
+        template: {
+          name: 'mappings',
+          data: {
+            bindings: bindings().filter((b) => b.trigger.isMetaLayer),
+            selectBinding: actionsModel.selectBinding,
+            quicksetDialog: actionsModel.dialog,
+            orientationModel: {
+              view: function(){}
+            },
+            openMacroEditor: actionsModel.dialog.openMacroEditor
+          }
+        }
+      ">
+    </div>
+  </div><!-- .modeBinding -->
+
+  <!-- SETTINGS WIDGETS -->
+  <div class="modeSection modeSettings" data-bind="css: { visible: $parent.device.viewOptions.isSettingsMode() }">
+    <!-- OLED WIDGET -->
+    <div class="oledWidget" data-bind="template: { name: 'screen-editor-widget', data: screenEditorViewModel }"></div>
+
+    <!-- REGION SELECTION -->
+    <section id="RegionSelect" class="widget">
+      <div
+        data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }">
+      </div>
+    </section>
+  </div><!-- .modeSettings -->
+
+  <!-- VIEW CONTROLS -->
+  <ul class="viewControls">
+    <li class="buttonCombineLarge"
+      data-bind="click: $parent.device.viewOptions.activateKeyBindingsMode, css: { active: $parent.device.viewOptions.isKeyBindingsMode() }, localizedText:'widgets.keyBindings'">
+    </li>
+    <li class="buttonCombineLarge"
+      data-bind="click: $parent.device.viewOptions.activateMetaKeyBindingsMode, css: { active: $parent.device.viewOptions.isMetaKeyBindingsMode() }, localizedText: 'widgets.metaBindings', visible: hasMetaLayer">
+    </li>
+    <li class="buttonCombineLarge"
+      data-bind="click: $parent.device.viewOptions.activateLightingMode, css: { active: $parent.device.viewOptions.isLightingMode() }, localizedText:'widgets.illumination'">
+    </li>
+    <li class="buttonCombineLarge"
+      data-bind="click: $parent.device.viewOptions.activateSettingsMode, css: { active: $parent.device.viewOptions.isSettingsMode() }, localizedText:'widgets.oledAndSettings.title'">
+    </li>
+  </ul><!-- .viewControls -->
+
+
+  <ul class="selectionTools"
+    data-bind="with: keyLightingViewModel, css: { visible: $parent.device.viewOptions.isLightingMode() }">
+    <li class="selectionTool">
+      <button class="toolButton" data-bind="
+        css: { selected: isSelectActive() },
+        click: useSelectorTool,
+        attr: {title: tooltipFor('select')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+        <i class="icon selectIcon"></i>
+      </button>
+    </li>
+    <li class="selectionTool">
+      <button class="toolButton" data-bind="
+        css: { selected: isMagicWandActive() },
+        click: useMagicWandTool,
+        attr: {title: tooltipFor('selectSame')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+        <i class="icon selectSameIcon"></i>
+      </button>
+    </li>
+    <li class="selectionTool">
+      <button class="toolButton" data-bind="
+        click: onClickSelectAllKeys,
+        attr: {title: tooltipFor('selectAllKeys')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+        <i class="icon selectAllIcon"></i>
+      </button>
+    </li>
+    <li class="selectionTool">
+      <button class="toolButton" data-bind="
+        click: useUndoTool,
+        attr: {title: tooltipFor('undo')},
+        tooltip: {hover: true, topCenter: true, tooltipClass: 'topCenter'}">
+        <i class="icon undoIcon"></i>
+      </button>
+    </li>
+  </ul>
+
+  <div class="deviceImgContainer" data-bind="css: { oledZoom: $parent.device.viewOptions.isSettingsMode() }">
+    <div class="fwEffectsColorBackground"
+      data-bind="style: { backgroundImage: 'linear-gradient(to right, rgb(255, 0, 0) 0%, rgb(255, 255, 0) 0%, rgb(0, 255, 0) 33%, rgb(0, 255, 255) 0%, rgb(0, 0, 255) 66%, rgb(255, 0, 255) 100%)'}">
+    </div>
+
+    <div class="deviceImg" data-bind="css: $parent.device.keyboardRenderClasses()">
+      <div class="oled">
+        <canvas class="oled__preview" data-bind="
+          screenEditorPreview: screenEditorViewModel,
+          click: screenEditorViewModel.openScreenEditor,
+          css: { actionable: $parent.device.viewOptions.isSettingsMode() }
+        "></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Lighting Info -->
+  <div class="settingsInfo" data-bind="style: { display: $parent.device.viewOptions.isLightingMode() ? 'flex' : 'none' }">
+
+    <div class="message visible">
+      <span data-bind="text: keyLightingViewModel().keysSelectedText"></span>
+
+      <span data-bind="style: {
+                      display: keyLightingViewModel().maxFoundationSlotsReached() ? 'block' : 'none'
+                    }">
+        <span style="margin: 0 0.25em;"></span>
+        <span data-bind="localizedText: 'widgets.lightingTools.maxBaseEffects'"></span>
+      </span>
+
+      <span data-bind="style: {
+                      display: keyLightingViewModel().maxReactiveSlotsReached() ? 'block' : 'none'
+                    }">
+        <span style="margin: 0 0.25em;"></span>
+        <span data-bind="localizedText: 'widgets.lightingTools.maxReactiveEffects'"></span>
+      </span>
+
+      <span data-bind="style: {
+                      display: keyLightingViewModel().maxAFKSlotsReached() ? 'block' : 'none'
+                    }">
+        <span style="margin: 0 0.25em;"></span>
+        <span data-bind="localizedText: 'widgets.lightingTools.maxIdleEffects'"></span>
+      </span>
+    </div>
+  </div>
+
+  <!-- OLED EDITOR -->
+  <div data-bind="
+    template: {
+      name: 'screen-editor',
+      data: {
+        ...screenEditorViewModel,
+        defaultImage: defaultScreenImage,
+        screenedDeviceName: $parent.device.fullName,
+      }
+    }
+  "></div>
+</div><!-- .settings -->

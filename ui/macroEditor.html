@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+
+    <!-- all styles -->
+    <link rel="stylesheet" href="index.css">
+
+    <link rel="shortcut icon" type="image/x-icon" href="images/icons/favicon.ico">
+
+    <title data-bind="localizedText: 'macroEditor.windowTitle'">Macro Editor</title>
+  <script defer src="macroEditor.js"></script></head>
+
+  <body id="MacroEditor" class="macroEditorWindow" data-bind="windowEvents: { close: macroEditor.closeOrSwitchAway }">
+    <div id="Container" data-bind="with: macroEditor">
+      <section data-bind="css: {railOpen: railOpen()}">
+        <div class="rail" data-bind="css: {notransition: !useTransitionOnPanel()}">
+          <div class="railContent">
+              <h4 class="railHeader" data-bind="localizedText: 'macroEditor.macros'">Macros</h4>
+              <div class="content scrollableContainer vertical">
+                  <ul class="railListing" id="MacroList" data-bind="foreach: { data: macros, as: 'currentMacro' }, contextmenu: {items: macroMenuItems}">
+
+                      <!-- ko if: !isFakeMacro() -->
+                      <li class="macro hasContextMenu" data-bind="css: {selected: currentMacro == $parent.selectedMacro(), textMacro: currentMacro.isTextMacro(), keypressMacro: !currentMacro.isTextMacro()}, click: $root.macroEditor.checkUnsavedChangesAndSelectMacro">
+                          <a class="itemName" href="javascript:void(0)" data-bind="text: name"></a>
+                          <span class="icon cogIcon" data-bind="openContextmenu: {trigger: 'left'}"></span>
+                      </li>
+                      <!-- /ko -->
+                  </ul>
+              </div>
+              <footer>
+                  <ul class="btnList horizontal">
+                      <li>
+                          <!--<button id="NewMacroButton" data-bind="disable: currentlyRecording(), click: checkUnsavedChangesAndSelectMacro" class="railBtn compressedBtn">
+                              <i class="icon newIcon"></i>
+                              <span class="buttonLabel" data-bind="localizedText: 'common.new'">New</span>
+                          </button>-->
+
+                          <button id="NewMacroButton" data-bind="disable: currentlyRecording(), onDemandContextMenu:{ itemsFn: showNewMacroTypeOptions, position: 'bottom' }" class="railBtn compressedBtn">
+                              <i class="icon newIcon"></i>
+                              <span class="buttonLabel" data-bind="localizedText: 'common.new'">New</span>
+                          </button>
+                      </li>
+                  </ul>
+              </footer>
+          </div> <!-- content -->
+        </div>  <!-- rail -->
+
+
+        <!-- MACRO EDITING -->
+        <div class="main mainEditing" data-bind="visible: !typeInfoPageVisible()" style="display: none">
+
+          <div class="mainInner">
+            <header>
+              <h1 class="headerText" type="text" maxlength="50" data-bind="text: selectedMacro().name">
+            </header>
+            <div class="content" data-bind="css:{ 'contextTextMacros': textUIVisible(), afterRender: guiFinishedRender() }">
+
+              <!-- KEYPRESS MACROS -->
+              <!-- KEYPRESS MACROS -->
+              <!-- KEYPRESS MACROS -->
+              <div class="keypressMacros" data-bind="visible: keypressUIVisible(), if: keypressUIVisible()">
+
+                <div class="eventsContainer scrollableContainer vertical">
+                  <ul class="events" id="macroEvents" data-bind="foreach: selectedMacro().eventsModel.events">
+                    <li class="separator" data-bind="event: {contextmenu: $root.macroEditor.separatorContextMenu}"><div></div></li>
+
+
+                    <li class="event" data-bind="
+                        css: classes,
+                        event: {
+                          contextmenu: $root.macroEditor.eventContextMenu,
+                          mouseover: $root.macroEditor.eventFunctions.onHover,
+                          mouseout: $root.macroEditor.eventFunctions.onLoseFocus,
+                        },
+                        dblclick: $root.macroEditor.eventContextMenu">
+                        <div class="info" data-bind="
+                          text: label,
+                          css: direction,
+                          attr: {contentEditable: editing}">
+                        </div>
+
+                        <label data-bind="text: extraLabel"></label>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="eventControls">
+                  <div class="btnGroup btnGroupLeft">
+                    <button id="MacroRecordingOptions" class="negative compressedBtn" data-bind="disable: currentlyRecording(), onDemandContextMenu: {itemsFn: showRecordingOptions, position: 'top'}">
+                      <i class="icon cogIcon"></i>
+                    </button>
+                    <button class="negative" data-bind="enable: macroRecorded(), click: clearMacro, localizedText: 'common.clear'"></button>
+                  </div><!-- No space for inline block
+               --><div class="btnGroup btnGroupRight recordingButtons" data-bind="css: { recordingButtonsActive: currentlyRecording() }">
+                    <button class="" href="javascript:void(0)" data-bind="click: startRecording, visible: !currentlyRecording(), localizedText: 'common.start'"></button>
+                    <button id="StopRecordingMacroButton" data-bind="visible: currentlyRecording(), click: stopRecording, localizedText: 'common.stop'"></button>
+                    <span class="recordingLight"></span>
+                  </div>
+                </div>
+
+              </div><!-- .keypressMacros -->
+
+
+              <!-- TEXT MACROS -->
+              <!-- TEXT MACROS -->
+              <!-- TEXT MACROS -->
+              <div class="textMacros" data-bind="visible: textUIVisible(), if: textUIVisible()" style="display: none">
+
+                <div class="textMacroContent">
+
+                  <textarea class="textData" data-bind="value: selectedMacro().text, valueUpdate: 'afterkeydown', localizedAttr: { key: 'macroEditor.textMacroPlaceholder', attr: 'placeholder' }">
+                  </textarea>
+
+                  <div class="clearButton">
+                    <button class="clearText negative" data-bind="enable: selectedMacro().text !== undefined &amp;&amp; selectedMacro().text().length > 0, click: clearTextMacro, localizedText: 'common.clear'"></button>
+                  </div>
+                </div>
+
+                <div class="textMacroOptions">
+                  <div class="title" data-bind="localizedText: 'common.options'">Options</div>
+
+                  <ul class="optionFields">
+                    <li class="option">
+                      <div class="fieldLabel">
+                        <span class="labelInner" data-bind="localizedText: 'macroEditor.startKey'">Start Key</span>
+                      </div>
+                      <div class="field">
+                        <div class="record">
+                          <div id="keystrokeStartActionInput" class="keystrokeActionInput" data-bind="click: keyPressRecording(0), css: { recordFieldActive: keyPressRecordingState(0)()=='on' }">
+                            <p data-bind="text: keyPressText(0), css: keyPressClasses(0)"></p>
+                          </div>
+                          <button class="clearButton" type="button" data-bind="click: keyPressClear(0), disable: keyPressIsEmpty(0)"></button>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="option">
+                      <div class="fieldLabel">
+                        <span class="labelInner" data-bind="localizedText: 'macroEditor.sendKey'">Send Key</span>
+                      </div>
+                      <div class="field">
+                        <div class="record">
+                          <div id="keystrokeSendActionInput" class="keystrokeActionInput" data-bind="click: keyPressRecording(1), css: { recordFieldActive: keyPressRecordingState(1)()=='on' }">
+                            <p data-bind="text: keyPressText(1), css: keyPressClasses(1)"></p>
+                          </div>
+                          <button class="clearButton" type="button" data-bind="click: keyPressClear(1), disable: keyPressIsEmpty(1)"></button>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="option">
+                      <div class="fieldLabel">
+                        <span class="labelInner" data-bind="localizedText: 'common.delay'">Delay</span>
+                      </div>
+                      <div class="field">
+                        <input class="textMacroDelay" type="number" data-bind="value: selectedMacro().delay, valueUpdate: 'afterkeydown',">
+                        <label class="suffixLabel" data-bind="localizedText: 'common.milliseconds'">ms</label>
+                      </div>
+                    </li>
+                  <ul>
+
+                </ul></ul></div><!-- .textMacroOptions -->
+
+              </div><!-- .textMacros -->
+
+            </div>
+          </div>
+
+          <footer>
+            <div class="content">
+              <div class="left footerSection">
+                <div class="content">
+                    <!--<button class="negative iconSpacer" data-bind="disable: currentlyRecording(), click: showManagePanel"  id="ManageMacrosButton">
+                        <i class="icon configIcon"></i>
+                        <span data-bind="localizedText: 'common.manage'">Manage</span>
+                    </button>-->
+                </div>
+              </div>
+
+              <div class="middle footerSection">
+                <div class="content">
+                  &nbsp;
+                </div>
+              </div>
+
+              <div class="right footerSection">
+                <div class="content">
+                    <button class="revert negative" data-bind="click: revertToSavedMacro, enable: macroEdited(), localizedText: 'common.revert'"></button>
+                    <button class="save positive" id="SaveMacroButton" data-bind="enable: macroEdited(), click: saveMacro, localizedText: 'common.save'">Save</button>
+                </div>
+              </div>
+            </div>
+          </footer>
+
+        </div><!-- .mainEditing -->
+
+        <!-- MACRO TYPE DESCRIPTION SCREEN -->
+        <div class="main mainTypeInfo" data-bind="visible: typeInfoPageVisible()" style="display: none">
+
+          <div class="cols cf">
+            <div class="col col1">
+
+              <div class="macroTypeContent">
+                <h3 data-bind="localizedText: 'macroEditor.keypressMacro'">Keypress Macro</h3>
+
+                <div class="macroGraphic macroGraphicKeypress">
+                  <!-- KEYPRESS MACRO ANIMATION AS BACKGROUND -->
+                </div>
+
+                <div class="macroDesc">
+                  <p data-bind="localizedText: 'macroEditor.typeInfoKeypress'">Keypress macro description</p>
+                </div>
+
+                <div class="macroNewButton">
+                  <button class="positive" data-bind="click: addNewMacro, localizedText: 'common.create'"></button>
+                </div>
+              </div>
+
+            </div>
+            <div class="col col2">
+
+              <div class="macroTypeContent">
+                <h3 data-bind="localizedText: 'macroEditor.textMacro'">Text Macro</h3>
+
+                <div class="macroGraphic macroGraphicText">
+                  <!-- TEXT MACRO ANIMATION AS BACKGROUND -->
+                </div>
+
+                <div class="macroDesc">
+                  <p data-bind="localizedText: 'macroEditor.typeInfoText'">Text macro description</p>
+                </div>
+
+                <div class="macroNewButton">
+                  <button class="positive" data-bind="click: addNewTextMacro, localizedText: 'common.create'"></button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div><!-- .mainEditing -->
+
+      </section>
+    </div>
+
+    <div id="MacroModal" title="">
+        <div class="modalContainer">
+          <div class="content">
+            <p></p>
+            <input type="text" maxlength="50" data-bind="value: macroEditor.macroModelForDialog.macro.name, valueUpdate:'afterkeydown'">
+            <div id="MacroNameValidation" class="validationError withAlert" data-bind="visible: macroEditor.macroModelForDialog.nameErrors().length > 0">
+              <div class="content">
+                <!-- ko foreach: macroEditor.macroModelForDialog.nameErrors -->
+                <span class="errTxt" data-bind="html: $data"></span>
+                <!-- /ko -->
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div id="MessageDialog" class="content" title="">
+      <p>
+        <label></label>
+        </p><div class="infoForLabel"></div>
+        <p class="text"></p>
+        <p class="textLine2"></p>
+        <p class="textLine3"></p>
+      <p></p>
+    </div>
+
+    <div id="ConfirmationModal" class="content" title="" style="display: none">
+      <div class="header">
+        <p class="headerText"></p>
+      </div>
+      <p class="text indented"></p>
+      <p class="textLine2 indented"></p>
+      <p class="textLine3 indented"></p>
+      <div class="custom"></div>
+      <p class="textAfterCustom"></p>
+      <ul class="customList"></ul>
+      <p class="checkboxContainer">
+        <input type="checkbox" id="ConfirmationModalCheckbox">
+        <label for="ConfirmationModalCheckbox" class="checkboxLabel"></label>
+      </p>
+    </div>
+
+    <div id="FixedDelayDialog">
+      <div>
+        <label for="FixedDelayDialogText" data-bind="localizedText: 'macroEditor.delayOptions.customDialog.text'"></label>
+        <input type="text" id="FixedDelayDialogText" maxlength="16" onkeyup="this.value=this.value.replace(/[^\d]/g,'')">
+      </div>
+    </div>
+
+    <div id="FatalErrorMessageBox" class="content" title="">
+      <p>
+        <label></label>
+        </p><p class="text" data-bind="localizedHtml: {key: 'errors.fatalErrorMessage', SUPPORT_PAGE: 'https://steelseries.zendesk.com/requests/new'}">A fatal error was encountered and has been logged. SteelSeries GG will now close. If you continue to encounter this error, please file a ticket on our <a href="https://steelseries.zendesk.com/requests/new">Support Page</a>.</p>
+      <p></p>
+    </div>
+
+  </body>
+</html>

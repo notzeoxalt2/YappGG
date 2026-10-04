@@ -1,0 +1,85 @@
+<div class="settings" data-bind="with: device.selectedConfig()">
+
+  <!-- BINDINGS WIDGETS -->
+  <div class="modeSection modeBinding" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }">
+    <!-- TRIGGER MAPPING WIDGET -->
+    <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+        css: 'region-' + selectedRegion().id,
+        template: {
+        name: 'mappings',
+        data: {
+            bindings: bindings().filter((b) => !b.trigger.isMetaLayer),
+            selectBinding: actionsModel.selectBinding,
+            quicksetDialog: actionsModel.dialog,
+            orientationModel: {
+            view: function(){}
+            },
+            openMacroEditor: actionsModel.dialog.openMacroEditor
+        }
+        }
+    ">
+    </div>
+  </div><!-- .modeBinding -->
+
+  <!-- RAPID TAP, in RIGHT COLUMN -->
+  <div class="modeSection modeRapidTap" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }">
+    <div class="rapidTap" data-bind="css: { visible: $parent.device.viewOptions.isKeyBindingsMode() }, template: {
+      name: 'rapidTap',
+      data: {
+        rapidTap: rapidTap,
+        renderKick: $parent.device.viewOptions.isActuationMode(),
+      }
+    }">
+    </div>
+  </div><!-- .modeActuation -->
+
+  <!-- METABINDINGS WIDGETS -->
+  <div class="modeSection modeBinding" data-bind="css: { visible: $parent.device.viewOptions.isMetaKeyBindingsMode() }">
+    <!-- TRIGGER MAPPING WIDGET -->
+    <div class="highlightMarkers highlightMarkers--bindings" data-bind="
+        css: 'region-' + selectedRegion().id,
+        template: {
+        name: 'mappings',
+        data: {
+            bindings: bindings().filter((b) => b.trigger.isMetaLayer),
+            selectBinding: actionsModel.selectBinding,
+            quicksetDialog: actionsModel.dialog,
+            orientationModel: {
+            view: function(){}
+            },
+            openMacroEditor: actionsModel.dialog.openMacroEditor
+        }
+        }
+    ">
+    </div>
+  </div><!-- .modeBinding -->
+
+  <!-- SETTINGS WIDGETS -->
+  <div class="modeSection modeSettings" data-bind="css: { visible: $parent.device.viewOptions.isSettingsMode() }">
+      <!-- REGION SELECTION -->
+      <section id="RegionSelect" class="widget">
+          <div data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }"></div>
+      </section>
+  </div><!-- .modeSettings -->
+
+  <!-- VIEW CONTROLS -->
+  <ul class="viewControls">
+    <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateKeyBindingsMode, css: { active: $parent.device.viewOptions.isKeyBindingsMode() }, localizedText:'widgets.keyBindings'"></li>
+    <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateMetaKeyBindingsMode, css: { active: $parent.device.viewOptions.isMetaKeyBindingsMode() }, localizedText: 'widgets.metaBindings', visible: hasMetaLayer"></li>
+    <li class="buttonCombineLarge" data-bind="click: $parent.device.viewOptions.activateSettingsMode, css: { active: $parent.device.viewOptions.isSettingsMode() }, localizedText:'common.settings'"></li>
+  </ul><!-- .viewControls -->
+
+  <div class="actuationModeToggle">
+    <div class="typingGamingModeWidget" data-bind="template: { name: 'typingGamingToggle', data: typingGamingModeProps }"></div>
+  </div>
+
+  <div class="deviceImgContainer" data-bind="css: { oledZoom: $parent.device.viewOptions.isSettingsMode() }">
+    <div data-bind="svgDeviceImg: { deviceId: $root.device.id, deviceName: $root.device.name, zones: svgDeviceImageZones, regionIdStr: selectedRegion().css }"></div>
+  </div>
+
+  <!-- Lighting Info -->
+  <div class="settingsInfo" data-bind="style: { display: $parent.device.viewOptions.isLightingMode() ? 'flex' : 'none' }">
+
+  </div>
+
+</div><!-- .settings -->

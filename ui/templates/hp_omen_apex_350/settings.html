@@ -1,0 +1,83 @@
+<div class="settings scrollableContainer horizontal vertical cf" data-bind="css: { leftSideClosed: !device.viewOptions.leftVisible(), rightSideClosed: !device.viewOptions.rightVisible()}">
+
+    <div class="cols cf" data-bind="with: device">
+
+        <div class="col col1" data-bind="css: { leftSideClosed: !viewOptions.leftVisible(), rightSideClosed: !viewOptions.rightVisible()}">
+
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div class="highlightMarkers" data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: {view: function(){}}, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }, css: 'region-' + selectedConfig().selectedRegion().id">
+          </div>
+          
+          <!-- LED ZONES -->
+          <div class="ledZones">
+            <div class="zoneLED zone1LED" id="zone1LED" data-bind="template: {name: 'led', data: {led: { model: selectedConfig().zone1LED} } }"></div>
+
+            <div class="zoneLED zone2LED" id="zone2LED" data-bind="template: {name: 'led', data: {led: { model: selectedConfig().zone2LED} } }"></div>
+
+            <div class="zoneLED zone3LED" id="zone3LED" data-bind="template: {name: 'led', data: {led: { model: selectedConfig().zone3LED} } }"></div>
+
+            <div class="zoneLED zone4LED" id="zone4LED" data-bind="template: {name: 'led', data: {led: { model: selectedConfig().zone4LED} } }"></div>
+
+            <div class="zoneLED zone5LED" id="zone5LED" data-bind="template: {name: 'led', data: {led: { model: selectedConfig().zone5LED} } }"></div>
+          </div>
+        </div><!-- .col1 -->
+
+        <div class="col col2" data-bind="css: { leftSideClosed: !viewOptions.leftVisible(), rightSideClosed: !viewOptions.rightVisible() }">
+
+          <!-- VIEW OPTIONS and LAYERS -->
+          <div class="viewOptions">
+            <ul class="viewControls">
+              <li data-bind="localizedText: 'widgets.viewOptions'"></li>
+              <li>
+                <input type="checkbox" id="viewToggleQuickset" data-bind="checked: viewOptions.leftVisible" />
+                <label for="viewToggleQuickset"><i class="icon iconMiddle configIconMuted"></i></label>
+              </li>
+              <li>
+                <input type="checkbox" id="viewToggleWidgets" data-bind="checked: viewOptions.rightVisible" />
+                <label for="viewToggleWidgets"><i class="icon iconMiddle cogIconMuted"></i></label>
+              </li>
+            </ul>
+          </div>
+
+          <!-- DEVICE IMAGE -->
+          <section>
+
+            <!-- SOLID COLOR ZONE BACKGROUNDS -->
+            <ul class="zoneBackgrounds" data-bind="with: selectedConfig()">
+              <li class="zoneBackground zone1" data-bind="style: { backgroundImage: zone1LED.color.computedBackground }, css: zone1LED.shiftSequenceClass"></li>
+              <li class="zoneBackground zone2" data-bind="style: { backgroundImage: zone2LED.color.computedBackground }, css: zone2LED.shiftSequenceClass"></li>
+              <li class="zoneBackground zone3" data-bind="style: { backgroundImage: zone3LED.color.computedBackground }, css: zone3LED.shiftSequenceClass"></li>
+              <li class="zoneBackground zone4" data-bind="style: { backgroundImage: zone4LED.color.computedBackground }, css: zone4LED.shiftSequenceClass"></li>
+              <li class="zoneBackground zone5" data-bind="style: { backgroundImage: zone5LED.color.computedBackground }, css: zone5LED.shiftSequenceClass"></li>
+            </ul>
+
+            <!-- DEVICE IMAGE w/ TRANSPARENT KEYS -->
+            <div class="deviceImg" data-bind="css: 'region-' + selectedConfig().selectedRegion().id">
+              <div class="deviceImgContainer"></div>
+            </div>
+          </section>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection" data-bind="with: device.selectedConfig, css: {leftSideClosed: !device.viewOptions.leftVisible()}, visible: device.viewOptions.rightVisible()">
+
+          <!-- GLOBAL ILLUMINATION -->
+          <section class="widget">
+            <div data-bind="template: {name: 'global_illumination', data: { transitionDuration: globalIlluminationModel.transitionDuration, values: $root.device.brightnessValues, observables: globalIlluminationModel.observables } }"></div>
+          </section>
+
+          <!-- REGION SELECTION -->
+          <section id="RegionSelect" class="widget">
+            <div data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }"></div>
+          </section>
+
+          <!-- USB POLLING RATE -->
+          <section id="PollingRate" class="widget">
+            <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2, 1], pollingRateLevel: polling_rate.level, pollingRateHz: polling_rate.hz } }"></div>
+          </section>
+
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+

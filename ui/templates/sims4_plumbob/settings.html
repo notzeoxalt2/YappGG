@@ -1,0 +1,19 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig().settings">
+
+  <div class="fixedSection">
+    <div class="deviceImgContainer">
+      <div class="tag sims4plumbobED" id="TagLED1" data-bind="template:{ name: 'lightingCustom', data:{
+      lightingCustomModel: { lighting: $root.device.selectedConfig().lightingModel } },
+      afterRender: $root.device.selectedConfig().onTemplateLoaded}, css: $root.device.selectedConfig().lightingModel.templateCssClass">
+      </div>
+    </div>
+  </div>
+
+  <div class="scrollingSection">
+
+    <!-- LED DIALOG GETS POOPED INTO HERE -->
+
+  </div>
+
+</div>
+

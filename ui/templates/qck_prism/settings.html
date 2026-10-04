@@ -1,0 +1,24 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device">
+
+  <div class="col col1">
+    <div class="modeSection modeLighting">
+      <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools', data:{ settings: selectedConfig().lightingSettings }, afterRender: selectedConfig().onTemplateLoaded }"></div>
+    </div>
+  </div>
+
+  <div class="col col2">
+    <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template:{ name: 'zoneColors', data:{ model: selectedConfig().individualZoneLightingManager, withZoneLabels: true }, afterRender: selectedConfig().onTemplateLoaded }, css:{ disabled: !viewOptions.isLightingMode() }"></div>
+    <div class="deviceImgContainer"></div>
+  </div>
+
+  <div class="col col3">
+    <!-- LIGHTING TEMPLATES -->
+    <div data-bind="template: { name: 'lightingTemplates', data: { tooltipLocaleKey: 'widgets.qck.tooltip.templates', templates: lightingTemplates, lightingManager: selectedConfig().individualZoneLightingManager } }"></div>
+    <!-- GLOBAL ILLUMINATION -->
+    <section class="widget">
+      <div data-bind="template: {name: 'global_illumination', data: { tooltipLocalizationKey: 'widgets.qck.tooltip.globalIllumination', transitionDuration: selectedConfig().globalIlluminationModel.transitionDuration, values: brightnessValues, observables: selectedConfig().globalIlluminationModel.observables } }"></div>
+    </section>
+  </div>
+
+</div>
+

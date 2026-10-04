@@ -1,0 +1,89 @@
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = Extension
+ClassGuid   = {e2f84ce7-8efa-411c-aa69-97454ca4cb57}
+Provider    = %ProviderName%
+ExtensionId = {E83B603A-ABA0-4D94-BF87-3BBA62F4B383}
+DriverVer = 04/14/2026,15.7.9.637
+CatalogFile = SteelSeries-Sonar-VAD-Extension.cat
+PnpLockDown = 1
+
+[Manufacturer]
+%MfgName% = DeviceExtensions,NTamd64.10.0...17763
+
+[DeviceExtensions.NTamd64.10.0...17763]
+%Device.ExtensionDesc% = DeviceExtension_Install, ROOT\VEN_SSGG&DEV_0001
+
+[DeviceExtension_Install]
+
+[DeviceExtensions.I.GameAPO]
+AddReg = APO.I.Association0.AddReg
+
+[DeviceExtensions.I.ChatAPO]
+AddReg = APO.I.Association1.AddReg
+
+;======================================================
+; APO per-interface registry
+;======================================================
+[APO.I.Association0.AddReg]
+; Instruct audio endpoint builder to set the CLSIDs for stream, mode, and endpoint APOs
+; into the effects property store
+HKR,FX\0,%PKEY_FX_EndpointEffectClsid%,,%SSAPO_EFX_ID%
+
+HKR,FX\0,%PKEY_EFX_ProcessingModes_Supported_For_Streaming%,0x00010000,%AUDIO_SIGNALPROCESSINGMODE_DEFAULT%
+
+HKR,FX\0,%PKEY_FX_Association%,,%KSNODETYPE_ANY%
+
+[APO.I.Association1.AddReg]
+HKR,FX\0,%PKEY_FX_EndpointEffectClsid%,,%SSAPO_CHAT_EFX_ID%
+
+HKR,FX\0,%PKEY_EFX_ProcessingModes_Supported_For_Streaming%,0x00010000,%AUDIO_SIGNALPROCESSINGMODE_DEFAULT%
+
+HKR,FX\0,%PKEY_FX_Association%,,%KSNODETYPE_ANY%
+
+[DeviceExtension_Install.Interfaces]
+; Interfaces for speaker (internal) render endpoint.
+AddInterface = %KSCATEGORY_AUDIO%,    %KSNAME_game_topology_speaker%,   DeviceExtensions.I.GameAPO
+AddInterface = %KSCATEGORY_TOPOLOGY%, %KSNAME_game_topology_speaker%,   DeviceExtensions.I.GameAPO
+AddInterface = %KSCATEGORY_AUDIO%,    %KSNAME_chat_topology_speaker%,   DeviceExtensions.I.ChatAPO
+AddInterface = %KSCATEGORY_TOPOLOGY%, %KSNAME_chat_topology_speaker%,   DeviceExtensions.I.ChatAPO
+AddInterface = %KSCATEGORY_AUDIO%,    %KSNAME_media_topology_speaker%,   DeviceExtensions.I.GameAPO
+AddInterface = %KSCATEGORY_TOPOLOGY%, %KSNAME_media_topology_speaker%,   DeviceExtensions.I.GameAPO
+AddInterface = %KSCATEGORY_AUDIO%,    %KSNAME_aux_topology_speaker%,   DeviceExtensions.I.GameAPO
+AddInterface = %KSCATEGORY_TOPOLOGY%, %KSNAME_aux_topology_speaker%,   DeviceExtensions.I.GameAPO
+
+[DeviceExtension_Install.Components]
+AddComponent = APOSwc,,APOSwc_Install
+
+[APOSwc_Install]
+ComponentIDs = SWC\VEN_SSGG&AID_0001
+
+[Strings]
+Device.ExtensionDesc = "SteelSeries Sonar VAD extensions"
+
+MfgName      = "SteelSeries ApS"
+ProviderName = "SteelSeries ApS"
+
+PKEY_FX_Association			= "{D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},0"
+PKEY_FX_StreamEffectClsid   = "{D04E05A6-594B-4fb6-A80D-01AF5EED7D1D},5"
+PKEY_FX_ModeEffectClsid     = "{D04E05A6-594B-4fb6-A80D-01AF5EED7D1D},6"
+PKEY_FX_EndpointEffectClsid = "{D04E05A6-594B-4fb6-A80D-01AF5EED7D1D},7"
+
+SSAPO_EFX_ID = "{4B7758E3-9361-4F88-83E9-44D8F05184EF}"
+SSAPO_CHAT_EFX_ID = "{4B7758D2-9361-4F88-83E9-44D8F05184EF}"
+
+KSNODETYPE_ANY   = "{00000000-0000-0000-0000-000000000000}"
+
+KSNAME_game_topology_speaker="game_topology_speaker"
+KSNAME_chat_topology_speaker="chat_topology_speaker"
+KSNAME_media_topology_speaker="media_topology_speaker"
+KSNAME_aux_topology_speaker="aux_topology_speaker"
+
+KSCATEGORY_AUDIO = "{6994AD04-93EF-11D0-A3CC-00A0C9223196}"
+KSCATEGORY_TOPOLOGY = "{DDA54A40-1E4C-11D1-A050-405705C10000}"
+
+PKEY_EFX_ProcessingModes_Supported_For_Streaming = "{D3993A3F-99C2-4402-B5EC-A92A0367664B},7"
+
+REG_MULTI_SZ = 0x00010000 ; FLG_ADDREG_TYPE_MULTI_SZ
+
+AUDIO_SIGNALPROCESSINGMODE_DEFAULT = "{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}"

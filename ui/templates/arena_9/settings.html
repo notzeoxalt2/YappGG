@@ -1,0 +1,66 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device">
+  <!-- DEVICE SECTION -->
+  <section class="deviceSection">
+    <!-- ko if: selectedConfig().isSettingsMode -->
+    <div class="renderedDeviceImg"></div>
+    <!-- /ko -->
+    <!-- ko if: selectedConfig().isLightingMode -->
+    <div class="svgDeviceImg" data-bind="svgDeviceImg: { deviceId: $root.device.id, deviceName: $root.device.name, zones: selectedConfig().svgDeviceImageZones(), useZoneSelection: true, onZoneSelect: selectedConfig().onZoneSelect }"></div>
+    <!-- /ko -->
+  </section>
+
+  <section class="widgetsSection">
+    <div class="settingsTabs" data-bind="template: { name: 'settingsTabs', data: selectedConfig().settingsTabsProps }"></div>
+
+    <!-- LIGHTING MODE WIDGETS -->
+    <div data-bind="if: selectedConfig().isLightingMode">
+      <div class="lightingPalette" data-bind="template: { name: 'lightingPalette', data: { ...selectedConfig().lightingPaletteProps, disabledKO: $root.device.isPrismEnabledForDevice } }"></div>
+      <div class="dragSelectionDescription" data-bind="localizedText: 'widgets.lightingMode.zoneDragHelp'"></div>
+    </div>
+
+    <!-- SETTINGS MODE WIDGETS -->
+    <div class="grid-widget-container" data-bind="if: selectedConfig().isSettingsMode">
+      <!-- EQ widget -->
+      <section class="full-width opaque widget" style="width: auto;">
+        <div class="title" data-bind="localizedText: 'widgets.equalizer.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.tooltip.equalizer', tooltip: {}"></a>
+        <div class="equalizer" data-bind="template: { name: 'eq', data: selectedConfig().equalizerProps }"></div>
+      </section>
+
+      <!-- Inactivity timer widget -->
+      <section class="full-width opaque widget" style="width: auto;">
+        <div class="title" data-bind="localizedText: 'widgets.lightingTimeout.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.lightingTimeout.tooltip', tooltip: {}"></a>
+        <div class="powerOptions" data-bind="template: { name: 'powerOptions', data: selectedConfig().powerOptionsProps }"></div>
+      </section>
+
+      <!-- Dim Screen Idle widget -->
+      <section class="full-width opaque widget" style="width: auto;">
+        <div class="title" data-bind="localizedText: 'widgets.oledDisplay.screenIdleDimTimeout.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: {key:'widgets.oledDisplay.screenIdleTimeout.controlPodToolTip'}, tooltip: {} "></a>
+        <div class="screenIdleDim" data-bind="template: { name: 'powerOptions', data: selectedConfig().screenIdleProps } "></div>
+      </section>
+
+      <!-- OLED active brightness widget -->
+      <section class="opaque widget" style="width: auto;">
+        <div class="title" data-bind="localizedText: 'widgets.oledDisplay.screenBrightness.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="tooltip: {}, localizedTitle: {key: 'widgets.oledDisplay.screenBrightness.tooltip', '#DEVICENAME#': $root.device.fullName}"></a>
+        <div class="oledActiveBrightness" data-bind="template: { name: 'oledBrightness', data: selectedConfig().oledBrightnessProps }"></div>
+      </section>
+
+      <!-- Surround Upmix widget -->
+      <section class="opaque widget" style="width:auto;">
+        <div class="title" data-bind="localizedText: 'widgets.surroundUpmix.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.surroundUpmix.tooltip', tooltip: {}"></a>
+        <div class="surroundUpmix" data-bind="template: { name: 'surroundUpmix', data: selectedConfig().surroundUpmixProps }"></div>
+      </section>
+
+      <!-- Surround Volumes widget -->
+      <section class="full-width opaque widget" style="width: auto;">
+        <div class="title" data-bind="localizedText: 'widgets.output.title'"></div>
+        <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.output.tooltipArenas', tooltip: {}"></a>
+        <div class="surroundVolumeSliders" data-bind="template: { name: 'surroundVolumeSliders', data: selectedConfig().surroundVolumeProps }"></div>
+      </section>
+    </div>
+  </section>
+</div> <!-- device -->

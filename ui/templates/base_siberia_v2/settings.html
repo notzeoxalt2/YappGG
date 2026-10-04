@@ -1,0 +1,67 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="with: device.selectedConfig()">
+  <div class="deviceImgContainer fixedSection">
+    <div class="tag siberiaV2Led" data-bind="with: led">
+      <div class="led" data-bind="ledDialog: {}">
+        <span class="title" data-bind="localizedText: 'widgets.led.title'"></span>
+        <div class="colorValue" data-bind="css: backgroundColorClass"></div>
+
+
+        <div class="ledContainer" data-bind="css: {disabled: illuminationDisabled}">
+
+
+          <div class="ledLightingProperties">
+
+            <div class="lightingRow intensity">
+              <div class="controlSet cf">
+                <div class="sectionTitle" data-bind="localizedText: 'common.brightness'"></div>
+                <div class="lightingControl lightingControlIntensity">
+                    <div class="slider" data-bind="template: {name: 'horizSlider', data: {value: intensity, options: [85, 170, 255], displayOptions: intensityDisplayOptions}}"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="lightingRow">
+              <div class="controlSet">
+                <div class="sectionTitle" data-bind="localizedText: 'widgets.led.effectsLabel'"></div>
+
+                <div class="lightingControl dropdownContainer" data-bind="dropdown: selectedPreset, css: {disabled: illuminationDisabled}">
+                  <a href="javascript:void(0)" class="dropdownButton withArrow" data-bind="text: selectedPreset().name"></a>
+
+                  <div class="dropdownContent topGradient">
+                    <div class="scrollableArea">
+                      <ul class="presets" data-bind="foreach: presets">
+                        <li class="" data-bind="text: name"></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div> <!-- dropdownContainer -->
+              </div>
+            </div>
+
+            <!--ko if: selectedPreset().breatheSpeeds -->
+              <div data-bind="template: {name: 'breatheEffect', data: {isBreathing: selectedPreset().breatheSpeeds, breatheSpeeds: selectedPreset().breatheSpeeds, breatheSpeed: selectedPreset().breatheSpeed, illuminationDisabled: illuminationDisabled, displayOptions: selectedPreset().breatheDisplayOptions}}"></div>
+            <!-- /ko -->
+
+            <div class="lightingRow disabledInfo" data-bind="css: { disabledInfoVisible: illuminationDisabled }">
+              <p data-bind="localizedText: 'widgets.led.disabledInfo'">Disable Illumination is selected. Deselect it to view illumination settings.</p>
+            </div>
+
+            <div class="disableIllumination">
+              <input class="disableIlluminationCheck" type="checkbox" data-bind="checked: illuminationDisabled"/>
+              <span class="disableIlluminationText" data-bind="localizedText: 'widgets.led.disableIllumination'"></span>
+            </div>
+          </div>
+
+          <hr class="divider"/>
+        </div>
+
+      </div> <!-- led -->
+    </div> <!-- siberiaV2Led -->
+  </div> <!-- deviceImgContainer -->
+
+
+  <div class="widgetsContainer">
+    <div data-bind="template: {name: 'equalizer', data: { equalizer: $root.device.selectedConfig().equalizer }}"></div>
+  </div>
+</div>
+

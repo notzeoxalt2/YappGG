@@ -1,0 +1,30 @@
+<div class="settings scrollableContainer horizontal vertical settingsHasFixed" data-bind="with: device.selectedConfig().settings">
+
+  <div class="fixedSection">
+    <div class="deviceImgContainer">
+      <div class="tag siberia350LED" data-bind="template:{ name: 'lightingCustom', data:{
+      lightingCustomModel: { lighting: $root.device.selectedConfig().lightingModel } } }, css: $root.device.selectedConfig().lightingModel.templateCssClass">
+      </div>
+    </div>
+  </div>
+
+  <div class="scrollingSection">
+
+    <div class="widgetsColumn">
+      <!-- ko if: $root.device.selectedConfig().dtsHeadphoneXModel -->
+        <div data-bind="template: {name: 'dtsHeadphoneX', data: {toggleField: $root.device.selectedConfig().dtsHeadphoneXModel.toggle, modes: $root.device.selectedConfig().dtsHeadphoneXModel.modes, currentMode: $root.device.selectedConfig().dtsHeadphoneXModel.currentMode, enabled: $root.device.softwareInstalled}}"></div>
+      <!-- /ko -->
+
+      <div data-bind="template: {name: 'equalizer', data: { equalizer: $root.device.selectedConfig().equalizer }}"></div>
+
+      <div data-bind="template: {name: 'micVolume', data: {field: $root.device.selectedConfig().micVolumeModel.level, minVolume: $root.device.minVolume, maxVolume: $root.device.maxVolume}}"></div>
+    </div>
+
+
+    <div class="widgetsColumn">
+      <div data-bind="template: {name: 'auto_mic_gain', data: { toggleField: agc_on_off.state, titleLocaleKey: 'widgets.micAutoOptimization', tooltipLocaleKey: 'widgets.tooltip.micAutoOptimization', numericalValues: [241,0]} }"></div>
+    </div>
+  </div>
+
+</div>
+

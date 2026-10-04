@@ -1,0 +1,67 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical">
+
+    <div class="cols" data-bind="with: device">
+
+        <div class="col col1 fixedSection">
+
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }">
+          </div>
+
+
+          <!-- DEVICE IMAGE TOGGLES -->
+          <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientationModel">
+            <div class="viewToggles">
+              <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button>
+            </div>
+          </div>
+
+
+          <!-- LOGO & WHEEL LED WIDGET -->
+          <div class="LEDhotspot plumbobLED" data-bind="css: orientationModel.view()">
+            <div data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().lightingModel } } }, css: selectedConfig().lightingModel.templateCssClass">
+            </div>
+         </div>
+
+        </div><!-- .col1 -->
+
+        <div class="col col2 fixedSection">
+
+          <!-- DEVICE IMAGE -->
+          <section>
+            <div class="deviceImg">
+              <div class="deviceImgContainer" data-bind="css: orientationModel.view()"></div>
+            </div>
+          </section>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection">
+      <div class="widgetsContainer widgetsContainerStatic">
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+
+
+          <!-- CPI WIDGET -->
+          <section id="Resolution1" class="widget">
+            <div data-bind="template: {name: 'cpi', data: {cpiModel : cpiLevel1}}"></div>
+          </section>
+
+        </div>
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig().settings()">
+
+          <!-- POLLING RATE WIDGET -->
+          <section id="PollingRate" class="widget">
+            <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [4, 3, 2], pollingRateLevel: polling_rate.level, pollingRateHz: polling_rate.hz } }"></div>
+          </section>
+
+        </div>
+
+      </div>
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+

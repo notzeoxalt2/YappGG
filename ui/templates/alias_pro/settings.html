@@ -1,0 +1,51 @@
+<div class="settings scrollableContainer horizontal vertical" data-bind="with: device">
+    <!-- DEVICE SECTION -->
+    <section class="deviceSection">
+    <!-- ko if: selectedConfig().isLightingMode -->
+    <div class="svgDeviceImg" data-bind="svgDeviceImg: { deviceId: $root.device.id, deviceName: $root.device.name, zones: selectedConfig().svgDeviceImgZones(), useZoneSelection: true, onZoneSelect: selectedConfig().onZoneSelect }"></div>
+    <!-- /ko -->
+    <!-- ko ifnot: selectedConfig().isLightingMode -->
+    <div class="renderedDeviceImg"></div>
+    <!-- /ko -->
+    </section>
+
+    <section class="widgetsSection">
+        <div class="settingsTabs" data-bind="template: { name: 'settingsTabs', data: selectedConfig().settingsTabsProps }"></div>
+
+        <!-- AUDIO MODE WIDGETS -->
+        <div class="widgetsContainer" data-bind="if: selectedConfig().isAudioMode">
+            <!-- Sidetone widget -->
+            <section class="full-width opaque widget" style="width: auto;">
+                <div class="micSidetone" data-bind="template: { name: 'micSidetone', data: selectedConfig().sidetoneProps }"></div>
+            </section>
+            <!-- Phantom Power 48V widget -->
+            <section class="full-width opaque widget" style="width: auto;">
+                <div class="phantomPower" data-bind="template: { name: 'phantomPower', data: selectedConfig().phantomPowerProps }"></div>
+            </section>
+        </div>
+
+        <!-- LIGHTING MODE WIDGETS -->
+        <div class="widgetsContainer" data-bind="if: selectedConfig().isLightingMode">
+            <!-- Mic Gain Lighting widget -->
+            <section class="full-width opaque widget" style="width: auto;">
+                <div class="micGainLighting" data-bind="template: { name: 'micGainLighting', data: selectedConfig().micGainLightingProps }"></div>
+            </section>
+            <!-- Mute Buttons widget -->
+            <section class="full-width opaque widget" style="width: auto;">
+                <div class="muteButtonLed" data-bind="template: { name: 'muteButtonLed', data: selectedConfig().muteButtonLedProps }"></div>
+            </section>
+            <!-- Ambient Lighting widget -->
+            <section class="full-width opaque widget" style="width: auto;">
+                <div class="ambientLighting" data-bind="template: { name: 'ambientLighting', data: {...selectedConfig().ambientLightingProps, disabledKO: $root.device.isPrismEnabledForDevice } }"></div>
+            </section>
+        </div>
+
+        <!-- BINDING MODE WIDGETS -->
+        <div class="widgetsContainer" data-bind="if: selectedConfig().isBindingsMode">
+            <!-- Sub App Actions Binding widget -->
+            <section class="full-width opaque widget" style="width: auto;">
+                <div class="subAppActionsBinding" data-bind="template: { name: 'subAppActionsBinding', data: selectedConfig().subAppActionsBindingProps }"></div>
+            </section>
+        </div>
+    </section>
+</div>

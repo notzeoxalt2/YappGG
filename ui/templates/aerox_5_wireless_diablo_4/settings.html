@@ -1,0 +1,152 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" data-bind="css: {lightingMode: device.viewOptions.isLightingMode()}">
+
+  <div class="" data-bind="with: device">
+
+    <div class="col col1 fixedSection" data-bind="css:{ lightingMode: viewOptions.isLightingMode() && !selectedConfig().bluetoothConnected() }">
+      <!-- LIGHTING MODE -->
+      <div class="modeSection modeLighting" data-bind="with: selectedConfig(), css: { disabledSection: !viewOptions.isLightingMode() || selectedConfig().bluetoothConnected() }">
+
+        <div class="widgetsContainer">
+
+          <!-- ACTIVE/REACTIVE TABS -->
+          <div class="modeSelection">
+            <ul class="modeTabs">
+              <li class="modeTab activeMode" data-bind="css: { modeTabActive: !$parent.viewOptions.isReactiveLightingMode() }, click:function(){$parent.viewOptions.isReactiveLightingMode(false) }, localizedText:'common.active'">
+              </li>
+              <li class="modeTab reactiveMode" data-bind="css: { modeTabActive: $parent.viewOptions.isReactiveLightingMode() }, click:function(){ $parent.viewOptions.isReactiveLightingMode(true) }, localizedText:'common.reactive'">
+              </li>
+            </ul>
+          </div>
+
+          <!-- Wrapper div required because the title hover will not show up if it's on the same element as the disabled class -->
+          <div data-bind="localizedTitleConditional: { titleTrue: 'widgets.illuminationDisabledForPrism', conditional: $root.device.isPrismEnabledForDevice}">
+
+            <div class="lightingToolsWidget" data-bind="template:{ name: 'lighting_tools', data:{ settings: { ...lightingSettings, disabled: $root.device.isPrismEnabledForDevice() } }, afterRender: individualZoneLightingManager().onTemplateLoaded }, visible: ($parent.viewOptions.isLightingMode() && !$parent.viewOptions.isReactiveLightingMode())"></div>
+          </div>
+
+          <div class="reactiveColorWidget" data-bind="template:{ name: 'reactive_color_selection', data:{ reactiveColorObservables: reactiveModel.reactiveColor, supportsColorRandomization: true, colorRandomizationEnabledObservable: reactiveModel.randomizationEnabled, reactiveEnabledObservable: reactiveModel.reactiveEnabled, effectsTooltipKeys: reactiveModel.effectsTooltipKeys}}, visible: ($parent.viewOptions.isLightingMode() && $parent.viewOptions.isReactiveLightingMode())"></div>
+
+          <!-- global illumination -->
+          <section class="globalIllumination widget">
+              <div data-bind="template: {name: 'global_illumination_slider', data: { transitionDuration: globalIlluminationModel.transitionDuration, values: $root.device.brightnessValues, observables: globalIlluminationModel.observables, titleText: globalIlluminationModel.titleText, tooltipText: 'widgets.tooltip.globalIlluminationDevice', ticks: 5  } }"></div>
+          </section>
+
+        </div>
+      </div><!-- .modeLighting -->
+
+      <!-- SETTINGS MODE -->
+      <div class="modeSection modeSettings" data-bind="css:{ disabledSection: viewOptions.isLightingMode() && !selectedConfig().bluetoothConnected() }">
+
+        <!-- TRIGGER MAPPING WIDGET -->
+        <!-- Wrapper div required because the title hover will not show up if it's on the same element as the disabled class -->
+        <div class="widget" data-bind="localizedTitleConditional: { titleTrue: 'widgets.bluetooth.disabledHover', conditional: selectedConfig().bluetoothConnected }">
+          <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }, css: { disabled: selectedConfig().bluetoothConnected }">
+          </div>
+        </div>
+
+        <div class="bluetoothMode" data-bind="template: {name: 'bluetoothMode', data: { enabled: selectedConfig().bluetoothConnected, deviceConnected: $root.device.connected, btModeTextKey: 'widgets.bluetooth.bluetoothMode.description4Generic' }}"></div>
+        <!-- DEVICE IMAGE TOGGLES -->
+        <div id="DeviceOrientationToggle" class="btnList btnListStack" data-bind="with: orientationModel">
+          <button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewLeft', css: {active: view() == 'lateralView'}, click: setLateralView"></button><!-- No whitespace for inline-block
+          --><button class="box boxHighlight" data-bind="localizedText: 'deviceConfig.deviceViewTop', css: {active: view() == 'dorsalView'}, click: setDorsalView"></button>
+        </div>
+      </div>
+    </div><!-- .col1 -->
+
+    <div class="col col2 fixedSection">
+      <div class="viewOptions">
+        <ul class="viewControls">
+          <li class="buttonCombineLarge" data-bind="css:{ active: !viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(false);}, localizedText:'main.settings'"></li>
+
+          <!-- Lighting mode button 1: Normal -->
+          <!-- ko if: (selectedConfig().batteryPerformanceModel.model.lowPowerMode.field() == '0' && !selectedConfig().bluetoothConnected()) -->
+          <li class="buttonCombineLarge" data-bind="css:{ active: viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(true);orientationModel.setDorsalView()}, localizedText:'widgets.illumination'"></li>
+          <!-- /ko -->
+
+          <!-- Lighting mode button 2: LPGM enabled or Bluetooth -->
+          <!-- ko if: (selectedConfig().batteryPerformanceModel.model.lowPowerMode.field() != '0' || selectedConfig().bluetoothConnected()) -->
+          <li class="buttonCombineLarge lpgm" data-bind="css:{ active: viewOptions.isLightingMode() }, click:function(){viewOptions.isLightingMode(false);}, localizedTitleConditional: { titleTrue: 'widgets.bluetooth.disabledHover', titleFalse: 'widgets.batteryPerformanceV4.disabledHover', conditional: selectedConfig().bluetoothConnected }, localizedText:'widgets.illumination'"></li>
+          <!-- /ko -->
+
+        </ul>
+      </div>
+
+      <!-- DEVICE IMAGE -->
+      <section data-bind="with: orientationModel">
+        <div class="deviceImg">
+
+          <div class="deviceImgContainer" data-bind="css : view()"></div>
+        </div>
+      </section>
+
+      <div class="illuminationZoneSelectionHint" data-bind="css:{ disabledSection: !viewOptions.isLightingMode() }">
+          <label class="multizoneSelectText" data-bind="localizedText: 'widgets.lightingTools.multizoneSelection', visible: (viewOptions.isLightingMode() && !viewOptions.isReactiveLightingMode())"></label>
+          <label class="noReactiveZoneSelection" data-bind="localizedText:  'widgets.zoneColors.noPerZoneReactive', visible: (viewOptions.isLightingMode() && viewOptions.isReactiveLightingMode())"></label>
+      </div>
+
+      <!-- zone backgrounds -->
+      <div class="zoneBackgrounds disabled" data-bind="attr: { class: 'zoneBackgrounds' }, template:{ name: 'zoneColors', data:{ model: selectedConfig().individualZoneLightingManager, withZoneGuides: true, zoneGuidesOnByDefault: true } }, css:{ disabled: !viewOptions.isLightingMode(), lateralView: orientationModel.view() == 'lateralView', reactive: viewOptions.isReactiveLightingMode() && viewOptions.isLightingMode(), activeBackgrounds: true }"></div>
+
+      <!-- fake zone colors backgrounds widget for reactive background colors -->
+      <div class="zoneBackgrounds reactiveBackgrounds disabled" data-bind="visible: (viewOptions.isLightingMode() && viewOptions.isReactiveLightingMode())">
+        <div id="ZoneColors">
+          <ul class="colorZones">
+            <li class="zone code0"><div class="bgShape" data-bind="style: { backgroundColor: selectedConfig().reactiveModel.reactiveBackgroundColor }"></div></li>
+            <li class="zone code1"><div class="bgShape" data-bind="style: { backgroundColor: selectedConfig().reactiveModel.reactiveBackgroundColor }"></div></li>
+            <li class="zone code2"><div class="bgShape" data-bind="style: { backgroundColor: selectedConfig().reactiveModel.reactiveBackgroundColor }"></div></li>
+          </ul>
+        </div>
+      </div>
+    </div><!-- .col2 -->
+  </div><!-- .fixedSection -->
+
+  <div class="scrollingSection" data-bind="css:{ disabledSection: device.viewOptions.isLightingMode() && !device.selectedConfig().bluetoothConnected() }">
+
+    <div class="grid-widget-container" data-bind="with: device.selectedConfig()">
+
+      <section class="full-width widget" style="width: auto;">
+        <div data-bind="template: {
+                        name: 'multiCPI',
+                        data: {
+                          cpi: user_cpi,
+                          renderKick: $root.device.viewOptions.isLightingMode()
+                        }
+                      }">
+      </section>
+
+
+      <section class="widgetColumn">
+        <section id="BatteryPerformanceV4" class="widget">
+          <div data-bind="template: {name: 'batteryPerformanceV4', data: $root.device.selectedConfig().batteryPerformanceModel, afterRender: $root.device.selectedConfig().batteryPerformanceModel.onTemplateLoaded }"></div>
+        </section>
+
+        <section id="AngleSnap" class="widget" data-bind="localizedTitleConditional: { titleTrue: 'widgets.bluetooth.disabledHover', conditional: bluetoothConnected }">
+          <div data-bind="template: { name: 'angleSnap', data: { snapLevel: settings().angle_snapping.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }, css: { disabled: bluetoothConnected }"></div>
+        </section>
+      </section>
+
+      <section class="widgetColumn">
+        <section class="accelDecel widget" data-bind="localizedTitleConditional: { titleTrue: 'widgets.bluetooth.disabledHover', conditional: bluetoothConnected }">
+          <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: settings().exact_accel.level, exactAim: settings().exact_aim.level, color: $root.device.primaryColor, isLightingModeObservable: $root.device.viewOptions.isLightingMode } } }, css: { disabled: bluetoothConnected } "></div>
+        </section>
+
+        <!-- Polling rate 1: Normal -->
+        <!-- ko if: (batteryPerformanceModel.model.lowPowerMode.field() == '0' && !bluetoothConnected()) -->
+        <section id="PollingRate" class="widget" data-bind="css: { disabled: bluetoothConnected }">
+          <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [3, 2, 1, 0], pollingRateLevel: settings().polling_rate.level, pollingRateHz: settings().polling_rate.hz } }"></div>
+        </section>
+        <!-- /ko -->
+
+        <!-- Polling rate 2: LPGM enabled or Bluetooth -->
+        <!-- ko if: (batteryPerformanceModel.model.lowPowerMode.field() != '0' || bluetoothConnected()) -->
+        <section id="PollingRate" class="widget" data-bind="localizedTitleConditional : { titleTrue: 'widgets.bluetooth.disabledHover', titleFalse: 'widgets.batteryPerformanceV4.disabledHover', conditional: bluetoothConnected }">
+          <div data-bind="click: $root.device.selectedConfig().batteryPerformanceModel.setLPGM, template: {name: 'pollingRate', data: { pollingRateRange: [3, 2, 1, 0], pollingRateLevel: settings().polling_rate.lpgm, pollingRateHz: settings().polling_rate.lpgmhz } }, css: 'disabled' "></div>
+        </section>
+        <!-- /ko -->
+
+      </section>
+
+    </div>
+
+  </div> <!-- scrollingSection -->
+</div>

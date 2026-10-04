@@ -1,0 +1,96 @@
+<div class="settings scrollableContainer horizontal vertical cf">
+
+    <div class="cols cf" data-bind="with: device">
+
+        <div class="col col1">
+        </div><!-- .col1 -->
+
+        <div class="col col2" data-bind="with: selectedConfig()">
+
+          <!-- DEVICE IMAGE -->
+          <section>
+
+              <!-- SOLID COLOR ZONE BACKGROUNDS -->
+              <ul class="zoneBackgrounds">
+                <li class="zoneBackground zone1" data-bind="style: { backgroundColor: zone1LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone2" data-bind="style: { backgroundColor: zone2LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone3" data-bind="style: { backgroundColor: zone3LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone4" data-bind="style: { backgroundColor: zone4LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone5" data-bind="style: { backgroundColor: zone5LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone6" data-bind="style: { backgroundColor: zone6LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone7" data-bind="style: { backgroundColor: zone7LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone8" data-bind="style: { backgroundColor: zone8LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone9" data-bind="style: { backgroundColor: zone9LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone10" data-bind="style: { backgroundColor: zone10LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone11" data-bind="style: { backgroundColor: zone11LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone12" data-bind="style: { backgroundColor: zone12LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone13" data-bind="style: { backgroundColor: zone13LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone14" data-bind="style: { backgroundColor: zone14LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone15" data-bind="style: { backgroundColor: zone15LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone16" data-bind="style: { backgroundColor: zone16LightingModel.shiftSequenceColor }"></li>
+                <li class="zoneBackground zone17" data-bind="style: { backgroundColor: zone17LightingModel.shiftSequenceColor }"></li>
+              </ul>
+
+              <!-- DEVICE IMAGE w/ TRANSPARENT KEYS -->
+              <div class="deviceImg">
+                <div class="deviceImgContainer"></div>
+              </div>
+
+            <!-- LED ZONES -->
+            <div class="ledZones" data-bind="css: { disabled: undeployedSettings().global_effects_enabled() }">
+                <!-- IO PANEL -->
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone17LightingModel, disabled: globalLightingModeEnabled } } }, css: zone17LightingModel.templateCssClass"></div>
+
+                <!-- LEFT TRACK -->
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone1LightingModel, disabled: globalLightingModeEnabled } } }, css: zone1LightingModel.templateCssClass"></div>
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone2LightingModel, disabled: globalLightingModeEnabled } } }, css: zone2LightingModel.templateCssClass"></div>
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone3LightingModel, disabled: globalLightingModeEnabled } } }, css: zone3LightingModel.templateCssClass"></div>
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone4LightingModel, disabled: globalLightingModeEnabled } } }, css: zone4LightingModel.templateCssClass"></div>
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone5LightingModel, disabled: globalLightingModeEnabled } } }, css: zone5LightingModel.templateCssClass"></div>
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone6LightingModel, disabled: globalLightingModeEnabled } } }, css: zone6LightingModel.templateCssClass"></div>
+                <div class="leftSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone7LightingModel, disabled: globalLightingModeEnabled } } }, css: zone7LightingModel.templateCssClass"></div>
+
+                <!-- EXTERNAL -->
+                <div class="bottomSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone8LightingModel, disabled: globalLightingModeEnabled } } }, css: zone8LightingModel.templateCssClass"></div>
+
+                <!-- RIGHT TRACK -->
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone9LightingModel, disabled: globalLightingModeEnabled } } }, css: zone9LightingModel.templateCssClass"></div>
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone10LightingModel, disabled: globalLightingModeEnabled } } }, css: zone10LightingModel.templateCssClass"></div>
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone11LightingModel, disabled: globalLightingModeEnabled } } }, css: zone11LightingModel.templateCssClass"></div>
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone12LightingModel, disabled: globalLightingModeEnabled } } }, css: zone12LightingModel.templateCssClass"></div>
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone13LightingModel, disabled: globalLightingModeEnabled } } }, css: zone13LightingModel.templateCssClass"></div>
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone14LightingModel, disabled: globalLightingModeEnabled } } }, css: zone14LightingModel.templateCssClass"></div>
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone15LightingModel, disabled: globalLightingModeEnabled } } }, css: zone15LightingModel.templateCssClass"></div>
+
+                <!-- LOGO -->
+                <div class="rightSide" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zone16LightingModel, disabled: globalLightingModeEnabled } } }, css: zone16LightingModel.templateCssClass"></div>
+            </div>
+
+          </section>
+
+          <!-- GLOBAL EFFECTS TODO -->
+          <div class="globalEffects">
+            <ul class="widgets" data-bind="css: { disabled: !undeployedSettings().global_effects_enabled() }">
+              <li class="toggle">
+                  <div class="mediumToggleButton" data-bind="toggle: { field: undeployedSettings().global_effects_enabled, numerical: [0, 1] }">
+                      <label class="labelButton" data-bind="css: { on: undeployedSettings().global_effects_enabled(), off: !undeployedSettings().global_effects_enabled() }"></label>
+                      <label class="before"></label>
+                      <label class="after"></label>
+                  </div>
+              </li>
+              <li data-bind="text: currentGlobalEffectLocalizedText"></li>
+              <!-- <li class="btnEdit"></li> -->
+              <!-- TODO -->
+              <li class="globalLED" data-bind="template:{ name: 'lightingCustom', data: { lightingCustomModel: { lighting: zoneAllLightingModel, enabled: globalLightingModeEnabled } } }, css: zoneAllLightingModel.templateCssClass"></li>
+              <!-- <li class="colorValue" style="background: rgb(255, 0, 255);"></li> -->
+              <!-- <li class="placeholderText">PLACEHOLDER</li> -->
+            </ul>
+          </div>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+
+
+</div> <!-- device -->
+

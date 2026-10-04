@@ -1,0 +1,92 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical">
+
+  <div class="cols" data-bind="with: device">
+
+      <div class="col col1 fixedSection">
+
+        <!-- TRIGGER MAPPING WIDGET -->
+        <div data-bind="">
+        </div>
+
+      </div><!-- .col1 -->
+
+      <div class="col col2 fixedSection">
+
+        <!-- DEVICE IMAGE -->
+        <section>
+          <div class="deviceImg">
+            <div class="deviceImgContainer"></div>
+          </div>
+        </section>
+
+      </div><!-- .col2 -->
+  </div><!-- .fixedSection -->
+
+    <div class="scrollingSection">
+      <div class="widgetsContainer widgetsContainerStatic">
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+
+          <!-- ko if : sticksLoaded -->
+          <section id="syncSticks1" class="syncWidget widget">
+            <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.stratus.tooltip.linkSettings', tooltip: {}"></a>
+            <div data-bind="template: {name: 'syncToggle', data: {toggleField: sync_sticks, numericalValues: [1,0], toggleLabelKey: 'widgets.stratus.linkSettings'}}">
+            </div>
+          </section>
+
+          <section id="leftStick" class="analogStick widget">
+            <div data-bind="template: {name: 'analogStick', data: {analogStickModel: joystickModel().leftStick, widgetTitleKey : 'widgets.stratus.leftStick', sensitivityLevels : sensitivityLevels, deadzoneLevels : deadzoneLevels, maxValueLevels : maxValueLevels}}"></div>
+          </section>
+          <!-- /ko -->
+
+        </div><!-- .widgetsColumn -->
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+
+          <!-- ko if : sticksLoaded -->
+          <section id="syncSticksExtension" class="syncWidget linkExtension widget"></section>
+
+          <section id="rightStick" class="analogStick widget">
+            <div data-bind="template: {name: 'analogStick', data: {analogStickModel: joystickModel().rightStick, widgetTitleKey : 'widgets.stratus.rightStick', sensitivityLevels : sensitivityLevels, deadzoneLevels : deadzoneLevels, maxValueLevels : maxValueLevels}}"></div>
+          </section>
+          <!-- /ko -->
+
+        </div><!-- .widgetsColumn -->
+      </div><!-- .widgetContainer -->
+
+      <div class="widgetsContainer widgetsContainerStatic">
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+
+          <!-- ko if : triggersLoaded -->
+          <section id="syncTriggers1" class="syncWidget widget">
+            <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.stratus.tooltip.linkTriggers', tooltip: {}"></a>
+            <div data-bind="template: {name: 'syncToggle', data: {toggleField: sync_triggers, numericalValues: [1,0], toggleLabelKey: 'widgets.stratus.linkTriggers'}}">
+            </div>
+          </section>
+
+          <section id="leftTrigger" class="analogTrigger widget">
+            <div data-bind="template: {name: 'analogTrigger', data: {deadzone: triggerModel().leftTriggerDeadzone, widgetTitleKey : 'widgets.stratus.leftTrigger', deadzoneLevels : deadzoneLevels}}">
+            </div>
+          </section>
+          <!-- /ko -->
+
+        </div><!-- .widgetsColumn -->
+
+        <div class="widgetsColumn" data-bind="with: device.selectedConfig()">
+
+          <!-- ko if : triggersLoaded -->
+          <section id="syncTriggersExtension" class="syncWidget linkExtension widget"></section>
+
+          <section id="rightTrigger" class="analogTrigger widget">
+            <div data-bind="template: {name: 'analogTrigger', data: {deadzone: triggerModel().rightTriggerDeadzone, widgetTitleKey : 'widgets.stratus.rightTrigger', deadzoneLevels : deadzoneLevels}, afterRender: $root.device.selectedConfig().onTemplateLoaded}">
+            </div>
+          </section>
+          <!-- /ko -->
+
+        </div><!-- .widgetsColumn -->
+      </div><!-- .widgetContainer -->
+    </div><!-- .scrollingSection -->
+
+
+</div> <!-- device -->

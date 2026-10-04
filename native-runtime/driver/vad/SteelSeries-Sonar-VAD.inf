@@ -1,0 +1,416 @@
+[Version]
+Signature="$Windows NT$"
+Class=MEDIA
+Provider=%ProviderName%
+ClassGUID={4d36e96c-e325-11ce-bfc1-08002be10318}
+DriverVer = 04/14/2026,15.7.9.759
+CatalogFile=SteelSeries-Sonar-VAD.cat
+PnpLockDown = 1
+
+[SourceDisksNames]
+222="SteelSeries_Sonar_VAD Driver Disk","",222
+
+[SourceDisksFiles]
+SteelSeries-Sonar-VAD.sys=222
+
+[SignatureAttributes]
+SteelSeries-Sonar-VAD.sys=SignatureAttributes.DRM
+
+[SignatureAttributes.DRM]
+DRMLevel=1300
+
+[SignatureAttributes.PETrust]
+PETrust=true
+
+[Manufacturer]
+%MfgName%=SteelSeries_Sonar_VAD,NTamd64.10.0...17763
+
+[SteelSeries_Sonar_VAD.NTamd64.10.0...17763]
+%SteelSeries_Sonar_VAD_SA.DeviceDesc%=SteelSeries_Sonar_VAD_SA, ROOT\VEN_SSGG&DEV_0001
+
+[DestinationDirs]
+SteelSeries_Sonar_VAD_SA.CopyList=13 ; 13=Package's DriverStore directory
+
+;======================================================
+; SteelSeries_Sonar_VAD_SA
+;======================================================
+[SteelSeries_Sonar_VAD_SA.CopyList]
+SteelSeries-Sonar-VAD.sys
+
+[SteelSeries_Sonar_VAD_SA.AddReg]
+HKR,,AssociatedFilters,,"wdmaud,redbook"
+HKR,,Driver,,SteelSeries-Sonar-VAD.sys
+
+HKR,Drivers,SubClasses,,"wave,mixer"
+
+HKR,Drivers\wave\wdmaud.drv,Driver,,wdmaud.drv
+HKR,Drivers\mixer\wdmaud.drv,Driver,,wdmaud.drv
+
+HKR,Drivers\wave\wdmaud.drv,Description,,%SteelSeries_Sonar_VAD_SA.DeviceDesc%
+HKR,Drivers\mixer\wdmaud.drv,Description,,%SteelSeries_Sonar_VAD_SA.DeviceDesc%
+
+HKR,%MEDIA_CATEGORIES_NAME%\%GAME_SPEAKER_NAME_ID%,Name,,%custom_name_game%
+HKR,%MEDIA_CATEGORIES_NAME%\%CHAT_SPEAKER_NAME_ID%,Name,,%custom_name_chat%
+HKR,%MEDIA_CATEGORIES_NAME%\%CHAT_CAPTURE_NAME_ID%,Name,,%custom_name_chat_capture%
+HKR,%MEDIA_CATEGORIES_NAME%\%MEDIA_SPEAKER_NAME_ID%,Name,,%custom_name_media%
+HKR,%MEDIA_CATEGORIES_NAME%\%AUX_SPEAKER_NAME_ID%,Name,,%custom_name_aux%
+HKR,%MEDIA_CATEGORIES_NAME%\%STREAM_NAME_ID%,Name,,%custom_name_stream%
+
+;======================================================
+; render interfaces: game speaker
+;======================================================
+[SteelSeries_Sonar_VAD.Game.I.WaveSpeaker]
+AddReg=SteelSeries_Sonar_VAD.Game.I.WaveSpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Game.I.WaveSpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Game.WaveSpeaker.szPname%
+
+[SteelSeries_Sonar_VAD.Game.I.TopologySpeaker]
+AddReg=SteelSeries_Sonar_VAD.Game.I.TopologySpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Game.I.TopologySpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Game.TopologySpeaker.szPname%
+
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+HKR,FX\0,%PKEY_FX_Association%,,%KSNODETYPE_ANY%
+
+; The following lines opt-in to pull mode.
+HKR,EP\0,%PKEY_AudioEndpoint_Supports_EventDriven_Mode%,0x00010001,0x1
+
+HKR,EP\0,%PKEY_SS_VAD_ROLE%,%REG_DWORD%,%ROLE_GAME%
+
+HKR,EP\0,%PKEY_SS_VAD_Setting_repository%,%REG_SZ%,%GAME_Setting_repository%
+
+HKR,EP\0,%PKEY_AudioDevice_EnableEndpointByDefault%,0x00010001,0x00000100
+
+;======================================================
+; render interfaces: chat speaker
+;======================================================
+[SteelSeries_Sonar_VAD.Chat.I.WaveSpeaker]
+AddReg=SteelSeries_Sonar_VAD.Chat.I.WaveSpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Chat.I.WaveSpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Chat.WaveSpeaker.szPname%
+
+[SteelSeries_Sonar_VAD.Chat.I.TopologySpeaker]
+AddReg=SteelSeries_Sonar_VAD.Chat.I.TopologySpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Chat.I.TopologySpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Chat.TopologySpeaker.szPname%
+
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+HKR,FX\0,%PKEY_FX_Association%,,%KSNODETYPE_ANY%
+
+; The following lines opt-in to pull mode.
+HKR,EP\0,%PKEY_AudioEndpoint_Supports_EventDriven_Mode%,0x00010001,0x1
+
+HKR,EP\0,%PKEY_SS_VAD_ROLE%,%REG_DWORD%,%ROLE_CHAT%
+
+HKR,EP\0,%PKEY_SS_VAD_Setting_repository%,%REG_SZ%,%CHAT_RENDER_Setting_repository%
+
+HKR,EP\0,%PKEY_AudioDevice_EnableEndpointByDefault%,0x00010001,0x00000100
+
+;======================================================
+; chat capture interfaces
+;======================================================
+[SteelSeries_Sonar_VAD.ChatCapture.I.Wave]
+AddReg=SteelSeries_Sonar_VAD.ChatCapture.I.Wave.AddReg
+
+[SteelSeries_Sonar_VAD.ChatCapture.I.Wave.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.ChatCapture.Wave.szPname%
+
+[SteelSeries_Sonar_VAD.ChatCapture.I.Topology]
+AddReg=SteelSeries_Sonar_VAD.ChatCapture.I.Topology.AddReg
+
+[SteelSeries_Sonar_VAD.ChatCapture.I.Topology.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.ChatCapture.Topology.szPname%
+
+; The following lines opt-in to pull mode.
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+
+HKR,EP\0,%PKEY_AudioEndpoint_Supports_EventDriven_Mode%,0x00010001,0x1
+HKR,EP\0,%PKEY_SS_VAD_ROLE%,%REG_DWORD%,%ROLE_CHATCAPTURE%
+
+HKR,EP\0,%PKEY_SS_VAD_Setting_repository%,%REG_SZ%,%CHAT_CAPTURE_Setting_repository%
+
+HKR,EP\0,%PKEY_AudioDevice_EnableEndpointByDefault%,0x00010001,0x00000300
+
+;======================================================
+; render interfaces: media speaker
+;======================================================
+[SteelSeries_Sonar_VAD.Media.I.WaveSpeaker]
+AddReg=SteelSeries_Sonar_VAD.Media.I.WaveSpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Media.I.WaveSpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Media.WaveSpeaker.szPname%
+
+[SteelSeries_Sonar_VAD.Media.I.TopologySpeaker]
+AddReg=SteelSeries_Sonar_VAD.Media.I.TopologySpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Media.I.TopologySpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Media.TopologySpeaker.szPname%
+
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+HKR,FX\0,%PKEY_FX_Association%,,%KSNODETYPE_ANY%
+
+; The following lines opt-in to pull mode.
+HKR,EP\0,%PKEY_AudioEndpoint_Supports_EventDriven_Mode%,0x00010001,0x1
+
+HKR,EP\0,%PKEY_SS_VAD_ROLE%,%REG_DWORD%,%ROLE_MEDIA%
+
+HKR,EP\0,%PKEY_SS_VAD_Setting_repository%,%REG_SZ%,%MEDIA_Setting_repository%
+
+HKR,EP\0,%PKEY_AudioDevice_EnableEndpointByDefault%,0x00010001,0x00000100
+
+;======================================================
+; render interfaces: aux speaker
+;======================================================
+[SteelSeries_Sonar_VAD.Aux.I.WaveSpeaker]
+AddReg=SteelSeries_Sonar_VAD.Aux.I.WaveSpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Aux.I.WaveSpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Aux.WaveSpeaker.szPname%
+
+[SteelSeries_Sonar_VAD.Aux.I.TopologySpeaker]
+AddReg=SteelSeries_Sonar_VAD.Aux.I.TopologySpeaker.AddReg
+
+[SteelSeries_Sonar_VAD.Aux.I.TopologySpeaker.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Aux.TopologySpeaker.szPname%
+
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+HKR,FX\0,%PKEY_FX_Association%,,%KSNODETYPE_ANY%
+
+; The following lines opt-in to pull mode.
+HKR,EP\0,%PKEY_AudioEndpoint_Supports_EventDriven_Mode%,0x00010001,0x1
+
+HKR,EP\0,%PKEY_SS_VAD_ROLE%,%REG_DWORD%,%ROLE_AUX%
+
+HKR,EP\0,%PKEY_SS_VAD_Setting_repository%,%REG_SZ%,%AUX_Setting_repository%
+
+HKR,EP\0,%PKEY_AudioDevice_EnableEndpointByDefault%,0x00010001,0x00000100
+
+;======================================================
+; render interfaces: stream
+;======================================================
+[SteelSeries_Sonar_VAD.Stream.I.Wave]
+AddReg=SteelSeries_Sonar_VAD.Stream.I.Wave.AddReg
+
+[SteelSeries_Sonar_VAD.Stream.I.Wave.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Stream.Wave.szPname%
+
+[SteelSeries_Sonar_VAD.Stream.I.Topology]
+AddReg=SteelSeries_Sonar_VAD.Stream.I.Topology.AddReg
+
+[SteelSeries_Sonar_VAD.Stream.I.Topology.AddReg]
+HKR,,CLSID,,%Proxy.CLSID%
+HKR,,FriendlyName,,%SteelSeries_Sonar_VAD.Stream.Topology.szPname%
+
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+HKR,FX\0,%PKEY_FX_Association%,,%KSNODETYPE_ANY%
+
+; The following lines opt-in to pull mode.
+HKR,EP\0,%PKEY_AudioEndpoint_Association%,,%KSNODETYPE_ANY%
+
+HKR,EP\0,%PKEY_AudioEndpoint_Supports_EventDriven_Mode%,0x00010001,0x1
+
+HKR,EP\0,%PKEY_SS_VAD_ROLE%,%REG_DWORD%,%ROLE_STREAM%
+
+HKR,EP\0,%PKEY_SS_VAD_Setting_repository%,%REG_SZ%,%STREAM_Setting_repository%
+
+HKR,EP\0,%PKEY_AudioDevice_EnableEndpointByDefault%,0x00010001,0x00000300
+
+;======================================================
+; SteelSeries_Sonar_VAD_SA
+;======================================================
+[SteelSeries_Sonar_VAD_SA.NT]
+Include=ks.inf,wdmaudio.inf
+Needs=KS.Registration, WDMAUDIO.Registration, MsApoFxProxy.Registration
+CopyFiles=SteelSeries_Sonar_VAD_SA.CopyList
+AddReg=SteelSeries_Sonar_VAD_SA.AddReg
+
+[SteelSeries_Sonar_VAD_SA.NT.Interfaces]
+;
+; Interfaces for game render endpoint.
+;
+AddInterface=%KSCATEGORY_AUDIO%, %KSNAME_game_wave_speaker%, SteelSeries_Sonar_VAD.Game.I.WaveSpeaker
+AddInterface=%KSCATEGORY_RENDER%, %KSNAME_game_wave_speaker%, SteelSeries_Sonar_VAD.Game.I.WaveSpeaker
+AddInterface=%KSCATEGORY_AUDIO%, %KSNAME_game_topology_speaker%, SteelSeries_Sonar_VAD.Game.I.TopologySpeaker
+AddInterface=%KSCATEGORY_TOPOLOGY%, %KSNAME_game_topology_speaker%, SteelSeries_Sonar_VAD.Game.I.TopologySpeaker
+
+;
+; Interfaces for chat render endpoint.
+;
+AddInterface=%KSCATEGORY_AUDIO%, %KSNAME_chat_wave_speaker%, SteelSeries_Sonar_VAD.Chat.I.WaveSpeaker
+AddInterface=%KSCATEGORY_RENDER%, %KSNAME_chat_wave_speaker%, SteelSeries_Sonar_VAD.Chat.I.WaveSpeaker
+AddInterface=%KSCATEGORY_AUDIO%, %KSNAME_chat_topology_speaker%, SteelSeries_Sonar_VAD.Chat.I.TopologySpeaker
+AddInterface=%KSCATEGORY_TOPOLOGY%, %KSNAME_chat_topology_speaker%, SteelSeries_Sonar_VAD.Chat.I.TopologySpeaker
+
+;
+; Interfaces for chat capture endpoint 
+;
+AddInterface=%KSCATEGORY_AUDIO%,    %KSNAME_chat_capture_wave%, SteelSeries_Sonar_VAD.ChatCapture.I.Wave
+AddInterface=%KSCATEGORY_CAPTURE%,  %KSNAME_chat_capture_wave%, SteelSeries_Sonar_VAD.ChatCapture.I.Wave
+AddInterface=%KSCATEGORY_RENDER%,   %KSNAME_chat_capture_wave%, SteelSeries_Sonar_VAD.ChatCapture.I.Wave
+AddInterface=%KSCATEGORY_AUDIO%,    %KSNAME_chat_capture_topology%, SteelSeries_Sonar_VAD.ChatCapture.I.Topology
+AddInterface=%KSCATEGORY_TOPOLOGY%, %KSNAME_chat_capture_topology%, SteelSeries_Sonar_VAD.ChatCapture.I.Topology
+
+;
+; Interfaces for media render endpoint.
+;
+AddInterface=%KSCATEGORY_AUDIO%,	%KSNAME_media_wave_speaker%, SteelSeries_Sonar_VAD.Media.I.WaveSpeaker
+AddInterface=%KSCATEGORY_RENDER%,	%KSNAME_media_wave_speaker%, SteelSeries_Sonar_VAD.Media.I.WaveSpeaker
+AddInterface=%KSCATEGORY_AUDIO%,	%KSNAME_media_topology_speaker%, SteelSeries_Sonar_VAD.Media.I.TopologySpeaker
+AddInterface=%KSCATEGORY_TOPOLOGY%, %KSNAME_media_topology_speaker%, SteelSeries_Sonar_VAD.Media.I.TopologySpeaker
+
+;
+; Interfaces for aux render endpoint.
+;
+AddInterface=%KSCATEGORY_AUDIO%,	%KSNAME_aux_wave_speaker%, SteelSeries_Sonar_VAD.Aux.I.WaveSpeaker
+AddInterface=%KSCATEGORY_RENDER%,	%KSNAME_aux_wave_speaker%, SteelSeries_Sonar_VAD.Aux.I.WaveSpeaker
+AddInterface=%KSCATEGORY_AUDIO%,	%KSNAME_aux_topology_speaker%, SteelSeries_Sonar_VAD.Aux.I.TopologySpeaker
+AddInterface=%KSCATEGORY_TOPOLOGY%, %KSNAME_aux_topology_speaker%, SteelSeries_Sonar_VAD.Aux.I.TopologySpeaker
+
+;
+; Interfaces for stream render endpoint.
+;
+AddInterface=%KSCATEGORY_AUDIO%, %KSNAME_stream_wave%, SteelSeries_Sonar_VAD.Stream.I.Wave
+AddInterface=%KSCATEGORY_RENDER%, %KSNAME_stream_wave%, SteelSeries_Sonar_VAD.Stream.I.Wave
+AddInterface=%KSCATEGORY_AUDIO%, %KSNAME_stream_topology%, SteelSeries_Sonar_VAD.Stream.I.Topology
+AddInterface=%KSCATEGORY_TOPOLOGY%, %KSNAME_stream_topology%, SteelSeries_Sonar_VAD.Stream.I.Topology
+
+[SteelSeries_Sonar_VAD_SA.NT.Services]
+AddService=SteelSeries_Sonar_VAD,0x00000002,SteelSeries_Sonar_VAD_Service_Inst
+
+[SteelSeries_Sonar_VAD_Service_Inst]
+DisplayName=%SteelSeries_Sonar_VAD.SvcDesc%
+ServiceType=1
+StartType=3
+ErrorControl=1
+ServiceBinary=%13%\SteelSeries-Sonar-VAD.sys
+
+[SteelSeries_Sonar_VAD_SA.NT.HW]
+AddReg = AUDIOHW.AddReg
+
+[AUDIOHW.AddReg]
+; FILE_DEVICE_SOUND
+HKR,,DeviceType,0x10001,0x0000001D
+; SDDL_DEVOBJ_SYS_ALL_ADM_RWX_WORLD_RWX_RES_RWX
+HKR,,Security,,"D:P(A;;GA;;;SY)(A;;GRGWGX;;;BA)(A;;GRGWGX;;;WD)(A;;GRGWGX;;;RC)"
+
+;======================================================
+; WDF
+;======================================================
+[SteelSeries_Sonar_VAD_SA.NT.Wdf]
+KmdfService = SteelSeries_Sonar_VAD, SteelSeries_Sonar_VAD_SA_WdfSect
+[SteelSeries_Sonar_VAD_SA_WdfSect]
+KmdfLibraryVersion = 1.15
+
+;======================================================
+; COMMON
+;======================================================
+[Strings]
+
+MEDIA_CATEGORIES_NAME = "MediaCategories"
+
+KSNAME_game_wave_speaker = "game_wave_speaker"
+KSNAME_game_topology_speaker = "game_topology_speaker"
+
+KSNAME_chat_wave_speaker = "chat_wave_speaker"
+KSNAME_chat_topology_speaker = "chat_topology_speaker"
+
+KSNAME_chat_capture_wave = "chat_capture_wave"
+KSNAME_chat_capture_topology = "chat_capture_topology"
+
+KSNAME_media_wave_speaker = "media_wave_speaker"
+KSNAME_media_topology_speaker = "media_topology_speaker"
+
+KSNAME_aux_wave_speaker = "aux_wave_speaker"
+KSNAME_aux_topology_speaker = "aux_topology_speaker"
+
+KSNAME_stream_wave = "stream_wave"
+KSNAME_stream_topology = "stream_topology"
+
+Proxy.CLSID = "{17CCA71B-ECD7-11D0-B908-00A0C9223196}"
+KSCATEGORY_AUDIO = "{6994AD04-93EF-11D0-A3CC-00A0C9223196}"
+KSCATEGORY_RENDER = "{65E8773E-8F56-11D0-A3B9-00A0C9223196}"
+KSCATEGORY_CAPTURE = "{65E8773D-8F56-11D0-A3B9-00A0C9223196}"
+KSCATEGORY_REALTIME = "{EB115FFC-10C8-4964-831D-6DCB02E6F23F}"
+KSCATEGORY_TOPOLOGY = "{DDA54A40-1E4C-11D1-A050-405705C10000}"
+
+KSNODETYPE_ANY = "{00000000-0000-0000-0000-000000000000}"
+
+REG_BINARY = 0x00000001
+REG_DWORD = 0x00010001
+REG_SZ = 0x00000000
+
+PKEY_AudioEndpoint_Association               = "{1DA5D803-D492-4EDD-8C23-E0C0FFEE7F0E},2"
+PKEY_AudioEndpoint_Supports_EventDriven_Mode = "{1DA5D803-D492-4EDD-8C23-E0C0FFEE7F0E},7"
+PKEY_FX_Association = "{D04E05A6-594B-4FB6-A80D-01AF5EED7D1D},0"
+PKEY_SS_VAD_ROLE = "{F141E7CC-921B-466D-802F-879D6D4AEC17},0"
+PKEY_SS_VAD_Setting_repository = "{F141E7CC-921B-466D-802F-879D6D4AEC17},1"
+PKEY_AudioEngine_OEMFormat = "{E4870E26-3CC5-4CD2-BA46-CA0A9A70ED04},3"
+PKEY_AudioDevice_EnableEndpointByDefault="{F3E80BEF-1723-4FF2-BCC4-7F83DC5E46D4},4"
+
+GAME_SPEAKER_NAME_ID = "{43C0BAD3-6957-4F08-A5C6-AE13C17D9DFA}"
+CHAT_SPEAKER_NAME_ID = "{7113199D-1914-4A23-B3D6-F53C40A2FD40}"
+CHAT_CAPTURE_NAME_ID = "{B86FDF6D-14D5-44C3-B42F-E31A0682080C}"
+MEDIA_SPEAKER_NAME_ID = "{201B3AE5-D970-4EB5-B6B3-0F34A00841B5}"
+AUX_SPEAKER_NAME_ID = "{155C1287-171A-4BC6-BB85-10B31BE2746E}"
+STREAM_NAME_ID = "{2D0F2039-EA2E-4473-B780-0097A3D84E8A}"
+
+ROLE_CHAT = 0x1
+ROLE_GAME = 0x2
+ROLE_CHATCAPTURE = 0x3
+ROLE_STREAM = 0x4
+ROLE_MEDIA = 0x5
+ROLE_AUX = 0x6
+
+GAME_Setting_repository = "Game"
+CHAT_RENDER_Setting_repository = "ChatRender"
+CHAT_CAPTURE_Setting_repository = "ChatCapture"
+MEDIA_Setting_repository = "Media"
+AUX_Setting_repository = "Aux"
+STREAM_Setting_repository = "Stream"
+
+custom_name_chat = "SteelSeries Sonar - Chat"
+custom_name_game = "SteelSeries Sonar - Gaming"
+custom_name_chat_capture = "SteelSeries Sonar - Microphone"
+custom_name_media = "SteelSeries Sonar - Media"
+custom_name_aux = "SteelSeries Sonar - Aux"
+custom_name_stream = "SteelSeries Sonar - Stream"
+
+ProviderName = "SteelSeries ApS"
+MfgName      = "SteelSeries ApS"
+
+SteelSeries_Sonar_VAD_SA.DeviceDesc="SteelSeries Sonar Virtual Audio Device"
+SteelSeries_Sonar_VAD.SvcDesc="SteelSeries Sonar Driver"
+
+;; friendly names
+SteelSeries_Sonar_VAD.Game.WaveSpeaker.szPname="SteelSeries_Sonar_VAD Game Wave Speaker"
+SteelSeries_Sonar_VAD.Game.TopologySpeaker.szPname="SteelSeries_Sonar_VAD Game Topology Speaker"
+
+SteelSeries_Sonar_VAD.Chat.WaveSpeaker.szPname="SteelSeries_Sonar_VAD Chat Wave Speaker"
+SteelSeries_Sonar_VAD.Chat.TopologySpeaker.szPname="SteelSeries_Sonar_VAD Chat Topology Speaker"
+
+SteelSeries_Sonar_VAD.ChatCapture.Wave.szPname="SteelSeries_Sonar_VAD Chat Capture Wave"
+SteelSeries_Sonar_VAD.ChatCapture.Topology.szPname="SteelSeries_Sonar_VAD Chat Capture Topology"
+
+SteelSeries_Sonar_VAD.Media.WaveSpeaker.szPname="SteelSeries_Sonar_VAD Media Wave Speaker"
+SteelSeries_Sonar_VAD.Media.TopologySpeaker.szPname="SteelSeries_Sonar_VAD Media Topology Speaker"
+
+SteelSeries_Sonar_VAD.Aux.WaveSpeaker.szPname="SteelSeries_Sonar_VAD Aux Wave Speaker"
+SteelSeries_Sonar_VAD.Aux.TopologySpeaker.szPname="SteelSeries_Sonar_VAD Aux Topology Speaker"
+
+SteelSeries_Sonar_VAD.Stream.Wave.szPname="SteelSeries_Sonar_VAD Stream Wave"
+SteelSeries_Sonar_VAD.Stream.Topology.szPname="SteelSeries_Sonar_VAD Stream Topology"

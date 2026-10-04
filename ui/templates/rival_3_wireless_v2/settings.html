@@ -1,0 +1,54 @@
+<div class="settings settingsHasFixed scrollableContainer horizontal vertical" >
+    <div class="" data-bind="with: device">
+        <div class="col col1 fixedSection">
+            <!-- TRIGGER MAPPING WIDGET -->
+            <div data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: orientationModel, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }"></div>
+            <div class="bluetoothMode" data-bind="template: {name: 'bluetoothMode', data: { enabled: selectedConfig().bluetoothConnected, deviceConnected: $root.device.connected }}"></div>
+        </div> <!-- .col1 -->
+        <div class="col col2 fixedSection">
+            <!-- DEVICE IMAGE -->
+            <section>
+                <div class="deviceImg" data-bind="with: orientationModel">
+                    <div class="deviceImgContainer" data-bind="css : view()"></div>
+                </div>
+            </section>
+        </div> <!-- .col2 -->
+    </div> <!-- .fixedSection -->
+
+    <div class="scrollingSection" >
+        <div class="grid-widget-container" data-bind="with: device.selectedConfig()">
+            <section class="full-width widget" style="width: auto;">
+                <a href="javascript:void(0)" class="tooltip" data-bind="localizedTitle: 'widgets.independentXYDPI.tooltip', tooltip: {}"></a>
+                <div class="independentXYDPI" data-bind="template: { name: 'independentXYDPI', data: { cpi: user_cpi } }"></div>
+            </section>
+
+            <div class="widgetsColumn" >
+                <section id="BatteryPerformanceV5" class="widget">
+                    <div data-bind="template: {name: 'batteryPerformanceV5', data: $root.device.selectedConfig().batteryPerformanceModelProps}"></div>
+                </section>
+
+                <!-- Polling rate 1: Normal -->
+                <!-- ko if: (batteryPerformanceModelProps.model.lowPowerMode.field() == '0' && !bluetoothConnected()) -->
+                <section id="PollingRate" class="widget" data-bind="css: { disabled: bluetoothConnected }">
+                    <div data-bind="template: {name: 'pollingRate', data: { pollingRateRange: [3, 2, 1, 0], pollingRateLevel: pollingRateProps.level, pollingRateHz: pollingRateProps.hz } }"></div>
+                </section>
+                <!-- /ko -->
+
+                <!-- Polling rate 2: LPGM enabled or Bluetooth -->
+                <!-- ko if: (batteryPerformanceModelProps.model.lowPowerMode.field() != '0' || bluetoothConnected()) -->
+                <section id="PollingRate" class="widget" data-bind="localizedTitleConditional : { titleTrue: 'widgets.bluetooth.disabledHover', titleFalse: 'widgets.batteryPerformanceV4.disabledHover', conditional: bluetoothConnected }">
+                    <div data-bind="click: batteryPerformanceModelProps.setLPGM, template: {name: 'pollingRate', data: { pollingRateRange: [3, 2, 1, 0], pollingRateLevel: pollingRateProps.level, pollingRateHz: pollingRateProps.hz} }, css: 'pollingRateDisabled' "></div>
+                </section>
+                <!-- /ko -->
+            </div>
+            <div class="widgetsColumn">
+                <section class="accelDecel widget">
+                    <div data-bind="template: {name: 'accelDecel', data: { accelDecelData: { accelerationLevels: $root.device.selectedConfig().accelerationLevels, exactAccel: settings().exact_accel.level, exactAim: settings().exact_aim.level, color: $root.device.primaryColor, isLightingModeObservable: $root.device.viewOptions.isLightingMode }, customTooltip: 'widgets.tooltip.accelDecelV2' } }"></div>
+                </section>
+                <section id="AngleSnap" class="widget">
+                    <div data-bind="template: { name: 'angleSnap', data: { snapLevel: settings().angle_snapping.level, snapLevelRange: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] } }"></div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>

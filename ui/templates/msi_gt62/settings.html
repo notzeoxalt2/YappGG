@@ -1,0 +1,103 @@
+<div class="settings cf" data-bind="css: { leftSideClosed: !device.viewOptions.leftVisible(), rightSideClosed: !device.viewOptions.rightVisible()}">
+
+    <div class="cols cf" data-bind="with: device">
+
+        <div class="col col1" data-bind="css: { leftSideClosed: !viewOptions.leftVisible(), rightSideClosed: !viewOptions.rightVisible()}">
+
+          <!-- TRIGGER MAPPING WIDGET -->
+          <div class="highlightMarkers" data-bind="template: {name: 'mappings', data: { bindings: selectedConfig().bindings(), selectBinding: selectedConfig().actionsModel.selectBinding, quicksetDialog: selectedConfig().actionsModel.dialog, orientationModel: {view: function(){}}, openMacroEditor: selectedConfig().actionsModel.dialog.openMacroEditor } }, css: 'region-' + selectedConfig().selectedRegion().id">
+          </div>
+
+          <!-- LED ZONES -->
+          <!-- <pre data-bind="text: ko.toJSON($data.selectedConfig(), null, 2)"></pre> -->
+          <div class="ledZones" data-bind="css: 'lightingMode-' + selectedConfig().activeSleepIlluminationModel.beingEditedEffectId()">
+
+            <!-- ACTIVE ZONES -->
+            <div class="zoneLED zone1LED zoneActiveLED" id="zone1LED" data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().zone1LightingModel } } }, css: selectedConfig().zone1LightingModel.templateCssClass">
+            </div>
+
+            <div class="zoneLED zone2LED zoneActiveLED" id="zone2LED" data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().zone2LightingModel } } }, css: selectedConfig().zone2LightingModel.templateCssClass">
+            </div>
+
+            <div class="zoneLED zone3LED zoneActiveLED" id="zone3LED" data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().zone3LightingModel } } }, css: selectedConfig().zone3LightingModel.templateCssClass">
+            </div>
+
+            <!-- SLEEP ZONES -->
+            <div class="zoneLED zone1LED zoneSleepLED zone1LEDSleep" id="zone1LEDSleep" data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().zone1SleepLightingModel } } }, css: selectedConfig().zone1SleepLightingModel.templateCssClass">
+            </div>
+
+            <div class="zoneLED zone2LED zoneSleepLED zone2LEDSleep" id="zone2LEDSleep" data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().zone2SleepLightingModel } } }, css: selectedConfig().zone2SleepLightingModel.templateCssClass">
+            </div>
+
+            <div class="zoneLED zone3LED zoneSleepLED zone3LEDSleep" id="zone3LEDSleep" data-bind="template:{ name: 'lightingCustom', data:{
+            lightingCustomModel: { lighting: selectedConfig().zone3SleepLightingModel } } }, css: selectedConfig().zone3SleepLightingModel.templateCssClass">
+            </div>
+          </div>
+
+        </div><!-- .col1 -->
+
+        <div class="col col2" data-bind="css: { leftSideClosed: !viewOptions.leftVisible() }">
+
+          <!-- VIEW OPTIONS and LAYERS -->
+          <div class="viewOptions">
+            <ul class="viewControls">
+              <li data-bind="localizedText: 'widgets.viewOptions'"></li>
+              <li>
+                <input type="checkbox" id="viewToggleQuickset" data-bind="checked: viewOptions.leftVisible" />
+                <label for="viewToggleQuickset"><i class="icon iconMiddle configIconMuted"></i></label>
+              </li>
+              <li>
+                <input type="checkbox" id="viewToggleWidgets" data-bind="checked: viewOptions.rightVisible" />
+                <label for="viewToggleWidgets"><i class="icon iconMiddle cogIconMuted"></i></label>
+              </li>
+            </ul>
+          </div>
+
+          <!-- DEVICE IMAGE -->
+          <section>
+
+            <!-- SOLID COLOR ZONE BACKGROUNDS -->
+            <ul class="zoneBackgrounds" data-bind="with: selectedConfig(), css: 'lightingMode-'+selectedConfig().activeSleepIlluminationModel.beingEditedEffectId()">
+              <!-- ACTIVE ZONES -->
+              <li class="zoneBackground zone1 zoneActive zone1Active" data-bind="style: { background: zone1LightingModel.shiftSequenceColor }"></li>
+              <li class="zoneBackground zone2 zoneActive zone2Active" data-bind="style: { background: zone2LightingModel.shiftSequenceColor }"></li>
+              <li class="zoneBackground zone3 zoneActive zone3Active" data-bind="style: { background: zone3LightingModel.shiftSequenceColor }"></li>
+
+              <!-- SLEEP ZONES -->
+              <li class="zoneBackground zone1 zoneSleep zone1Sleep" data-bind="style: { background: zone1SleepLightingModel.shiftSequenceColor }"></li>
+              <li class="zoneBackground zone2 zoneSleep zone2Sleep" data-bind="style: { background: zone2SleepLightingModel.shiftSequenceColor }"></li>
+              <li class="zoneBackground zone3 zoneSleep zone3Sleep" data-bind="style: { background: zone3SleepLightingModel.shiftSequenceColor }"></li>
+            </ul>
+
+            <!-- DEVICE IMAGE w/ TRANSPARENT KEYS -->
+            <div class="deviceImg" data-bind="css: 'region-' + selectedConfig().selectedRegion().id">
+              <div class="deviceImgContainer"></div>
+            </div>
+          </section>
+
+        </div><!-- .col2 -->
+    </div><!-- .fixedSection -->
+
+    <div class="scrollingSection" data-bind="with: device.selectedConfig, css: {leftSideClosed: !device.viewOptions.leftVisible()}, visible: device.viewOptions.rightVisible()">
+
+        <!-- ACTIVE/SLEEP LIGHTING EFFECTS -->
+        <section class="widget">
+          <!-- <pre data-bind="text: ko.toJSON($root.device.brightnessValues, null, 2)"></pre> -->
+
+          <div data-bind="template: {name: 'active_sleep_illumination', data: { effects: $root.device.availableEffects, model: activeSleepIlluminationModel, values: $root.device.brightnessValues, observables: activeSleepIlluminationModel.observables } }"></div>
+        </section>
+
+        <!-- REGION SELECTION -->
+        <section id="RegionSelect" class="widget">
+          <div data-bind="template: {name: 'regionSelect', data: { selectedRegion: selectedRegion, regions: localizedRegions, setSelectedRegion: setSelectedRegion } }"></div>
+        </section>
+
+    </div><!-- .scrollingSection -->
+
+</div> <!-- device -->
+
