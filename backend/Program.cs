@@ -49,6 +49,8 @@ static class Program
         try
         {
             if(args.Contains("--decode-media")){var index=Array.IndexOf(args,"--decode-media");Console.WriteLine(JsonSerializer.Serialize(MediaImport.Decode(args[index+1],args[index+2])));return 0;}
+            if(args.Contains("--audio-apps")){Console.WriteLine(JsonSerializer.Serialize(ApplicationAudio.Apps()));return 0;}
+            if(args.Contains("--preview-outputs")){using var e=new MMDeviceEnumerator();Console.WriteLine(JsonSerializer.Serialize(e.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active).Where(d=>!AudioPolicy.IsGG(d)&&!AudioPolicy.IsTroll(d)&&!d.FriendlyName.Contains("SteelSeries Sonar")).Select(d=>new{id=d.ID,name=d.FriendlyName})));return 0;}
             if(args.Contains("--driver-health")){using var configuration=Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\SteelSeries ApS\Sonar.APO\ChatCapture");Console.WriteLine(JsonSerializer.Serialize(new{installed=DriverSetup.Installed(),configuration=configuration!=null}));return 0;}
             if(args.Contains("--repair-driver")){var result=DriverSetup.Install();DriverBranding.Rename();Console.WriteLine(JsonSerializer.Serialize(result));return 0;}
             if(args.Contains("--cleanup-test")){NativeEngine.CoInitializeEx(0,0);NativeEngine.PrepareRuntime();using var context=new NativeActivationContext();Console.WriteLine(JsonSerializer.Serialize(CleanupTest.Run()));return 0;}
@@ -87,7 +89,7 @@ static class Program
             if(args.Contains("--devices"))
             {
                 using var enumerator=new MMDeviceEnumerator();
-                Console.WriteLine(JsonSerializer.Serialize(enumerator.EnumerateAudioEndPoints(DataFlow.Capture,DeviceState.Active).Where(d=>{try{return !MicEngine.IsSonarMic(d)&&!IndependentEngine.IsCable(d)&&!d.FriendlyName.Contains("SteelSeries Sonar",StringComparison.OrdinalIgnoreCase);}catch(COMException){return false;}}).Select(d=>new{id=d.ID,name=d.FriendlyName})));return 0;
+                Console.WriteLine(JsonSerializer.Serialize(enumerator.EnumerateAudioEndPoints(DataFlow.Capture,DeviceState.Active).Where(d=>{try{return !MicEngine.IsSonarMic(d)&&!AudioPolicy.IsTroll(d)&&!IndependentEngine.IsCable(d)&&!d.FriendlyName.Contains("SteelSeries Sonar",StringComparison.OrdinalIgnoreCase);}catch(COMException){return false;}}).Select(d=>new{id=d.ID,name=d.FriendlyName})));return 0;
             }
             if(args.Contains("--endpoint-report"))
             {
@@ -132,10 +134,17 @@ static class Program
                                 case "status":share.Status();Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,status=engine.Status(),shareProtection=share.Status()}));continue;
                                 case "gain":engine.Gain(message.GetProperty("value").GetSingle(),message.TryGetProperty("muted",out var muted)&&muted.GetBoolean());break;
                                 case "after-effect":engine.AfterEffect(message.TryGetProperty("data",out var after)&&after.ValueKind==JsonValueKind.Object?after:null);break;
+                                case "preview":engine.Preview(message.GetProperty("volume").GetSingle(),message.TryGetProperty("outputId",out var previewOutput)?previewOutput.GetString():null);break;
+                                case "media-destination":engine.MediaDestination(message.GetProperty("destination").GetString()!);break;
+                                case "troll-voice":engine.TrollVoice(message.GetProperty("enabled").GetBoolean());break;
+                                case "application-audio":engine.SelectApplication(message.GetProperty("pid").GetInt32());break;
                                 case "soundboard-ready":engine.PrepareSoundboard();break;
                                 case "soundboard-play":engine.PlaySound(message.GetProperty("soundId").GetString()!,message.GetProperty("path").GetString()!,message.GetProperty("volume").GetSingle());break;
+                                case "soundboard-pause-all":engine.PauseAllSounds();break;
+                                case "soundboard-pause":engine.PauseSound(message.GetProperty("soundId").GetString()!,message.GetProperty("paused").GetBoolean());break;
+                                case "media-gain":engine.MediaGain(message.GetProperty("value").GetSingle());break;
                                 case "soundboard-stop":engine.StopSounds(message.TryGetProperty("soundId",out var soundId)?soundId.GetString():null);break;
-                                case "record-start":engine.RecordStart(message.GetProperty("path").GetString()!);break;
+                                case "record-start":engine.RecordStart(message.GetProperty("path").GetString()!,message.TryGetProperty("route",out var route)?route.GetString()??"clean":"clean");break;
                                 case "record-stop":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,recording=engine.RecordStop()}));continue;
                                 case "capture-test":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,capture=engine.CaptureTest(message.GetProperty("milliseconds").GetInt32())}));continue;
                                 case "snapshot":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,settings=engine.Snapshot(),running=engine.Running}));continue;

@@ -62,6 +62,7 @@ sealed class FunMicrophone : IDisposable
     readonly WasapiCapture capture;
     readonly WasapiOut output;
     readonly BufferedWaveProvider buffer;
+    readonly BufferedWaveProvider? trollBuffer,previewBuffer;readonly WasapiOut? trollOutput,previewOutput;readonly Func<ApplicationAudio?>? application;volatile float previewGain=.15f,mediaGain=1;volatile bool trollVoice=true;volatile string mediaDestination="troll";
     volatile FunDsp? dsp;
     readonly NativeCleanup? cleanup;
     readonly float[] board=new float[4096];
@@ -71,8 +72,9 @@ sealed class FunMicrophone : IDisposable
     public string? Error { get; private set; }
     public string? Name=>dsp?.Name;
     public bool CleanFirst=>cleanup!=null;
-    public FunMicrophone(MMDevice input,MMDevice target,JsonElement? preset,string? cleanedCaptureId=null,SoundboardMixer? soundboard=null)
+    public FunMicrophone(MMDevice input,MMDevice target,JsonElement? preset,string? cleanedCaptureId=null,SoundboardMixer? soundboard=null,MMDevice? troll=null,MMDevice? headphones=null,Func<ApplicationAudio?>? appAudio=null)
     {
+        application=appAudio;
         capture=new WasapiCapture(input,true,20);
         if(soundboard!=null)soundboard.SampleRate=capture.WaveFormat.SampleRate;
         dsp=preset.HasValue?new FunDsp(preset.Value,capture.WaveFormat.SampleRate):null;
@@ -80,9 +82,11 @@ sealed class FunMicrophone : IDisposable
         buffer=new BufferedWaveProvider(WaveFormat.CreateIeeeFloatWaveFormat(capture.WaveFormat.SampleRate,2)){BufferDuration=TimeSpan.FromMilliseconds(250),DiscardOnBufferOverflow=true,ReadFully=true};
         output=new WasapiOut(target,AudioClientShareMode.Shared,false,40);
         output.Init(buffer);
+        if(troll!=null){trollBuffer=new BufferedWaveProvider(buffer.WaveFormat){BufferDuration=TimeSpan.FromMilliseconds(250),DiscardOnBufferOverflow=true,ReadFully=true};trollOutput=new WasapiOut(troll,AudioClientShareMode.Shared,false,40);trollOutput.Init(trollBuffer);}
+        if(headphones!=null){previewBuffer=new BufferedWaveProvider(buffer.WaveFormat){BufferDuration=TimeSpan.FromMilliseconds(250),DiscardOnBufferOverflow=true,ReadFully=true};previewOutput=new WasapiOut(headphones,AudioClientShareMode.Shared,false,40);previewOutput.Init(previewBuffer);}
         capture.DataAvailable+=(_,a)=>{
             var format=capture.WaveFormat;int bytes=format.BitsPerSample/8,channels=format.Channels,frames=a.BytesRecorded/format.BlockAlign;
-            var result=new byte[frames*8];
+            var result=new byte[frames*8];var trollResult=new byte[frames*8];var previewResult=new byte[frames*8];
             bool floating=format.Encoding==WaveFormatEncoding.IeeeFloat||(format is WaveFormatExtensible ext&&ext.SubFormat==new Guid("00000003-0000-0010-8000-00aa00389b71"));
             var activeDsp=dsp;
             try{for(int offset=0;offset<frames;offset+=4096){
@@ -92,19 +96,24 @@ sealed class FunMicrophone : IDisposable
                     clean[frame*2]=clean[frame*2+1]=sample/channels;
                 }
                 cleanup?.Process(clean,count);
-                soundboard?.Mix(board,count);
+                soundboard?.Mix(board,count);var clipPreview=new float[count];Array.Copy(board,clipPreview,count);application?.Invoke()?.Mix(board,count,format.SampleRate);
                 for(int frame=0;frame<count;frame++){
-                    float sample=(clean[frame*2]+clean[frame*2+1])*.5f;sample=activeDsp?.Process(sample)??sample;sample=muted?0:Math.Clamp(sample*gain+board[frame],-.98f,.98f);
+                    float raw=(clean[frame*2]+clean[frame*2+1])*.5f;float sample=muted?0:Math.Clamp(raw*gain+(mediaDestination!="troll"?board[frame]*mediaGain:0),-.98f,.98f);float trollSample=muted?0:Math.Clamp((trollVoice?(activeDsp?.Process(raw)??raw)*gain:0)+(mediaDestination!="clean"?board[frame]*mediaGain:0),-.98f,.98f);float previewSample=muted?0:Math.Clamp(clipPreview[frame]*previewGain,-.98f,.98f);
                     BitConverter.TryWriteBytes(result.AsSpan((frame+offset)*8,4),sample);BitConverter.TryWriteBytes(result.AsSpan((frame+offset)*8+4,4),sample);
+                    BitConverter.TryWriteBytes(trollResult.AsSpan((frame+offset)*8,4),trollSample);BitConverter.TryWriteBytes(trollResult.AsSpan((frame+offset)*8+4,4),trollSample);BitConverter.TryWriteBytes(previewResult.AsSpan((frame+offset)*8,4),previewSample);BitConverter.TryWriteBytes(previewResult.AsSpan((frame+offset)*8+4,4),previewSample);
                 }
             }}catch(Exception error){Error=error.Message;Running=false;return;}
-            if(!closing)buffer.AddSamples(result,0,result.Length);
+            if(!closing){buffer.AddSamples(result,0,result.Length);trollBuffer?.AddSamples(trollResult,0,trollResult.Length);previewBuffer?.AddSamples(previewResult,0,previewResult.Length);}
         };
         capture.RecordingStopped+=(_,a)=>{if(!closing&&a.Exception!=null){Error=a.Exception.Message;Running=false;}};
         output.PlaybackStopped+=(_,a)=>{if(!closing&&a.Exception!=null){Error=a.Exception.Message;Running=false;}};
     }
-    public void Start(){capture.StartRecording();output.Play();Running=true;}
+    public void Start(){capture.StartRecording();output.Play();trollOutput?.Play();previewOutput?.Play();Running=true;}
+    public void MediaGain(float value)=>mediaGain=value;
+    public void MediaDestination(string value)=>mediaDestination=value;
+    public void TrollVoice(bool value)=>trollVoice=value;
+    public void PreviewVolume(float value)=>previewGain=value;
     public void ChangeEffect(JsonElement? preset){dsp=preset.HasValue?new FunDsp(preset.Value,capture.WaveFormat.SampleRate):null;}
     public void Gain(float value,bool mute){gain=value;muted=mute;}
-    public void Dispose(){closing=true;Running=false;using var stopped=new ManualResetEventSlim();capture.RecordingStopped+=(_,_)=>stopped.Set();capture.StopRecording();stopped.Wait(2000);output.Stop();capture.Dispose();output.Dispose();cleanup?.Dispose();}
+    public void Dispose(){closing=true;Running=false;using var stopped=new ManualResetEventSlim();capture.RecordingStopped+=(_,_)=>stopped.Set();capture.StopRecording();stopped.Wait(2000);output.Stop();trollOutput?.Stop();previewOutput?.Stop();capture.Dispose();output.Dispose();trollOutput?.Dispose();previewOutput?.Dispose();cleanup?.Dispose();}
 }

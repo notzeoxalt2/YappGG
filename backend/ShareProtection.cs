@@ -28,7 +28,7 @@ sealed class ShareProtection : IDisposable
         foreach (var d in e.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active))
         using (d)
         {
-            if (!AudioPolicy.IsGG(d)) continue;
+            if (!AudioPolicy.IsGG(d)&&!AudioPolicy.IsTroll(d)) continue;
             var manager = d.AudioSessionManager;
             manager.RefreshSessions();
             for (int i = 0; i < manager.Sessions.Count; i++)

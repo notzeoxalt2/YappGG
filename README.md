@@ -10,9 +10,15 @@ The installer opens YappGG after Finish by default. Start with Windows is checke
 
 Installed builds check public GitHub Releases after startup and every six hours, downloading newer stable versions in the background. Settings has Automatic updates, Check for updates and Restart to update. Installation waits for your explicit restart; Windows may request administrator approval. Release downloads must remain public for friends to update without credentials. No GitHub token is included in the app.
 
-Versions through 0.5.0 need one manual installation of 0.5.1 to gain the updater.
+Versions through 0.5.0 need one manual installation of 0.6.0 to gain the updater.
 
 ## Soundboard
+
+YappGG Microphone carries clean voice; YappGG Troll carries voice plus clips by default. Send media to lets you choose Troll only, normal mic only, or both. Select the same microphone in Discord. Separate meters show captured audio; Discord voice detection may still suppress music if its filters or input threshold are enabled.
+
+Use Play again to stop, Pause/Resume to keep position, and Restart to begin again. Stop all and Pause/Resume all have configurable global shortcuts (Ctrl+Alt+S and Ctrl+Alt+P by default). Your headphone preview and the boosted mic-send volume are independent. Boost is capped at 10,000% with a final peak limit; high settings distort. Videos display muted locally to avoid duplicate audio. Folders organize clips and full music/video files. Selected application capture includes its child processes and excludes unrelated applications; control that application’s original local listening volume in Windows or the app itself.
+
+The signed driver requires active render feed endpoints, which Windows also lists as outputs. Keep physical headphones as your playback output; disabling those feeds breaks the microphones.
 
 Import audio/video files or ZIP packs, including nested folders. Assign each sound a shortcut using a modifier plus a letter, number or function key. Shortcuts also work from the tray. Clips mix after cleanup; YappGG mute silences the combined output. Unsupported or damaged media is reported and skipped. MP3, MP4, WAV, FLAC, Ogg and WebM have been tested. No test clips are bundled.
 

@@ -23,9 +23,12 @@ static class MediaImport
 }
 sealed class SoundboardMixer:IDisposable
 {
-    sealed record Voice(string Id,WaveFileReader Reader,ISampleProvider Provider,float Volume);
+    sealed record Voice(string Id,WaveFileReader Reader,ISampleProvider Provider,float Volume){public bool Paused;}
     readonly object gate=new();readonly List<Voice> voices=[];readonly float[] scratch=new float[4096];
     public int SampleRate { get; set; }=48000;
+    public string[] Paused {get {lock(gate)return voices.Where(v=>v.Paused).Select(v=>v.Id).ToArray();}}
+    public void Pause(string id,bool paused){lock(gate){var voice=voices.FirstOrDefault(v=>v.Id==id)??throw new InvalidOperationException("This sound is not playing.");voice.Paused=paused;}}
+    public void PauseAll(){lock(gate){bool value=voices.Any(v=>!v.Paused);foreach(var voice in voices)voice.Paused=value;}}
     public string[] Playing { get {lock(gate)return voices.Select(v=>v.Id).ToArray();} }
     public void Play(string id,string path,float volume){
         if(!float.IsFinite(volume)||volume<0||volume>1)throw new ArgumentOutOfRangeException(nameof(volume));
@@ -34,7 +37,7 @@ sealed class SoundboardMixer:IDisposable
         }catch{reader.Dispose();throw;}
     }
     public void Mix(float[] destination,int frames){
-        lock(gate){Array.Clear(destination,0,frames);for(int i=voices.Count-1;i>=0;i--){var voice=voices[i];int read=voice.Provider.Read(scratch,0,frames);for(int frame=0;frame<read;frame++)destination[frame]+=scratch[frame]*voice.Volume;if(read<frames){voice.Reader.Dispose();voices.RemoveAt(i);}}}
+        lock(gate){Array.Clear(destination,0,frames);for(int i=voices.Count-1;i>=0;i--){var voice=voices[i];if(voice.Paused)continue;int read=voice.Provider.Read(scratch,0,frames);for(int frame=0;frame<read;frame++)destination[frame]+=scratch[frame]*voice.Volume;if(read<frames){voice.Reader.Dispose();voices.RemoveAt(i);}}}
     }
     public void Stop(string? id=null){lock(gate){for(int i=voices.Count-1;i>=0;i--)if(id==null||voices[i].Id==id){voices[i].Reader.Dispose();voices.RemoveAt(i);}}}
     public void Dispose()=>Stop();
