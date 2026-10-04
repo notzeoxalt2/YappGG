@@ -16,7 +16,9 @@ Versions through 0.5.0 need one manual installation of the latest release to gai
 
 YappGG Microphone carries clean voice; YappGG Troll carries voice plus clips by default. Send media to lets you choose Troll only, normal mic only, or both. Select the same microphone in Discord. Separate meters show captured audio; Discord voice detection may still suppress music if its filters or input threshold are enabled.
 
-Use Play again to stop, Pause/Resume to keep position, and Restart to begin again. Stop all and Pause/Resume all have configurable global shortcuts (Ctrl+Alt+S and Ctrl+Alt+P by default). Your headphone preview and the boosted mic-send volume are independent. Boost is capped at 10,000% with a final peak limit; high settings distort. Videos display muted locally to avoid duplicate audio. Folders organize clips and full music/video files.
+Use Play again to stop, Pause/Resume to keep position, and Restart to begin again. Stop all and Pause/Resume all have configurable global shortcuts (Ctrl+Alt+S and Ctrl+Alt+P by default). Your headphone preview and the boosted mic-send volume are independent. Boost is capped at 10,000% with a final peak limit; high settings distort. The transparent dark sound wheel offers four sizes and 4, 6, 8, 10 or 12 sounds per page. Tile spacing and fitted labels prevent overlaps. Its folder selection and size settings persist across restarts. Nested folders such as Omen/Jett remain separate, including when importing folders or ZIP packs. Rename/move preserves clip IDs, shortcuts and volumes. Updates keep the AppData sound library; folder migration saves a backup before changing its index. Missing audio stays visible with Replace missing file to restore media without losing its settings.
+
+Videos display muted locally to avoid duplicate audio. Folders organize clips and full music/video files.
 
 The signed driver requires active render feed endpoints, which Windows also lists as outputs. Keep physical headphones as your playback output; disabling those feeds breaks the microphones.
 
