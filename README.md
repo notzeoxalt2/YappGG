@@ -12,7 +12,7 @@ The installer opens YappGG after Finish by default. Start with Windows is checke
 
 Installed builds check public GitHub Releases after startup and every six hours, downloading newer stable versions in the background. Settings has Automatic updates, Check for updates and Restart to update. Installation waits for your explicit restart; Windows may request administrator approval. Release downloads must remain public for friends to update without credentials. No GitHub token is included in the app.
 
-Versions through 0.5.0 need one manual installation of the latest release to gain the updater.
+Versions through 0.7.7 may need one manual installation of the latest release if Restart to update fails. The Windows helper starts through Windows Start-Process in a hidden background window and survives the calling app closing, rather than using Node detached launch, which can silently exit before running PowerShell. Readiness is checked before the app quits, with separate verification/shutdown/helper status and failure logs.
 
 ## Soundboard
 

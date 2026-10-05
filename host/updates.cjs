@@ -17,7 +17,18 @@ class Updates {
  set(values){Object.assign(this.state,values);for(const listener of this.listeners)listener({...this.state});}
  async check(){if(!this.allowed||this.busy||this.state.status==='ready'||this.state.status==='downloading'||this.state.status==='installing')return {...this.state};this.busy=true;try{await this.updater.checkForUpdates();}catch{this.set({status:'error',message:'Cannot reach the update downloads. Check your connection; GitHub releases must be public.'});}finally{this.busy=false;}return {...this.state};}
  command(command,values={}){if(command==='status')return {...this.state};if(command==='check')return this.check();if(command==='enabled'){this.set({enabled:!!values.enabled});fs.writeFileSync(this.file,JSON.stringify({enabled:this.state.enabled}));return {...this.state};}if(command==='install')return this.install();throw Error('Unknown update action.');}
- async install(){if(this.installing)return {...this.state};if(!this.allowed||this.state.status!=='ready')throw Error('Download an update before restarting.');this.installing=true;let prepared=false;this.set({status:'installing',message:'Verifying update and closing the microphone engine...'});try{const file=this.updater.installerPath,sha512=this.downloaded?.files?.[0]?.sha512||this.downloaded?.sha512;await this.installer.verifyInstaller(file,sha512);await this.beforeInstall();prepared=true;await this.installer.launchInstaller({app:this.app,data:this.data,file,version:this.state.availableVersion});this.set({message:'Installer is ready. Approve the Windows administrator prompt.'});setImmediate(()=>this.app.quit());return {...this.state};}catch(error){if(prepared)await this.afterInstallFailure();this.set({status:prepared?'ready':'error',message:String(error.message||error)});throw error;}finally{this.installing=false;}}
+ async install(){
+  if(this.installing)return {...this.state};if(!this.allowed||this.state.status!=='ready')throw Error('Download an update before restarting.');this.installing=true;let prepared=false;
+  const event=(phase,detail='')=>fs.appendFileSync(path.join(this.data,'update-install-events.log'),JSON.stringify({time:new Date().toISOString(),phase,detail})+'\n');
+  try{
+   this.set({status:'installing',message:'Verifying the downloaded installer…'});event('verify-start');
+   const file=this.updater.installerPath,sha512=this.downloaded?.files?.[0]?.sha512||this.downloaded?.sha512;await this.installer.verifyInstaller(file,sha512);event('verify-complete');
+   this.set({message:'Closing the microphone engine…'});event('shutdown-start');await this.beforeInstall();prepared=true;event('shutdown-complete');
+   this.set({message:'Starting the Windows update helper…'});event('helper-start');await this.installer.launchInstaller({app:this.app,data:this.data,file,version:this.state.availableVersion});event('helper-ready');
+   this.set({message:'Installer is ready. Approve the Windows administrator prompt.'});setImmediate(()=>this.app.quit());return {...this.state};
+  }catch(error){event('failed',error.message);this.set({status:'error',message:String(error.message||error)});if(prepared){try{await this.afterInstallFailure();}catch(restoreError){event('restore-failed',restoreError.message);}this.set({status:'ready',message:String(error.message||error)});}throw error;}finally{this.installing=false;}
+ }
+
  start(){if(!this.allowed)return;this.initial=setTimeout(()=>{if(this.state.enabled)this.check();},20000);this.initial.unref();this.interval=setInterval(()=>{if(this.state.enabled)this.check();},6*60*60*1000);this.interval.unref();}
  dispose(){clearTimeout(this.initial);clearInterval(this.interval);this.listeners.clear();}
 }
