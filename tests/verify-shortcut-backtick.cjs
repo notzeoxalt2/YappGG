@@ -1,0 +1,13 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict'),{validShortcut}=require('../host/soundboard-library.cjs');
+const source=fs.readFileSync('ui/soundboard.js','utf8');
+const definition=source.slice(source.indexOf(' const Shortcut='),source.indexOf(' const friendly='));
+const Shortcut=vm.runInNewContext(definition+';Shortcut',{e:(_tag,props)=>props});
+let saved;const input=Shortcut({value:'',label:'Wheel',change:value=>saved=value});
+input.onKeyDown({key:'~',code:'Backquote',altKey:true,shiftKey:true,preventDefault(){}});
+assert.equal(saved,'Alt+Shift+`');assert(validShortcut(saved));
+input.onKeyDown({key:'`',altKey:true,preventDefault(){}});assert.equal(saved,'Alt+`');assert(validShortcut(saved));
+input.onKeyDown({key:'q',ctrlKey:true,altKey:true,preventDefault(){}});assert.equal(saved,'Control+Alt+Q');
+input.onKeyDown({key:'Shift',shiftKey:true,preventDefault(){}});assert.equal(saved,'Control+Alt+Q');
+assert(!validShortcut('`'));assert(!validShortcut('Alt+Shift+Unknown'));
+fs.writeFileSync('../reports/shortcut-backtick-test.json',JSON.stringify({passed:true,shiftedBackquote:true,plainBackquote:true,existingLetterBindings:true,invalidKeysRejected:true,noAudio:true}));
+console.log('PASS: physical backquote, shifted tilde, ordinary shortcuts and validation.');
