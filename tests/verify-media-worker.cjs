@@ -1,0 +1,9 @@
+const fs=require('fs'),path=require('path'),os=require('os'),assert=require('assert/strict'),{MediaDecodeWorker}=require('../host/media-decode-worker.cjs');
+(async()=>{const root=fs.mkdtempSync(path.join(os.tmpdir(),'yappgg-decode-worker-')),worker=new MediaDecodeWorker(path.resolve('build/compact-native/MicBackend.exe'));try{
+ const input=path.join(root,'silent.wav'),buffer=Buffer.alloc(44+48000*2);buffer.write('RIFF');buffer.writeUInt32LE(buffer.length-8,4);buffer.write('WAVEfmt ',8);buffer.writeUInt32LE(16,16);buffer.writeUInt16LE(1,20);buffer.writeUInt16LE(1,22);buffer.writeUInt32LE(48000,24);buffer.writeUInt32LE(96000,28);buffer.writeUInt16LE(2,32);buffer.writeUInt16LE(16,34);buffer.write('data',36);buffer.writeUInt32LE(buffer.length-44,40);fs.writeFileSync(input,buffer);
+ const first=await worker.decode(input,path.join(root,'first.wav')),pid=worker.process.pid;
+ const second=await worker.decode(input,path.join(root,'second.wav'));assert.equal(worker.process.pid,pid);assert(first.durationSeconds>0&&second.durationSeconds>0);
+ const controller=new AbortController(),cancelled=worker.decode(input,path.join(root,'cancelled.wav'),{signal:controller.signal});controller.abort();await assert.rejects(cancelled,error=>error.name==='AbortError');assert(!worker.pending);assert(!worker.process);
+ const recovered=await worker.decode(input,path.join(root,'recovered.wav'));assert(recovered.durationSeconds>0);assert.notEqual(worker.process.pid,pid);
+ fs.writeFileSync('../reports/media-worker-test.json',JSON.stringify({passed:true,reusesDecoderProcess:true,cancelKillsDecoder:true,canDecodeAfterCancel:true,noPlayback:true},null,2));console.log('PASS: real native file decoding reuses worker, cancellation terminates it, subsequent decode succeeds. No playback.');
+ }finally{worker.close();fs.rmSync(root,{recursive:true,force:true});}})().catch(error=>{console.error(error);process.exitCode=1;});

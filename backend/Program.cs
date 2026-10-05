@@ -48,6 +48,7 @@ static class Program
     {
         try
         {
+            if(args.Contains("--decode-worker")){string? line;while((line=Console.ReadLine())!=null){using var job=JsonDocument.Parse(line);var request=job.RootElement;var id=request.GetProperty("id").GetInt32();try{var metadata=MediaImport.Decode(request.GetProperty("input").GetString()!,request.GetProperty("target").GetString()!);Console.WriteLine(JsonSerializer.Serialize(new{id,metadata}));}catch(Exception error){Console.WriteLine(JsonSerializer.Serialize(new{id,error=error.Message}));}}return 0;}
             if(args.Contains("--decode-media")){var index=Array.IndexOf(args,"--decode-media");Console.WriteLine(JsonSerializer.Serialize(MediaImport.Decode(args[index+1],args[index+2])));return 0;}
             if(args.Contains("--preview-outputs")){using var e=new MMDeviceEnumerator();Console.WriteLine(JsonSerializer.Serialize(e.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active).Where(d=>!AudioPolicy.IsGG(d)&&!AudioPolicy.IsTroll(d)&&!d.FriendlyName.Contains("SteelSeries Sonar")).Select(d=>new{id=d.ID,name=d.FriendlyName})));return 0;}
             if(args.Contains("--driver-health")){using var configuration=Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\SteelSeries ApS\Sonar.APO\ChatCapture");Console.WriteLine(JsonSerializer.Serialize(new{installed=DriverSetup.Installed(),configuration=configuration!=null}));return 0;}
