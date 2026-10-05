@@ -4,7 +4,7 @@ Windows microphone processing with EQ, local ClearCast cleanup, presets, optiona
 
 Download the installer from [Releases](https://github.com/notzeoxalt2/YappGG/releases). Select your physical microphone in YappGG, then select YappGG Microphone as Discord input and your headphones as output.
 
-Startup readiness checks run concurrently and avoid a repeated routing pass. Transient device/service availability failures retry automatically. A capture-packet watchdog reconnects a stuck stream after a startup grace period; silent packets count as healthy, so quiet speech breaks do not trigger it. Actual Windows reboot/call behavior remains a manual check.
+The host starts the saved microphone independently of UI loading; renderer connection requests wait for this bootstrap instead of starting another stream. Stop/quit cancels bootstrap and a saved disabled mic remains disabled. Startup readiness checks run concurrently and avoid a repeated routing pass. Transient device/service availability failures retry automatically. A capture-packet watchdog reconnects a stuck stream after a startup grace period; silent packets count as healthy, so quiet speech breaks do not trigger it. Actual Windows reboot/call behavior remains a manual check.
 
 The installer opens YappGG after Finish by default. Start with Windows is checked by default. Discord setup and enhancement are optional, with a revert option in Settings.
 

@@ -164,5 +164,5 @@ globalThis.__initializeMic=async()=>{
   next.soundstage.configs.selectedConfigs.chatCapture=next.soundstage.configs.configs.chatCapture[initial.selected];
   next.soundstage.acousticEchoCanceling.aec=initial.configs.map(c=>({id:c.id,state:c.data.acousticEchoCancelingState,isSync:true}));
   updateState(next);
-  if(initial.audioStatus!=='verification')__connectAudio(initial.audioPreferences.inputId);
+  if(initial.audioStatus!=='verification'&&initial.audioPreferences.enabled!==false)__connectAudio(initial.audioPreferences.inputId);
 };
