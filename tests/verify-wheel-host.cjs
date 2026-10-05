@@ -1,0 +1,13 @@
+const assert=require('assert/strict'),{SoundWheel}=require('../host/sound-wheel.cjs');
+class Window{
+ constructor(options){this.options=options;this.visible=false;this.payloads=[];this.webContents={setWindowOpenHandler(){},on(){},send:(_,data)=>this.payloads.push(data)};Window.created++;}
+ setAlwaysOnTop(){}on(){}loadFile(){return Promise.resolve();}isDestroyed(){return false;}isVisible(){return this.visible;}setBounds(bounds){this.bounds=bounds;}show(){this.visible=true;}focus(){this.focused=true;}hide(){this.visible=false;}destroy(){this.destroyed=true;}
+}
+Window.created=0;
+(async()=>{let folder='Omen/Anyone/Funny',page=2,favorites=[],pointer,fail=false;const wheel=new SoundWheel({BrowserWindow:Window,screen:{getCursorScreenPoint:()=>({x:150,y:700}),getDisplayNearestPoint:()=>({workArea:{x:0,y:0,width:1920,height:1080}})},directory:'ui',list:()=>[{id:'fixture',name:'Clip',folder:'Omen/Anyone/Funny'}],folders:()=>['Omen','Omen/Anyone','Omen/Anyone/Funny','Astra','Astra/Basic'],folder:()=>folder,saveFolder:name=>folder=name,page:()=>page,savePage:(_,value)=>page=value,favorites:()=>favorites,toggleFavorite:name=>favorites=[name],layout:()=>({size:560,slots:8}),pointer:point=>pointer=point,shortcut:()=> 'Alt+Shift+`',play:async()=>{if(fail)throw Error('Mic is not ready.');return true;},onError:()=>{}});
+ await wheel.prepare();assert(!wheel.window.isVisible());await wheel.open();const win=wheel.window,payload=win.payloads.at(-1);
+ assert(win.options.focusable&&win.focused);assert.deepEqual(payload.folders,['Astra','Omen']);assert.equal(payload.folder,'Omen');assert.equal(payload.page,2);assert.deepEqual(pointer,{x:960,y:540});
+ await wheel.command({sender:win.webContents},'page',{folder:'Omen',page:3});await wheel.command({sender:win.webContents},'favorite',{folder:'Omen'});await wheel.choose('fixture');assert(!win.visible);await wheel.open();assert.equal(Window.created,1);assert.equal(win.payloads.at(-1).page,3);assert.deepEqual(win.payloads.at(-1).favorites,['Omen']);
+ fail=true;await assert.rejects(wheel.choose('fixture'),/not ready/);assert(win.visible,'Failed play must leave the wheel available');assert.throws(()=>wheel.command({sender:{}},'page',{folder:'Omen',page:1}),/Invalid/);wheel.dispose();
+ require('fs').writeFileSync('../reports/wheel-host-test.json',JSON.stringify({passed:true,focusAndCenteredPointerRequested:true,rootPickerOnly:true,warmWindowReused:true,pageRestoredAfterPlay:true,favoritesRestored:true,failedPlayStaysOpen:true,noActualWindowOrCursorMovement:true,noAudio:true}));console.log('PASS: focused wheel, pointer request, warm reuse, root folders, page/favorites and playback failure. Mocked UI/audio only.');
+})().catch(error=>{console.error(error);process.exitCode=1;});

@@ -22,6 +22,9 @@ static class NativeEngine
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]delegate int GetClassObject(ref Guid clsid,ref Guid iid,out IntPtr result);
     static readonly List<IntPtr> libraries=new();
     [DllImport("kernel32.dll",CharSet=CharSet.Unicode,SetLastError=true)]static extern bool SetDllDirectory(string directory);
+    [DllImport("user32.dll")]static extern bool ClipCursor(nint rectangle);
+    [DllImport("user32.dll")]static extern bool SetCursorPos(int x,int y);
+    public static void WheelPointer(int x,int y){ClipCursor(0);SetCursorPos(x,y);}
     public static void PrepareRuntime()=>SetDllDirectory(SonarPath);
     [DllImport("ole32.dll")]public static extern int CoInitializeEx(nint reserved,uint flags);
     public static T Create<T>(string path,string clsid)
@@ -138,6 +141,7 @@ static class Program
                                 case "media-destination":engine.MediaDestination(message.GetProperty("destination").GetString()!);break;
                                 case "troll-voice":engine.TrollVoice(message.GetProperty("enabled").GetBoolean());break;
                                 case "soundboard-ready":engine.PrepareSoundboard();break;
+                                case "wheel-pointer":NativeEngine.WheelPointer(message.GetProperty("x").GetInt32(),message.GetProperty("y").GetInt32());break;
                                 case "soundboard-play":engine.PlaySound(message.GetProperty("soundId").GetString()!,message.GetProperty("path").GetString()!,message.GetProperty("volume").GetSingle());break;
                                 case "soundboard-volume":engine.SoundVolume(message.GetProperty("soundId").GetString()!,message.GetProperty("volume").GetSingle());break;
                                 case "soundboard-pause-all":engine.PauseAllSounds();break;
