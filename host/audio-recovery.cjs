@@ -1,6 +1,6 @@
-const transientAudioError = message => /80010012|RPC_E_SERVER_DIED|800706ba|80010108|88890004|device.*invalidat|microphone engine (stopped|closed|exited)/i.test(String(message));
+const transientAudioError = message => /80010012|RPC_E_SERVER_DIED|800706ba|80010108|88890004|device.*invalidat|microphone engine (stopped|closed|exited|startup timed out)|microphone capture stalled|selected microphone is disconnected|virtual microphone.*unavailable|microphone stream did not start|YappGG Troll audio endpoint|88890010|8889000f|audio service.*not running/i.test(String(message));
 class AudioRecovery {
- constructor({reconnect,report,log,enabled,delays=[500,1500,4000]}){Object.assign(this,{reconnect,report,log,enabled,delays});this.generation=0;this.active=false;this.exhausted=false;}
+ constructor({reconnect,report,log,enabled,delays=[500,1000,2000,4000,8000]}){Object.assign(this,{reconnect,report,log,enabled,delays});this.generation=0;this.active=false;this.exhausted=false;}
  cancel(){this.generation++;this.active=false;this.exhausted=false;clearTimeout(this.timer);}
  handle(error){
   const message=error?.message||String(error);if(!transientAudioError(message)||!this.enabled())return false;

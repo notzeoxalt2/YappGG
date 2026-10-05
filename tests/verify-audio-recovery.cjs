@@ -1,6 +1,6 @@
 const assert=require('node:assert/strict');const {AudioRecovery,transientAudioError}=require('../host/audio-recovery.cjs');const wait=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{
- assert(transientAudioError('0x80010012 (RPC_E_SERVER_DIED_DNE)'));assert(!transientAudioError('Unknown preset.'));
+ assert(transientAudioError('0x80010012 (RPC_E_SERVER_DIED_DNE)'));assert(!transientAudioError('Unknown preset.'));for(const error of ['Selected microphone is disconnected. Choose an available mic input.','The installed Sonar virtual microphone render endpoint is unavailable.','Microphone capture stalled.','Microphone engine startup timed out.','The microphone stream did not start.'])assert(transientAudioError(error));
  let tries=0,logs=[],states=[];const r=new AudioRecovery({enabled:()=>true,log:v=>logs.push(v),report:v=>states.push(v),delays:[1,1,1],reconnect:async()=>{if(++tries<2)throw Error('still disconnected');}});
  r.handle(Error('0x80010012'));r.handle(Error('0x80010012'));await wait(40);assert.equal(tries,2);assert.equal(r.active,false);assert(logs.some(v=>v.kind==='audio-recovered'));
  let failed=0;const f=new AudioRecovery({enabled:()=>true,log:()=>{},report:v=>states.push(v),delays:[1,1,1],reconnect:async()=>{failed++;throw Error('unplugged');}});f.handle(Error('88890004'));await wait(40);assert.equal(failed,3);assert(f.exhausted);f.handle(Error('88890004'));await wait(10);assert.equal(failed,3);f.cancel();assert(!f.exhausted);

@@ -1,0 +1,3 @@
+using MicOnly;
+long time=0;var h=new CaptureHeartbeat(()=>time);void Check(bool condition,string reason){if(!condition)throw new Exception(reason);}
+h.Start();Check(!h.Ready&&!h.Stalled,"initial state");time=4999;Check(!h.Stalled,"startup grace");time=5000;Check(h.Stalled,"no capture packets");h.Packet();Check(h.Ready&&!h.Stalled,"capture recovered");for(int i=0;i<1000;i++){time+=20;h.Packet();Check(!h.Stalled,"silent packets must count as healthy capture");}time+=2000;Check(h.Stalled,"capture stopped delivering packets");h.Stop();Check(!h.Stalled&&!h.Ready,"stop disables watchdog");h.Start();Check(!h.Stalled&&!h.Ready,"restart resets watchdog");Console.WriteLine("PASS: startup grace, stalled packets, healthy quiet capture, stop and restart. No audio devices opened.");

@@ -16,7 +16,7 @@ static class MediaImport
         if(source.WaveFormat.SampleRate!=48000)source=new WdlResamplingSampleProvider(source,48000);
         using var writer=new WaveFileWriter(target,WaveFormat.CreateIeeeFloatWaveFormat(48000,1));
         var samples=new float[4800];long total=0;int read;
-        while((read=source.Read(samples,0,samples.Length))>0){total+=read;if(total>48000L*1800)throw new InvalidDataException("Sounds can be up to 30 minutes long.");writer.WriteSamples(samples,0,read);}
+        while((read=source.Read(samples,0,samples.Length))>0){total+=read;writer.WriteSamples(samples,0,read);}
         if(total==0)throw new InvalidDataException("This file has no playable audio track.");
         return new{durationSeconds=total/48000.0,sampleRate=48000};
     }

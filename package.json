@@ -1,6 +1,6 @@
 {
   "name": "yappgg",
-  "version": "0.7.2",
+  "version": "0.7.3",
   "private": true,
   "description": "YappGG microphone EQ and processing",
   "main": "host/main.cjs",
@@ -1601,6 +1601,7 @@
     ]
   },
   "dependencies": {
-    "electron-updater": "^6.8.9"
+    "electron-updater": "^6.8.9",
+    "yauzl": "2.10.0"
   }
 }

@@ -68,6 +68,9 @@ sealed class FunMicrophone : IDisposable
     readonly float[] board=new float[4096];
     volatile float gain=1;
     volatile bool muted, closing;
+    readonly CaptureHeartbeat heartbeat=new();
+    public bool CaptureReady=>heartbeat.Ready;
+    public bool CaptureStalled=>heartbeat.Stalled;
     public bool Running { get; private set; }
     public string? Error { get; private set; }
     public string? Name=>dsp?.Name;
@@ -84,6 +87,7 @@ sealed class FunMicrophone : IDisposable
         if(troll!=null){trollBuffer=new BufferedWaveProvider(buffer.WaveFormat){BufferDuration=TimeSpan.FromMilliseconds(250),DiscardOnBufferOverflow=true,ReadFully=true};trollOutput=new WasapiOut(troll,AudioClientShareMode.Shared,false,40);trollOutput.Init(trollBuffer);}
         if(headphones!=null){previewBuffer=new BufferedWaveProvider(buffer.WaveFormat){BufferDuration=TimeSpan.FromMilliseconds(250),DiscardOnBufferOverflow=true,ReadFully=true};previewOutput=new WasapiOut(headphones,AudioClientShareMode.Shared,false,40);previewOutput.Init(previewBuffer);}
         capture.DataAvailable+=(_,a)=>{
+            if(a.BytesRecorded>0)heartbeat.Packet();
             var format=capture.WaveFormat;int bytes=format.BitsPerSample/8,channels=format.Channels,frames=a.BytesRecorded/format.BlockAlign;
             var result=new byte[frames*8];var trollResult=new byte[frames*8];var previewResult=new byte[frames*8];
             bool floating=format.Encoding==WaveFormatEncoding.IeeeFloat||(format is WaveFormatExtensible ext&&ext.SubFormat==new Guid("00000003-0000-0010-8000-00aa00389b71"));
@@ -107,12 +111,12 @@ sealed class FunMicrophone : IDisposable
         capture.RecordingStopped+=(_,a)=>{if(!closing&&a.Exception!=null){Error=a.Exception.Message;Running=false;}};
         output.PlaybackStopped+=(_,a)=>{if(!closing&&a.Exception!=null){Error=a.Exception.Message;Running=false;}};
     }
-    public void Start(){capture.StartRecording();output.Play();trollOutput?.Play();previewOutput?.Play();Running=true;}
+    public void Start(){heartbeat.Start();capture.StartRecording();output.Play();trollOutput?.Play();previewOutput?.Play();Running=true;}
     public void MediaGain(float value)=>mediaGain=value;
     public void MediaDestination(string value)=>mediaDestination=value;
     public void TrollVoice(bool value)=>trollVoice=value;
     public void PreviewVolume(float value)=>previewGain=value;
     public void ChangeEffect(JsonElement? preset){dsp=preset.HasValue?new FunDsp(preset.Value,capture.WaveFormat.SampleRate):null;}
     public void Gain(float value,bool mute){gain=value;muted=mute;}
-    public void Dispose(){closing=true;Running=false;using var stopped=new ManualResetEventSlim();capture.RecordingStopped+=(_,_)=>stopped.Set();capture.StopRecording();stopped.Wait(2000);output.Stop();trollOutput?.Stop();previewOutput?.Stop();capture.Dispose();output.Dispose();trollOutput?.Dispose();previewOutput?.Dispose();cleanup?.Dispose();}
+    public void Dispose(){closing=true;heartbeat.Stop();Running=false;using var stopped=new ManualResetEventSlim();capture.RecordingStopped+=(_,_)=>stopped.Set();capture.StopRecording();stopped.Wait(2000);output.Stop();trollOutput?.Stop();previewOutput?.Stop();capture.Dispose();output.Dispose();trollOutput?.Dispose();previewOutput?.Dispose();cleanup?.Dispose();}
 }
