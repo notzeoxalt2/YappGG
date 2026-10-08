@@ -150,6 +150,7 @@ static class Program
                                 case "soundboard-stop":engine.StopSounds(message.TryGetProperty("soundId",out var soundId)?soundId.GetString():null);break;
                                 case "record-start":engine.RecordStart(message.GetProperty("path").GetString()!,message.TryGetProperty("route",out var route)?route.GetString()??"clean":"clean");break;
                                 case "record-stop":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,recording=engine.RecordStop()}));continue;
+                                case "mic-apps":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,apps=MicrophoneApps.Active()}));continue;
                                 case "capture-test":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,capture=engine.CaptureTest(message.GetProperty("milliseconds").GetInt32())}));continue;
                                 case "snapshot":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,settings=engine.Snapshot(),running=engine.Running}));continue;
                                 default:throw new InvalidDataException("Unknown backend command.");

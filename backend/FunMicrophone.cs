@@ -65,7 +65,8 @@ sealed class FunMicrophone : IDisposable
     readonly BufferedWaveProvider? trollBuffer,previewBuffer;readonly WasapiOut? trollOutput,previewOutput;volatile float previewGain=.15f,mediaGain=1;volatile bool trollVoice=true;volatile string mediaDestination="troll";
     volatile FunDsp? dsp;
     readonly NativeCleanup? cleanup;
-    readonly float[] board=new float[4096];
+    readonly float[] board=new float[4096],clean=new float[8192];
+    byte[] result=new byte[4096*8],trollResult=new byte[4096*8],previewResult=new byte[4096*8];
     volatile float gain=1;
     volatile bool muted, closing;
     readonly CaptureHeartbeat heartbeat=new();
@@ -89,24 +90,24 @@ sealed class FunMicrophone : IDisposable
         capture.DataAvailable+=(_,a)=>{
             if(a.BytesRecorded>0)heartbeat.Packet();
             var format=capture.WaveFormat;int bytes=format.BitsPerSample/8,channels=format.Channels,frames=a.BytesRecorded/format.BlockAlign;
-            var result=new byte[frames*8];var trollResult=new byte[frames*8];var previewResult=new byte[frames*8];
+            int outputBytes=frames*8;if(result.Length<outputBytes){result=new byte[outputBytes];trollResult=new byte[outputBytes];previewResult=new byte[outputBytes];}
             bool floating=format.Encoding==WaveFormatEncoding.IeeeFloat||(format is WaveFormatExtensible ext&&ext.SubFormat==new Guid("00000003-0000-0010-8000-00aa00389b71"));
             var activeDsp=dsp;
             try{for(int offset=0;offset<frames;offset+=4096){
-                int count=Math.Min(4096,frames-offset);var clean=new float[count*2];
+                int count=Math.Min(4096,frames-offset);
                 for(int frame=0;frame<count;frame++){
                     float sample=0;for(int ch=0;ch<channels;ch++){int at=(frame+offset)*format.BlockAlign+ch*bytes;sample+=floating?BitConverter.ToSingle(a.Buffer,at):bytes==2?BitConverter.ToInt16(a.Buffer,at)/32768f:bytes==4?BitConverter.ToInt32(a.Buffer,at)/2147483648f:0;}
                     clean[frame*2]=clean[frame*2+1]=sample/channels;
                 }
                 cleanup?.Process(clean,count);
-                soundboard?.Mix(board,count);var clipPreview=new float[count];Array.Copy(board,clipPreview,count);
+                if(soundboard!=null)soundboard.Mix(board,count);else Array.Clear(board,0,count);
                 for(int frame=0;frame<count;frame++){
-                    float raw=(clean[frame*2]+clean[frame*2+1])*.5f;float sample=muted?0:Math.Clamp(raw*gain+(mediaDestination!="troll"?board[frame]*mediaGain:0),-.98f,.98f);float trollSample=muted?0:Math.Clamp((trollVoice?(activeDsp?.Process(raw)??raw)*gain:0)+(mediaDestination!="clean"?board[frame]*mediaGain:0),-.98f,.98f);float previewSample=muted?0:Math.Clamp(clipPreview[frame]*previewGain,-.98f,.98f);
+                    float raw=(clean[frame*2]+clean[frame*2+1])*.5f;float sample=muted?0:Math.Clamp(raw*gain+(mediaDestination!="troll"?board[frame]*mediaGain:0),-.98f,.98f);float trollSample=muted?0:Math.Clamp((trollVoice?(activeDsp?.Process(raw)??raw)*gain:0)+(mediaDestination!="clean"?board[frame]*mediaGain:0),-.98f,.98f);float previewSample=muted?0:Math.Clamp(board[frame]*previewGain,-.98f,.98f);
                     BitConverter.TryWriteBytes(result.AsSpan((frame+offset)*8,4),sample);BitConverter.TryWriteBytes(result.AsSpan((frame+offset)*8+4,4),sample);
                     BitConverter.TryWriteBytes(trollResult.AsSpan((frame+offset)*8,4),trollSample);BitConverter.TryWriteBytes(trollResult.AsSpan((frame+offset)*8+4,4),trollSample);BitConverter.TryWriteBytes(previewResult.AsSpan((frame+offset)*8,4),previewSample);BitConverter.TryWriteBytes(previewResult.AsSpan((frame+offset)*8+4,4),previewSample);
                 }
             }}catch(Exception error){Error=error.Message;Running=false;return;}
-            if(!closing){buffer.AddSamples(result,0,result.Length);trollBuffer?.AddSamples(trollResult,0,trollResult.Length);previewBuffer?.AddSamples(previewResult,0,previewResult.Length);}
+            if(!closing){buffer.AddSamples(result,0,outputBytes);trollBuffer?.AddSamples(trollResult,0,outputBytes);previewBuffer?.AddSamples(previewResult,0,outputBytes);}
         };
         capture.RecordingStopped+=(_,a)=>{if(!closing&&a.Exception!=null){Error=a.Exception.Message;Running=false;}};
         output.PlaybackStopped+=(_,a)=>{if(!closing&&a.Exception!=null){Error=a.Exception.Message;Running=false;}};
