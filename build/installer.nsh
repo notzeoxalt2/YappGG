@@ -15,6 +15,7 @@ Var YappDiscord
 Var YappEnhance
 Var YappSetupArgs
 Var YappDriverFailed
+Var YappDriverPendingRestart
 !macro customInit
   StrCpy $YappUpdating 0
   ${GetParameters} $R0
@@ -61,11 +62,18 @@ Var YappDriverFailed
 !macro customInstall
   ${If} $YappUpdating != 1
   StrCpy $YappDriverFailed 0
+  StrCpy $YappDriverPendingRestart 0
   nsExec::ExecToStack '"$INSTDIR\resources\backend-bin\MicBackend.exe" --install-driver'
   Pop $0
   Pop $1
   ${If} $0 == 3010
-    SetRebootFlag true
+    StrCpy $YappDriverPendingRestart 1
+    DetailPrint "Windows marked the microphone driver as pending reboot. Setup will not restart the PC."
+    ReadEnvStr $3 "PROGRAMDATA"
+    CreateDirectory "$3\YappGG"
+    FileOpen $2 "$3\YappGG\driver-pending-reboot.txt" w
+    FileWrite $2 "Windows requested a reboot to activate the microphone driver. YappGG setup will not restart your PC."
+    FileClose $2
   ${ElseIf} $0 != 0
     StrCpy $YappDriverFailed 1
     ReadEnvStr $3 "PROGRAMDATA"
@@ -75,9 +83,10 @@ Var YappDriverFailed
     FileClose $2
     DetailPrint "Microphone driver setup needs repair. Log: $3\YappGG\driver-install.log"
     IfSilent +2
-    MessageBox MB_ICONEXCLAMATION "YappGG files are installed, but Windows could not finish microphone driver setup. Restart Windows and use Settings > Repair microphone. Details: $3\YappGG\driver-install.log"
+    MessageBox MB_ICONEXCLAMATION "YappGG files are installed, but Windows could not finish microphone driver setup. Use Settings > Repair microphone. Setup will not restart your PC. Details: $3\YappGG\driver-install.log"
   ${EndIf}
   ${If} $YappDriverFailed == 0
+  ${AndIf} $YappDriverPendingRestart == 0
   nsExec::ExecToStack '"$INSTDIR\resources\backend-bin\MicBackend.exe" --brand-adapter'
   Pop $0
   Pop $1
@@ -88,11 +97,13 @@ Var YappDriverFailed
   ${EndIf}
   ${If} $YappDiscord == 1
   ${AndIf} $YappDriverFailed == 0
+  ${AndIf} $YappDriverPendingRestart == 0
     StrCpy $YappSetupArgs "$YappSetupArgs --discord-setup"
   ${EndIf}
   ${If} $YappEnhance == 1
     StrCpy $YappSetupArgs "$YappSetupArgs --enhance-discord"
   ${EndIf}
+  SetRebootFlag false
   ${StdUtils.ExecShellAsUser} $0 "$INSTDIR\YappGG.exe" "open" "$YappSetupArgs"
   ${EndIf}
 !macroend
