@@ -14,6 +14,7 @@ Var YappStartup
 Var YappDiscord
 Var YappEnhance
 Var YappSetupArgs
+Var YappDriverFailed
 !macro customInit
   StrCpy $YappUpdating 0
   ${GetParameters} $R0
@@ -59,21 +60,34 @@ Var YappSetupArgs
 !macroend
 !macro customInstall
   ${If} $YappUpdating != 1
+  StrCpy $YappDriverFailed 0
   nsExec::ExecToStack '"$INSTDIR\resources\backend-bin\MicBackend.exe" --install-driver'
   Pop $0
   Pop $1
-  ${If} $0 != 0
-    MessageBox MB_ICONSTOP "Microphone driver setup failed: $1"
-    Abort
+  ${If} $0 == 3010
+    SetRebootFlag true
+  ${ElseIf} $0 != 0
+    StrCpy $YappDriverFailed 1
+    ReadEnvStr $3 "PROGRAMDATA"
+    CreateDirectory "$3\YappGG"
+    FileOpen $2 "$3\YappGG\driver-install.log" w
+    FileWrite $2 "$1"
+    FileClose $2
+    DetailPrint "Microphone driver setup needs repair. Log: $3\YappGG\driver-install.log"
+    IfSilent +2
+    MessageBox MB_ICONEXCLAMATION "YappGG files are installed, but Windows could not finish microphone driver setup. Restart Windows and use Settings > Repair microphone. Details: $3\YappGG\driver-install.log"
   ${EndIf}
+  ${If} $YappDriverFailed == 0
   nsExec::ExecToStack '"$INSTDIR\resources\backend-bin\MicBackend.exe" --brand-adapter'
   Pop $0
   Pop $1
+  ${EndIf}
   StrCpy $YappSetupArgs "--install-preferences"
   ${If} $YappStartup != 1
     StrCpy $YappSetupArgs "$YappSetupArgs --no-startup"
   ${EndIf}
   ${If} $YappDiscord == 1
+  ${AndIf} $YappDriverFailed == 0
     StrCpy $YappSetupArgs "$YappSetupArgs --discord-setup"
   ${EndIf}
   ${If} $YappEnhance == 1

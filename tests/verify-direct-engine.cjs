@@ -1,0 +1,5 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');const source=fs.readFileSync('host/main.cjs','utf8');const start=source.indexOf("if(engineInfo.ggRunning)throw"),end=source.indexOf("   const devices=",start),body=source.slice(start,end);
+(async()=>{for(const ggRunning of [false,true]){let created=0;const context={engineInfo:{ggRunning},health:{installed:true,configuration:true},nativeClient:null,audioStatus:{},sendAudio(){},repairDriver:async()=>{throw Error('Unexpected repair');},appDirectory:'fixture',app:{isPackaged:true},path:require('path'),NativeClient:class{constructor(_exe,_log,mode){created++;assert.equal(mode,'exclusive');}},trace(){}};
+let failure;try{await vm.runInNewContext('(async()=>{'+body+'})()',context);}catch(error){failure=error;}
+if(ggRunning){assert.equal(created,0);assert(failure.message.includes('Close SteelSeries Sonar'));}else{assert.equal(created,1);assert.equal(context.nativeClient.engineMode,'exclusive');}}
+console.log('PASS: no GG client is selected; no-GG PCs use direct engine, conflicts get a clear message. Mocked processes/audio.');})().catch(error=>{console.error(error);process.exitCode=1;});

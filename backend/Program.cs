@@ -76,7 +76,7 @@ static class Program
                 using var communications=devices.GetDefaultAudioEndpoint(DataFlow.Render,Role.Communications);
                 Console.WriteLine(JsonSerializer.Serialize(new{playback=playback.FriendlyName,communicationsPlayback=communications.FriendlyName,virtualMicIsPlaybackDefault=MicEngine.IsSonarMic(playback)||MicEngine.IsSonarMic(communications),screenShare="Select a physical playback device or application-only sound. Whole-system capture may include the virtual microphone render stream."}));return 0;
             }
-            if(args.Contains("--install-driver")){Console.WriteLine(JsonSerializer.Serialize(DriverSetup.Install()));return 0;}
+            if(args.Contains("--install-driver")){var json=JsonSerializer.Serialize(DriverSetup.Install());Console.WriteLine(json);using var result=JsonDocument.Parse(json);return result.RootElement.GetProperty("reboot").GetBoolean()?3010:0;}
             if(args.Contains("--import-presets"))
             {
                 using var db=new SqliteConnection(new SqliteConnectionStringBuilder{DataSource=@"C:\ProgramData\SteelSeries\GG\apps\sonar\db\database.db",Mode=SqliteOpenMode.ReadOnly}.ToString());db.Open();
