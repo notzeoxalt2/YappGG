@@ -1,0 +1,34 @@
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert/strict');
+const { execFileSync } = require('child_process');
+const asar = require('@electron/asar');
+const crypto = require('crypto');
+const root = path.resolve(__dirname, '..');
+const version = require('../package.json').version;
+const release = path.resolve(root, '../release');
+const sevenZip = process.argv[2];
+assert(sevenZip, 'Pass a full 7-Zip executable path (NSIS archive support required)');
+const installer = path.join(release, `YappGG-Setup-${version}.exe`);
+const listing = file => execFileSync(sevenZip, ['l', '-slt', file], { windowsHide: true, encoding: 'utf8' });
+const installListing = listing(installer);
+assert(installListing.includes('Type = Nsis'));
+assert(!/WinShell\.dll/i.test(installListing), 'Installer still embeds WinShell');
+const entry = installListing.split(/\r?\n/).find(line => /^Path = .*Uninstall YappGG\.exe$/.test(line));
+assert(entry, 'Installer must still include its uninstaller');
+const reportDir = path.resolve(root, '../reports');
+const uninstallCopy = path.join(reportDir, `uninstaller-${version}-inspection.exe`);
+fs.writeFileSync(uninstallCopy, execFileSync(sevenZip, ['e', '-so', installer, entry.slice(7)], { windowsHide: true, maxBuffer: 20 * 1024 * 1024 }));
+assert(!/WinShell\.dll/i.test(listing(uninstallCopy)), 'Uninstaller still embeds WinShell');
+const archive = path.join(release, 'win-unpacked/resources/app.asar');
+for (const name of ['ui/mount.js', 'host/main.cjs', 'host/native-client.cjs', 'host/update-install.cjs']) {
+  assert(asar.extractFile(archive, name).equals(fs.readFileSync(path.join(root, name))), 'Packaged file mismatch: ' + name);
+}
+const packedPackage = JSON.parse(asar.extractFile(archive, 'package.json'));
+const sourcePackage = require('../package.json');
+for (const key of ['name', 'version', 'main', 'dependencies']) assert.deepEqual(packedPackage[key], sourcePackage[key], 'Packaged metadata mismatch: ' + key);
+const hash = file => crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+assert.equal(hash(path.join(root, 'build/compact-native/MicBackend.dll')), hash(path.join(release, 'win-unpacked/resources/backend-bin/MicBackend.dll')));
+const report = { version, passed: true, installerBytes: fs.statSync(installer).size, installerWinShellAbsent: true, uninstallerWinShellAbsent: true, uninstallerPresent: true, packagedFilesMatch: true, nativeBackendMatches: true, installedLocally: false, affectedFriendPcVerified: false, liveAudioTested: false };
+fs.writeFileSync(path.join(reportDir, `packaged-${version}-verification.json`), JSON.stringify(report, null, 2));
+console.log(JSON.stringify(report));
