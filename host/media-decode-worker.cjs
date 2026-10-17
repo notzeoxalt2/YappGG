@@ -1,7 +1,7 @@
 const {spawn}=require('child_process'),readline=require('readline');
 class MediaDecodeWorker{
  constructor(executable){this.executable=executable;this.serial=0;}
- decode(input,target,{signal}={}){
+ decode(input,target,{signal,probe=false}={}){
   signal?.throwIfAborted();if(this.pending)return Promise.reject(Error('Media decoder is busy.'));
   clearTimeout(this.idle);
   if(!this.process){const child=this.process=spawn(this.executable,['--decode-worker'],{windowsHide:true,stdio:['pipe','pipe','ignore']});
@@ -10,7 +10,7 @@ class MediaDecodeWorker{
    child.on('error',fail);child.on('exit',()=>fail(Error('Media decoder stopped.')));
   }
   const child=this.process,id=++this.serial;
-  return new Promise((resolve,reject)=>{const abort=()=>{this.pending=null;signal.removeEventListener('abort',abort);this.process=null;child.once('close',()=>reject(signal.reason));child.kill();};const clean=()=>signal?.removeEventListener('abort',abort);this.pending={id,resolve,reject,clean};signal?.addEventListener('abort',abort,{once:true});child.stdin.write(JSON.stringify({id,input,target})+'\n');});
+  return new Promise((resolve,reject)=>{const abort=()=>{this.pending=null;signal.removeEventListener('abort',abort);this.process=null;child.once('close',()=>reject(signal.reason));child.kill();};const clean=()=>signal?.removeEventListener('abort',abort);this.pending={id,resolve,reject,clean};signal?.addEventListener('abort',abort,{once:true});child.stdin.write(JSON.stringify({id,input,target,probe})+'\n');});
  }
  close(){clearTimeout(this.idle);if(this.pending)return;const child=this.process;this.process=null;child?.stdin.end();}
 }

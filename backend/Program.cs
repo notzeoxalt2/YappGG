@@ -51,8 +51,9 @@ static class Program
     {
         try
         {
-            if(args.Contains("--decode-worker")){string? line;while((line=Console.ReadLine())!=null){using var job=JsonDocument.Parse(line);var request=job.RootElement;var id=request.GetProperty("id").GetInt32();try{var metadata=MediaImport.Decode(request.GetProperty("input").GetString()!,request.GetProperty("target").GetString()!);Console.WriteLine(JsonSerializer.Serialize(new{id,metadata}));}catch(Exception error){Console.WriteLine(JsonSerializer.Serialize(new{id,error=error.Message}));}}return 0;}
+            if(args.Contains("--decode-worker")){string? line;while((line=Console.ReadLine())!=null){using var job=JsonDocument.Parse(line);var request=job.RootElement;var id=request.GetProperty("id").GetInt32();try{var metadata=request.TryGetProperty("probe",out var probe)&&probe.GetBoolean()?MediaImport.Probe(request.GetProperty("input").GetString()!):MediaImport.Decode(request.GetProperty("input").GetString()!,request.GetProperty("target").GetString()!);Console.WriteLine(JsonSerializer.Serialize(new{id,metadata}));}catch(Exception error){Console.WriteLine(JsonSerializer.Serialize(new{id,error=error.Message}));}}return 0;}
             if(args.Contains("--decode-media")){var index=Array.IndexOf(args,"--decode-media");Console.WriteLine(JsonSerializer.Serialize(MediaImport.Decode(args[index+1],args[index+2])));return 0;}
+            if(args.Contains("--application-audio-list")){Console.WriteLine(JsonSerializer.Serialize(ApplicationAudio.Choices()));return 0;}
             if(args.Contains("--preview-outputs")){using var e=new MMDeviceEnumerator();Console.WriteLine(JsonSerializer.Serialize(e.EnumerateAudioEndPoints(DataFlow.Render,DeviceState.Active).Where(d=>!AudioPolicy.IsGG(d)&&!AudioPolicy.IsTroll(d)&&!d.FriendlyName.Contains("SteelSeries Sonar")).Select(d=>new{id=d.ID,name=d.FriendlyName})));return 0;}
             if(args.Contains("--startup-context")){
                 object? routing=null;string? routingError=null;try{routing=AudioPolicy.SafeRoute();}catch(Exception error){routingError=error.Message;}
@@ -61,7 +62,7 @@ static class Program
                 Console.WriteLine(JsonSerializer.Serialize(new{routing,routingError,devices,engineInfo=new{ggRunning=System.Diagnostics.Process.GetProcessesByName("SteelSeriesSonar").Length>0},health=new{installed=DriverSetup.Installed(),configuration=configuration!=null}}));return 0;
             }
             if(args.Contains("--driver-health")){using var configuration=Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\SteelSeries ApS\Sonar.APO\ChatCapture");Console.WriteLine(JsonSerializer.Serialize(new{installed=DriverSetup.Installed(),configuration=configuration!=null}));return 0;}
-            if(args.Contains("--repair-driver")){var result=DriverSetup.Install();DriverBranding.Rename();Console.WriteLine(JsonSerializer.Serialize(result));return 0;}
+            if(args.Contains("--repair-driver")){var json=JsonSerializer.Serialize(DriverSetup.Install());try{DriverBranding.Rename();}catch(Exception branding){Console.Error.WriteLine("Driver installed; device naming will be retried later: "+branding.Message);}Console.WriteLine(json);using var result=JsonDocument.Parse(json);return result.RootElement.GetProperty("reboot").GetBoolean()?3010:0;}
             if(args.Contains("--cleanup-test")){NativeEngine.CoInitializeEx(0,0);NativeEngine.PrepareRuntime();using var context=new NativeActivationContext();Console.WriteLine(JsonSerializer.Serialize(CleanupTest.Run()));return 0;}
             if(args.Contains("--fun-test")){using var doc=JsonDocument.Parse(File.ReadAllText(args[Array.IndexOf(args,"--fun-test")+1]));Console.WriteLine(JsonSerializer.Serialize(FunDsp.Measure(doc.RootElement)));return 0;}
             if(args.Contains("--share-sessions")){using var guard=new ShareProtection();Console.WriteLine(JsonSerializer.Serialize(guard.Inspect(false)));return 0;}
@@ -146,6 +147,9 @@ static class Program
                                 case "preview":engine.Preview(message.GetProperty("volume").GetSingle(),message.TryGetProperty("outputId",out var previewOutput)?previewOutput.GetString():null);break;
                                 case "media-destination":engine.MediaDestination(message.GetProperty("destination").GetString()!);break;
                                 case "troll-voice":engine.TrollVoice(message.GetProperty("enabled").GetBoolean());break;
+                                case "application-audio-list":Console.WriteLine(JsonSerializer.Serialize(new{id,ok=true,result=ApplicationAudio.Choices()}));continue;
+                                case "application-audio-start":engine.StartApplicationAudio(message.GetProperty("pid").GetInt32());break;
+                                case "application-audio-stop":engine.StopApplicationAudio();break;
                                 case "soundboard-ready":engine.PrepareSoundboard();break;
                                 case "wheel-pointer":NativeEngine.WheelPointer(message.GetProperty("x").GetInt32(),message.GetProperty("y").GetInt32());break;
                                 case "soundboard-play":engine.PlaySound(message.GetProperty("soundId").GetString()!,message.GetProperty("path").GetString()!,message.GetProperty("volume").GetSingle());break;

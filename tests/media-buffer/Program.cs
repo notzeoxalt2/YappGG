@@ -1,5 +1,6 @@
 using MicOnly;using NAudio.Wave;using System.Diagnostics;
 static void Check(bool ok,string message){if(!ok)throw new Exception(message);}
+var ring=new LiveAudioRing(100);var submitted=Enumerable.Range(0,25).Select(x=>(float)x).ToArray();ring.Write(submitted,submitted.Length);var recent=new float[25];ring.Read(recent,0,recent.Length);Check(recent.Take(20).SequenceEqual(Enumerable.Range(5,20).Select(x=>(float)x))&&recent.Skip(20).All(v=>v==0),"Application audio ring did not keep the newest samples or zero-fill underflow");
 using(var mixer=new SoundboardMixer()){
  var slow=new Slow();mixer.PlaySource("slow",slow,slow,1);Check(slow.Entered.Wait(2000),"Prefetch did not start");
  var output=new float[960];var watch=Stopwatch.StartNew();mixer.Mix(output,output.Length);Check(watch.ElapsedMilliseconds<100,"Microphone mix waited for disk/decoder");

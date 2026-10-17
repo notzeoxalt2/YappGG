@@ -10,6 +10,7 @@ sealed class MonoMixProvider(ISampleProvider source):ISampleProvider
 }
 static class MediaImport
 {
+    public static object Probe(string input){using var reader=new MediaFoundationReader(input);return new{durationSeconds=reader.TotalTime.TotalSeconds,sampleRate=reader.WaveFormat.SampleRate};}
     public static object Decode(string input,string target){
         using var reader=new MediaFoundationReader(input);
         ISampleProvider source=new MonoMixProvider(reader.ToSampleProvider());
@@ -32,6 +33,7 @@ sealed class SoundboardMixer:IDisposable
     }
     readonly object controls=new();readonly AutoResetEvent wake=new(false);readonly Thread producer;
     Voice[] voices=[];readonly List<Voice> retired=[];volatile bool disposed;
+    public ISampleProvider? LiveSource;float[] live=[];
     long underruns;public long Underruns=>Interlocked.Read(ref underruns);public string? Error{get;private set;}
     public int SampleRate {get;set;}=48000;
     public SoundboardMixer(){producer=new Thread(Fill){IsBackground=true,Name="YappGG media prefetch",Priority=ThreadPriority.BelowNormal};producer.Start();}
@@ -42,7 +44,7 @@ sealed class SoundboardMixer:IDisposable
     public void Volume(string id,float value){CheckVolume(value);var voice=Snapshot().FirstOrDefault(v=>v.Id==id);if(voice!=null)voice.Volume=value;}
     public void Pause(string id,bool paused){var voice=Snapshot().FirstOrDefault(v=>v.Id==id&&!v.Stopped)??throw new InvalidOperationException("This sound is not playing.");voice.Paused=paused;wake.Set();}
     public void PauseAll(){var current=Snapshot();bool value=current.Any(v=>!v.Paused);foreach(var voice in current)voice.Paused=value;wake.Set();}
-    public void Play(string id,string path,float volume){CheckVolume(volume);var reader=new WaveFileReader(path);try{ISampleProvider provider=new MonoMixProvider(reader.ToSampleProvider());if(provider.WaveFormat.SampleRate!=SampleRate)provider=new WdlResamplingSampleProvider(provider,SampleRate);PlaySource(id,reader,provider,volume);}catch{reader.Dispose();throw;}}
+    public void Play(string id,string path,float volume){CheckVolume(volume);WaveStream reader=System.IO.Path.GetExtension(path).Equals(".wav",StringComparison.OrdinalIgnoreCase)?new WaveFileReader(path):new MediaFoundationReader(path);try{ISampleProvider provider=new MonoMixProvider(reader.ToSampleProvider());if(provider.WaveFormat.SampleRate!=SampleRate)provider=new WdlResamplingSampleProvider(provider,SampleRate);PlaySource(id,reader,provider,volume);}catch{reader.Dispose();throw;}}
     internal void PlaySource(string id,IDisposable owner,ISampleProvider provider,float volume){
         CheckVolume(volume);var voice=new Voice(id,owner,provider,volume,Math.Max(8192,SampleRate/4));
         lock(controls){if(disposed)throw new ObjectDisposedException(nameof(SoundboardMixer));var current=Snapshot().ToList();for(int i=current.Count-1;i>=0;i--)if(current[i].Id==id){Retire(current[i]);current.RemoveAt(i);}if(current.Count>=8){Retire(current[0]);current.RemoveAt(0);}current.Add(voice);Volatile.Write(ref voices,current.ToArray());}wake.Set();
@@ -51,6 +53,7 @@ sealed class SoundboardMixer:IDisposable
     // A contended ring is skipped, rather than making live voice wait.
     public void Mix(float[] destination,int frames){
         if(frames<0||frames>destination.Length)throw new ArgumentOutOfRangeException(nameof(frames));Array.Clear(destination,0,frames);
+        var source=Volatile.Read(ref LiveSource);if(source!=null){if(live.Length<frames)live=new float[frames];source.Read(live,0,frames);for(int i=0;i<frames;i++)destination[i]+=live[i];}
         var active=Snapshot();foreach(var voice in active){
             if(voice.Stopped||voice.Paused)continue;
             if(!Monitor.TryEnter(voice.Gate)){Interlocked.Increment(ref underruns);continue;}

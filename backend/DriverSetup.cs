@@ -47,6 +47,25 @@ static class DriverSetup
     var hardware=System.Text.Encoding.Unicode.GetBytes(HardwareId+"\0\0");Check(SetupDiSetDeviceRegistryProperty(set,ref target,1,hardware,(uint)hardware.Length),"Set microphone hardware ID");
     Check(SetupDiCallClassInstaller(0x19,set,ref target),"Register microphone device");
    }
+   // Registration is asynchronous on some Windows installations. Resolve the
+   // newly registered root devnode again from the live device tree before
+   // asking Windows to bind the staged driver. A stale SP_DEVINFO_DATA from
+   // the class-specific creation set can otherwise fail with
+   // SPAPI_E_DEVINST_NOT_EXIST (0xE000020B).
+   if(!existing){
+    SetupDiDestroyDeviceInfoList(set);set=-1;bool found=false;
+    for(var attempt=0;attempt<20&&!found;attempt++){
+     set=SetupDiGetClassDevs(0,null,0,6);
+     if(set!=-1){
+      for(uint index=0;;index++){
+       var candidate=new DeviceInfo{size=(uint)Marshal.SizeOf<DeviceInfo>()};if(!SetupDiEnumDeviceInfo(set,index,ref candidate))break;
+       var hardware=new byte[8192];if(SetupDiGetDeviceRegistryProperty(set,ref candidate,1,out _,hardware,(uint)hardware.Length,out _)&&System.Text.Encoding.Unicode.GetString(hardware).Split('\0').Contains(HardwareId,StringComparer.OrdinalIgnoreCase)){target=candidate;found=true;break;}
+      }
+     }
+     if(!found){if(set!=-1)SetupDiDestroyDeviceInfoList(set);set=-1;Thread.Sleep(250);}
+    }
+    if(!found)throw new InvalidOperationException("Windows accepted the YappGG microphone device registration but did not publish it in the live device tree. See C:\\Windows\\INF\\setupapi.dev.log and retry Repair microphone.");
+   }
    // Bind the exact registered devnode rather than scanning globally for a
    // freshly created device via UpdateDriverForPlugAndPlayDevices.
    Check(DiInstallDevice(0,set,ref target,0,0,out var reboot),"Bind signed microphone driver");

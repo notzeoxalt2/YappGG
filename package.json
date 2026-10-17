@@ -1,6 +1,6 @@
 {
   "name": "yappgg",
-  "version": "0.7.15",
+  "version": "0.7.16",
   "private": true,
   "description": "YappGG microphone EQ and processing",
   "main": "host/main.cjs",
